@@ -1,0 +1,285 @@
+{
+  "meta": {
+    "name": "Qótimo Sorvetes — Design DNA",
+    "description": "Identidade extraída do catálogo institucional impresso da Qótimo Sorvetes (9 páginas) e do perfil @qotimosorvetes. Marca familiar de Jaraguá do Sul/SC, fundada em 2000, com três linhas de submarca: Sorvetes (azul/vermelho), Açaí (roxo/magenta) e Premium (grafite/dourado). Alvo de aplicação: landing page institucional com scroll dirigido.",
+    "source_references": [
+      "Catálogo Qótimo — capa (medido)",
+      "Catálogo Qótimo — p.2 História e parque fabril",
+      "Catálogo Qótimo — Linha Tradicional (medido)",
+      "Catálogo Qótimo — Picolés e potes 1,3 L",
+      "Catálogo Qótimo — Caixas 5 e 10 litros",
+      "Catálogo Qótimo — Linha Açaí (medido)",
+      "Catálogo Qótimo — Linha Premium (medido)",
+      "Catálogo Qótimo — contracapa (medido)",
+      "https://www.instagram.com/qotimosorvetes/"
+    ],
+    "created_at": "2026-09-14"
+  },
+
+  "design_system": {
+    "color": {
+      "palette_type": "complementary com duas submarcas análogas",
+      "primary": { "hex": "#033B5C", "role": "Azul marinho institucional. Fundo dominante de blocos de marca, tipografia de títulos sobre claro, barra superior do catálogo." },
+      "secondary": { "hex": "#E63939", "role": "Vermelho coral da marca. Títulos de seção, faixa de onda da capa, ícones de contato, contorno interno do logo." },
+      "accent": { "hex": "#E63939", "role": "CTA e ênfase. Único elemento autorizado a interromper um bloco azul ou branco." },
+      "neutral": {
+        "scale": ["#FFFFFF", "#FCFCFC", "#F4F4F4", "#EAEBEB", "#CECDD0", "#7B726F", "#494342", "#212222"],
+        "usage": "Branco e #F4F4F4 são o respiro padrão e o fundo das páginas de produto; texto corrido em #212222 sobre claro e em #FFFFFF sobre o azul #033B5C; #CECDD0 apenas para rótulos secundários e o rótulo 'sabores'."
+      },
+      "semantic": {
+        "success": "#3E8E41",
+        "warning": "#D9BB5B",
+        "error": "#E63939",
+        "info": "#033B5C"
+      },
+      "surface": {
+        "background": "#FFFFFF",
+        "card": "#F4F4F4",
+        "elevated": "#033B5C"
+      },
+      "contrast_strategy": "Alto contraste por blocos chapados: uma superfície é branca ou é cor de marca, nunca um meio-termo. Texto claro sobre azul, texto grafite sobre branco. Nenhum texto sobre foto sem um bloco sólido por trás.",
+      "measurement": {
+        "method": "k-means em espaço CIELAB sobre amostra de 20.000 pixels, imagem reduzida a 400px",
+        "k": 10,
+        "note": "scripts/measure-colors.mjs indisponível (sharp bloqueado pelo proxy); medição equivalente executada em Python/PIL com a mesma clusterização Lab."
+      },
+      "measured_palette": [
+        { "hex": "#F4F4F4", "coverage": 0.2624, "role": "background" },
+        { "hex": "#013A5C", "coverage": 0.1676, "role": "primary" },
+        { "hex": "#E63939", "coverage": 0.083, "role": "accent" },
+        { "hex": "#053B5C", "coverage": 0.128, "role": "primary (p. Tradicional)" },
+        { "hex": "#6B0F81", "coverage": 0.0711, "role": "submarca Açaí — base" },
+        { "hex": "#9A30B4", "coverage": 0.0684, "role": "submarca Açaí — realce" },
+        { "hex": "#B34ACE", "coverage": 0.0542, "role": "submarca Açaí — títulos" },
+        { "hex": "#212222", "coverage": 0.746, "role": "submarca Premium — fundo" },
+        { "hex": "#D9BB5B", "coverage": 0.0431, "role": "submarca Premium — dourado" }
+      ],
+      "sub_brands": {
+        "sorvetes": { "primary": "#033B5C", "accent": "#E63939", "surface": "#FFFFFF" },
+        "acai": { "primary": "#6B0F81", "accent": "#B34ACE", "surface": "#FFFFFF", "support": "#3E8E41" },
+        "premium": { "primary": "#212222", "accent": "#D9BB5B", "surface": "#212222" }
+      }
+    },
+
+    "typography": {
+      "type_scale": {
+        "display":    { "size": "clamp(3rem, 7vw, 6rem)",     "weight": "800", "line_height": "0.95", "tracking": "-0.02em" },
+        "heading_1":  { "size": "clamp(2.25rem, 4.5vw, 4rem)","weight": "800", "line_height": "1.02", "tracking": "-0.015em" },
+        "heading_2":  { "size": "clamp(1.75rem, 3vw, 2.75rem)","weight": "700","line_height": "1.1",  "tracking": "-0.01em" },
+        "heading_3":  { "size": "1.375rem",                    "weight": "700", "line_height": "1.2",  "tracking": "0" },
+        "body":       { "size": "1.0625rem",                   "weight": "400", "line_height": "1.65", "tracking": "0" },
+        "body_small": { "size": "0.9375rem",                   "weight": "400", "line_height": "1.6",  "tracking": "0" },
+        "caption":    { "size": "0.8125rem",                   "weight": "500", "line_height": "1.4",  "tracking": "0.01em" },
+        "overline":   { "size": "0.75rem",                     "weight": "500", "line_height": "1.2",  "tracking": "0.38em" }
+      },
+      "font_families": {
+        "heading": "Display arredondada de peso alto em caixa baixa — Baloo 2 ou Fredoka; substitui a fonte desenhada dos títulos 'linha tradicional' e 'picolés de creme'.",
+        "body": "Sans geométrica humanista — Poppins ou Montserrat, pesos 400/600/700.",
+        "mono": "não utilizada na marca"
+      },
+      "font_style_notes": "A assinatura tipográfica do catálogo é o contraste entre três registros: títulos display gordos em caixa baixa (apetitosos), subtítulos em itálico leve (promessa sensorial) e rótulos em caixa baixa com tracking amplíssimo ('s a b o r e s', 'C a t á l o g o'). O rótulo espaçado é o detalhe que mais identifica a marca depois do logo — precisa aparecer na web. Listas de sabores sempre em bold, nunca em regular."
+    },
+
+    "spacing": {
+      "base_unit": "8px",
+      "scale": ["4px", "8px", "16px", "24px", "40px", "64px", "96px", "144px"],
+      "content_density": "comfortable",
+      "section_rhythm": "Alternância deliberada: seções de respiro (branco, 144px verticais) seguidas de blocos chapados de cor que sangram de borda a borda. Nunca duas seções coloridas seguidas sem branco entre elas."
+    },
+
+    "layout": {
+      "grid_system": "12 colunas com quebras assimétricas; blocos de cor sangram além do grid",
+      "max_content_width": "1200px",
+      "columns": "12 (desktop) / 6 (tablet) / 4 (mobile)",
+      "gutter": "24px",
+      "breakpoints": ["480px", "768px", "1024px", "1440px"],
+      "alignment_tendency": "asymmetric — o catálogo nunca centraliza um par foto+texto; um lado sempre pesa mais"
+    },
+
+    "shape": {
+      "border_radius": {
+        "small": "8px",
+        "medium": "16px",
+        "large": "32px",
+        "pill": "999px"
+      },
+      "border_usage": "subtle 1px apenas em caixas de texto sobre fundo colorido (como a moldura da seção HISTÓRIA)",
+      "divider_style": "onda ou curva cheia em vez de linha; quando há linha, é uma barra sólida na cor da linha de produto",
+      "signature_shape": "Máscara de foto com cantos assimétricos: dois cantos vivos, um arredondado em raio grande (~120px) e um em raio médio — a 'pétala'. É a forma-assinatura do catálogo e deve recortar toda foto de ambiente do site."
+    },
+
+    "elevation": {
+      "shadow_style": "none — a profundidade vem de sobreposição de blocos de cor, não de sombra",
+      "levels": {
+        "low": "nenhuma sombra; mudança de superfície por cor",
+        "medium": "0 8px 24px rgba(3,59,92,0.10) apenas em cards de produto flutuando sobre branco",
+        "high": "0 24px 60px rgba(3,59,92,0.18) reservado a um único elemento por tela"
+      },
+      "depth_cues": "sobreposição de camadas, recorte de produto sobre bloco de cor, marca d'água tipográfica ao fundo"
+    },
+
+    "iconography": {
+      "style": "pictogramas simples e cheios, sem contorno; os únicos ícones do catálogo são telefone, WhatsApp e Instagram",
+      "stroke_weight": "preenchido, sem traço",
+      "size_scale": ["16px", "20px", "24px"],
+      "preferred_set": "Phosphor Fill ou Lucide com fill aplicado"
+    },
+
+    "motion": {
+      "easing": "cubic-bezier(0.22, 1, 0.36, 1)",
+      "duration_scale": { "micro": "160ms", "normal": "420ms", "macro": "900ms" },
+      "entrance_pattern": "clip-reveal a partir da forma-pétala e subida curta de 24px com fade; listas de sabores entram em stagger de 40ms",
+      "exit_pattern": "fade curto sem deslocamento",
+      "philosophy": "Movimento contido e apetitoso. A marca é derretimento e cremosidade — transições longas e suaves em blocos grandes, nada de bounce ou elástico."
+    },
+
+    "components": {
+      "button_style": "pill sólida em #E63939 com texto branco 600; variante fantasma com borda 2px branca sobre azul",
+      "input_style": "pill de fundo branco, sem borda, com sombra interna suave",
+      "card_style": "card de produto branco com foto recortada sem fundo, rótulo 'sabores' em caixa baixa espaçada e lista em bold; callout de medida (100ml, 1,3 L) em pill escura com linha-guia fina até o produto",
+      "navigation_pattern": "barra superior fina com logo à esquerda e faixa na cor da linha ativa; troca de cor conforme a seção visível",
+      "modal_style": "painel deslizante inteiro em cor de linha, sem overlay cinza",
+      "list_style": "listas de sabores em duas ou três colunas, bold, sem marcador",
+      "component_notes": "O callout de medida com linha-guia é um componente próprio do catálogo e deve migrar para o site como legenda de produto. A pílula de medida usa a cor primária da linha, nunca o vermelho."
+    }
+  },
+
+  "design_style": {
+    "aesthetic": {
+      "mood": ["apetitoso", "familiar", "confiante", "alegre", "caseiro-industrial"],
+      "visual_metaphor": "o sorvete derretendo — ondas, respingos e curvas que escorrem entre os blocos",
+      "era_influence": "cartaz de sorveteria brasileira dos anos 90 relido com rigor gráfico contemporâneo",
+      "genre": "consumer food brand / indústria familiar com ambição de varejo nacional",
+      "personality_traits": ["acolhedora", "orgulhosa do próprio chão de fábrica", "generosa", "direta"],
+      "adjectives": ["cremoso", "gostoso", "saboroso", "vibrante", "sólido"]
+    },
+    "visual_language": {
+      "complexity": "moderate",
+      "ornamentation": "subtle accents — respingos, ondas e marca d'água tipográfica",
+      "whitespace_usage": "generoso nas páginas de produto, ausente nas páginas de marca (que são chapadas de cor de borda a borda)",
+      "visual_weight_distribution": "um lado da tela sempre pesa mais; o equilíbrio vem do contrapeso de cor, não da simetria",
+      "focal_strategy": "single hero element — um produto recortado domina cada bloco",
+      "contrast_level": "alto",
+      "texture_usage": "marca d'água de palavras ('cremoso', 'gostoso', 'saboroso') em baixo contraste e a textura do próprio sorvete em macro"
+    },
+    "composition": {
+      "hierarchy_method": "scale contrast + color weight — o título display em vermelho sobre branco resolve a hierarquia sozinho",
+      "balance_type": "asymmetric",
+      "flow_direction": "zigue-zague em Z; o olho alterna entre o bloco de texto à esquerda e o produto à direita a cada seção",
+      "grouping_strategy": "agrupamento por linha de produto, cada uma com sua cor e seu cabeçalho",
+      "negative_space_role": "isolar o produto recortado; o branco é o prato em que o sorvete é servido"
+    },
+    "imagery": {
+      "photo_treatment": "produto recortado sem fundo, luz frontal, cor saturada; fotos de ambiente e fábrica em cor natural, sem filtro",
+      "illustration_style": "não há ilustração além dos respingos e do grafismo das embalagens",
+      "graphic_elements": ["onda de duas cores", "respingo de três gotas", "forma-pétala de recorte", "barra superior da linha", "callout de medida com linha-guia"],
+      "pattern_usage": "marca d'água tipográfica repetida em diagonal ao fundo dos blocos de marca",
+      "image_shape": "pétala assimétrica (dois cantos vivos, dois arredondados em raios diferentes)"
+    },
+    "interaction_feel": {
+      "feedback_style": "imediato e físico — o botão afunda levemente, a cor escurece",
+      "hover_behavior": "o produto recortado sobe 8px e ganha sombra; o bloco de cor atrás não se move",
+      "transition_personality": "smooth glide",
+      "loading_style": "cortina na cor da linha subindo, com o respingo do logo",
+      "microinteraction_density": "baixa — poucos gestos, bem executados"
+    },
+    "brand_voice_in_ui": {
+      "tone": "afetivo e apetitoso, frases curtas com promessa sensorial ('O queridinho do público', 'Pequeno no nome, gigante no sabor', 'Felicidade pura em cada colherada')",
+      "formality": "informal com lastro industrial — trata o lojista como parceiro, o consumidor como vizinho",
+      "cta_style": "friendly invitation ('Fale com a gente', 'Seja um revendedor'), nunca urgência artificial",
+      "empty_state_approach": "frase curta e bem-humorada no tom das promessas de sabor",
+      "error_tone": "leve, sem culpar o usuário"
+    }
+  },
+
+  "visual_effects": {
+    "overview": {
+      "effect_intensity": "subtle-accent",
+      "performance_tier": "lightweight",
+      "fallback_strategy": "reduce to CSS — com prefers-reduced-motion, todo scroll-trigger vira estado final estático",
+      "primary_technology": "CSS + IntersectionObserver, sem biblioteca"
+    },
+    "background_effects": {
+      "type": "mesh-gradient",
+      "description": "Gradiente suave azul→vermelho apenas na dobra do herói, sob a onda; estático, com leve deslocamento no scroll.",
+      "technology": "CSS radial-gradient",
+      "params": { "color_palette": ["#033B5C", "#E63939", "#FFFFFF"], "speed": "estático", "density": "baixa", "opacity": "1", "blend_mode": "normal" }
+    },
+    "particle_systems": {
+      "enabled": false,
+      "type": "none",
+      "description": "A marca não usa partículas; respingos são elementos gráficos fixos, não partículas animadas.",
+      "technology": "none",
+      "params": { "count": "0", "shape": "none", "size_range": "none", "movement_pattern": "none", "color_behavior": "none", "interaction": "none", "spawn_area": "none" }
+    },
+    "3d_elements": {
+      "enabled": false,
+      "type": "none",
+      "description": "Sem 3D. O produto é fotografia recortada.",
+      "technology": "none",
+      "params": { "renderer": "none", "lighting": "none", "camera": "none", "materials": "none", "geometry": "none", "post_processing": [], "interaction_model": "none" }
+    },
+    "shader_effects": {
+      "enabled": false,
+      "type": "none",
+      "description": "Nenhum shader.",
+      "technology": "none",
+      "params": { "uniforms": "none", "vertex_manipulation": "none", "fragment_output": "none", "noise_type": "none", "distortion": "none" }
+    },
+    "scroll_effects": {
+      "parallax": {
+        "enabled": true,
+        "layers": "3",
+        "depth_range": "produto recortado 1.0 / bloco de cor 0.85 / marca d'água tipográfica 0.6",
+        "speed_curve": "linear, deslocamento máximo de 80px"
+      },
+      "scroll_triggered_animations": {
+        "enabled": true,
+        "trigger_points": "quando 25% da seção entra na viewport",
+        "animation_type": "clip-reveal pela forma-pétala + fade-up de 24px; contadores para 2000, 600 m², 6 sorveterias",
+        "scrub_behavior": "sem scrub — dispara uma vez e fica"
+      },
+      "scroll_morphing": {
+        "enabled": true,
+        "description": "A onda que separa as seções muda de cor conforme a linha de produto visível (azul→roxo→grafite), acompanhando a barra superior."
+      }
+    },
+    "text_effects": {
+      "type": "gradient-fill",
+      "description": "Apenas nos títulos display de cada linha: preenchimento sólido na cor da linha com o respingo em SVG ao lado, animado uma vez na entrada.",
+      "technology": "CSS + SVG",
+      "params": { "split_strategy": "by-word", "animation_per_unit": "fade-up", "stagger": "40ms", "effect_style": "contido" }
+    },
+    "cursor_effects": {
+      "enabled": false,
+      "type": "none",
+      "description": "Cursor padrão. Marca de alimento popular não pede cursor customizado.",
+      "params": { "shape": "none", "size": "none", "blend_mode": "none", "trail": "none", "interaction_zone": "none" }
+    },
+    "image_effects": {
+      "type": "reveal-clip",
+      "description": "Toda foto de ambiente entra com clip-path animado a partir da forma-pétala; produtos recortados sobem 8px no hover.",
+      "technology": "CSS clip-path + transform",
+      "params": { "filter_pipeline": "nenhum filtro — cor natural", "hover_transform": "translateY(-8px) e sombra média", "reveal_animation": "clip-path 900ms", "distortion_type": "none" }
+    },
+    "glassmorphism_neumorphism": {
+      "enabled": false,
+      "style": "none",
+      "params": { "blur_radius": "none", "transparency": "none", "border_treatment": "none", "shadow_type": "none", "light_source_angle": "none" }
+    },
+    "canvas_drawings": {
+      "enabled": false,
+      "type": "none",
+      "description": "Sem canvas.",
+      "technology": "none",
+      "params": { "draw_method": "none", "animation_loop": "none", "color_scheme": "none", "responsiveness": "none", "interaction": "none" }
+    },
+    "svg_animations": {
+      "enabled": true,
+      "type": "decorative-loop",
+      "description": "A onda divisória é um path SVG que muda de cor por seção; o respingo de três gotas do logo entra com path-draw no carregamento.",
+      "params": { "animation_method": "CSS transition sobre atributos SVG", "path_morphing": "apenas cor, sem morph de forma", "stroke_animation": "path-draw no respingo do logo", "filter_effects": "nenhum" }
+    },
+    "composite_notes": "O catálogo é impresso: não há efeito observado, tudo aqui é tradução para a web. Três assinaturas devem sobreviver à tradução, nesta ordem de prioridade: (1) a forma-pétala recortando as fotos, (2) a onda de duas cores separando seções e trocando de cor por linha de produto, (3) o rótulo em caixa baixa com tracking amplíssimo. Sem essas três, o site pode ficar bonito e não parecer Qótimo. A marca d'água tipográfica ('cremoso', 'gostoso', 'saboroso') é a quarta assinatura, opcional no mobile. Evitar: sombras pesadas, glassmorphism, gradientes multicoloridos e qualquer coisa 'dark tech' — a submarca Premium é o único contexto escuro legítimo."
+  }
+}

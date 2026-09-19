@@ -1,0 +1,52 @@
+{
+  "linhas": [
+    {
+      "id": "tradicional",
+      "nome": "Linha Tradicional",
+      "cor": "sorvetes",
+      "produtos": [
+        { "nome": "Moreninha", "medida": "12 cm", "claim": "O queridinho do público.", "sabores": ["Chocolate","Creme","Flocos","Morango"] },
+        { "nome": "Potinho", "medida": "100 ml", "claim": "Pequeno no nome, gigante no sabor.", "sabores": ["Chocolate","Chocolate Branco","Creme","Leite Condensado","Morango"], "nota": "Personalizado sob consulta" },
+        { "nome": "Sundae", "medida": "180 ml", "claim": "O sorvete que derrete corações.", "sabores": ["Baunilha Branca com Morango","Baunilha Branca Trufado","Chocolate","Creme Trufado","Morango","Morango Trufado"] }
+      ]
+    },
+    {
+      "id": "picoles",
+      "nome": "Picolés",
+      "cor": "sorvetes",
+      "produtos": [
+        { "nome": "Picolés de creme", "medida": "60 g", "claim": "Textura macia e saborosa.", "sabores": ["Blue Ice","Chiclete","Chocolate","Chocolate Branco","Coco","Creme","Leite Condensado","Leitinho","Manga","Maracujá","Menta","Milho Verde","Morango","Nata","Uva"] },
+        { "nome": "Picolés de frutas", "medida": "60 g", "claim": "A melhor refrescância no verão.", "sabores": ["Abacaxi","Acerola","Água de Coco","Groselha","Limão","Morango","Tangerina","Tutti-frutti","Uva"] }
+      ]
+    },
+    {
+      "id": "potes",
+      "nome": "Potes e caixas",
+      "cor": "sorvetes",
+      "produtos": [
+        { "nome": "Potes", "medida": "1,3 litros", "claim": "Qualidade incomparável.", "sabores": ["Abacate","Abacaxi","Banana Caramelizada","Baunilha com Morango","Blue Ice com Chiclete","Carioca","Chocolate Branco","Chocolate Branco com Uva","Chocolate Suíço","Coco Branco","Creme","Danoninho","Dois Chocolates","Flocos","Frutas Tropicais","Limonada Suíça","Maçã Encantada","Maracujá","Maracujá com Chocolate","Milho Verde","Morango","Sensação","Tentação","Tropical","Uva Roxa"] },
+        { "nome": "Caixas", "medida": "5 e 10 litros", "claim": "Felicidade pura em cada colherada.", "sabores": ["Abacate","Abacaxi","Abacaxi Francês","Alfajor","Banana Flambada","Baunilha com Morango","Baunilha Branca Trufada","Blue Ice","Brigadeiro","Cacau Brasil","Café Moka","Chiclete","Chocolate Branco","Chocolate Suíço","Choconinho","Chocotella","Chocotine","Coco Branco","Cookies","Creme","Creme Trufado","Crocante","Danoninho","Dois Amores","Flocos","Frutas Tropicais","Iogurte Grego com Amarena","Kinder Ovo","Laka Oreo","Leite Condensado","Leite Condensado com Uva","Limonada Suíça","Maçã Encantada","Maracujá","Marta Rocha","Menta com Chocolate","Milho Verde","Morango","Morango Trufado","Negresco","Ninho Trufado","Nozes","Paçoca","Passas ao Rum","Pistache","Prestígio","Puro Ninho","Rafaello","Red Ninho","Sensação","Sonho de Valsa","Torta Alemã","Tropical","Unicórnio","Uva Roxa"] }
+      ]
+    },
+    {
+      "id": "acai",
+      "nome": "Qótimo Açaí",
+      "cor": "acai",
+      "produtos": [
+        { "nome": "Caixas", "medida": "5 e 10 litros", "claim": "Energia e sabor em cada colherada.", "sabores": ["Açaí Tradicional/Puro","Recheio de Avelã","Recheio de Cookies","Recheio de Ferrero Rocher","Recheio de Leitinho","Recheio de Morango","Recheio de Ovomaltine","Recheio de Paçoca","Recheio de Sorvete de Kinder Ovo","Recheio de Sorvete de Maracujá","Recheio de Sorvete de Pistache"] },
+        { "nome": "Potes", "medida": "1 litro", "claim": "Um toque natural que conquista.", "sabores": ["Açaí Tradicional","Recheio de Avelã","Recheio de Leitinho"] },
+        { "nome": "Potes", "medida": "100 e 160 ml", "claim": "Refrescância e sabor a qualquer hora.", "sabores": ["Açaí Tradicional","Recheio de Avelã","Recheio de Leitinho","Recheio de Morango"] },
+        { "nome": "Picolé de açaí", "medida": "70 g", "claim": "Açaí com cobertura de skimó de leitinho.", "sabores": ["Açaí com skimó de leitinho"] }
+      ]
+    },
+    {
+      "id": "premium",
+      "nome": "Qótimo Premium",
+      "cor": "premium",
+      "produtos": [
+        { "nome": "Potes", "medida": "1,5 litro", "claim": "A melhor opção para a família.", "sabores": ["Abacaxi Francês","Baunilha Trufada","Brigadeiro","Café Moka","Chocomenta","Choconinho","Chocotella","Coco Bianco","Cookies","Creme Trufado","Fantasia","Gran Bueno","Iogurte Grego com Amarena","Leite Condensado com Uva","Leitinho Trufado","Marta Rocha","Morango com Pedaços","Napolitano","Napolitano Especial","Passas ao Rum","Pistache","Presticoco","Puro Ninho","Qmaltine","Red Ninho","Super Flocos","Torta Alemã","Unicórnio"] },
+        { "nome": "Picolés premium", "medida": "65 g", "claim": "Coberturas que vão além do sabor.", "sabores": ["Banana","Beijinho","Brigadeiro","Skimó","Tableq","Tentação","Unicórnio"] }
+      ]
+    }
+  ]
+}
