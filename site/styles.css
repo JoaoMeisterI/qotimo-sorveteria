@@ -251,18 +251,32 @@ body>*{--u:min(100cqw / 1713, 100svh / 918, 1.25px)}
 }
 .pilar__icone svg{width:55%;height:auto}
 
+.pilar__texto{
+  /* desce o bloco ate o topo das maiusculas bater com a arte (y=753,
+     medido por pixel nas tres colunas) */
+  margin-block-start:calc(12 * var(--u));
+}
+
 .pilar__texto h2{
   font-size:max(14px,calc(23.5 * var(--u)));
   font-weight:800;color:var(--navy);line-height:1.18;
-  max-width:calc(280 * var(--u));
+  max-width:calc(300 * var(--u));
 }
 .pilar__texto p{
   margin-block-start:calc(6 * var(--u));
   font-size:max(12.5px,calc(17.5 * var(--u)));
   line-height:1.35;
   color:var(--corpo);
-  max-width:calc(300 * var(--u));
+  max-width:calc(290 * var(--u));
 }
+
+/* As quebras da arte saem de max-width medido, nao de <br>. Larguras
+   naturais em Poppins (u=1): "Ingredientes" 156 / "Ingredientes de" 191;
+   "Sorvetes sempre fresquinhos" 254 / "...e" 269; "Cada sabor e pensado"
+   202 / "...para" 249. Cada teto cai dentro da janela certa. */
+.pilar:nth-child(1) .pilar__texto h2{max-width:calc(175 * var(--u))}
+.pilar:nth-child(2) .pilar__texto p{max-width:calc(260 * var(--u))}
+.pilar:nth-child(3) .pilar__texto p{max-width:calc(243 * var(--u))}
 
 /* ---------------------------------------------------------------- linhas */
 
