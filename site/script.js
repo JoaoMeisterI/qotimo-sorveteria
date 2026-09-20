@@ -114,11 +114,16 @@
       var y = window.scrollY || window.pageYOffset;
       var altura = hero.offsetHeight || 1;
       var p = Math.min(y / altura, 1);           // 0 → 1 dentro do herói
-      var d = (p * 46).toFixed(1);
+      /* Deslocamentos em FRACAO da altura do heroi, nao em px fixos: em
+         telas menores o heroi encolhe junto com --u, e um valor fixo tiraria
+         a ponta do cascao de tras da onda. A folga do cascao e ~4,6% da
+         altura, entao 3,4% mantem a ponta sempre coberta. */
+      var d = (p * altura * 0.05).toFixed(1);
       Array.prototype.forEach.call(faixas, function (el, i) {
         el.style.transform = 'translate3d(0,' + (i ? -d : d) + 'px,0)';
       });
-      if (cascao) cascao.style.transform = 'translate3d(0,' + (p * -34).toFixed(1) + 'px,0)';
+      if (cascao) cascao.style.transform =
+        'translate3d(0,' + (p * altura * -0.034).toFixed(1) + 'px,0)';
     };
 
     var aoRolar = function () {
