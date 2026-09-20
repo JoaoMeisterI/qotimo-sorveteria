@@ -106,6 +106,7 @@
   var faixas = document.querySelectorAll('.hero__faixa');
   var cascao = document.querySelector('.hero__cascao img');
   var copy = document.querySelector('.hero__copy');
+  var rolar = document.querySelector('.rolar');
 
   if (hero && (faixas.length || cascao)) {
     var pendente = false;
@@ -134,6 +135,10 @@
         copy.style.transform = 'translate3d(0,' + (p * altura * -0.085).toFixed(1) + 'px,0)';
         copy.style.opacity = (1 - f * 0.85).toFixed(3);
       }
+
+      /* o indicador some cedo: assim que a rolagem comeca ele ja nao e
+         mais util, e nao acompanha o resto ate o fim */
+      if (rolar) rolar.style.setProperty('--rolar-op', Math.max(0, 1 - p * 5).toFixed(3));
     };
 
     var aoRolar = function () {
