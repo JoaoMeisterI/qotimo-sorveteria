@@ -192,30 +192,43 @@ body>*{--u:min(100cqw / 1713, 100svh / 918, 1.25px)}
 .btn svg{width:calc(22 * var(--u));height:auto;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
 .btn:hover{background:#c5171a;transform:translateY(-2px)}
 
-/* cascao: recortado da propria arte. A tela tem margem esq 39 / topo 31,
-   entao left 677u + top 128u poem o objeto em x 692 / y 140, como na arte. */
+/* Cascao: arquivo com margem de 40px nos quatro lados. Com left 678u,
+   top 86u e width 365u o OBJETO cai em x 692..1029, topo 100u e ponta
+   944u — atras da faixa branca, que e quem o corta. Nunca esticar:
+   so width, com height:auto. */
 .hero__cascao{
   position:absolute;z-index:1;
-  inset-block-start:calc(128 * var(--u));
-  inset-inline-start:calc(677 * var(--u));
+  inset-block-start:calc(86 * var(--u));
+  inset-inline-start:calc(678 * var(--u));
   transform:none;
   display:block;
 }
 .hero__cascao img{
-  width:calc(366 * var(--u));
+  width:calc(365 * var(--u));
   max-width:none;height:auto;
 }
 
 /* onda branca na FRENTE do cascao: e ela que corta a ponta */
+/* A emenda da faixa branca caia em coordenada fracionaria e o navegador
+   pintava 1px de vermelho misturado com branco atravessando a pagina.
+   Resolvido com 1px de sobreposicao real, nao com arredondamento. */
 .hero__base{
   position:relative;z-index:2;
+  margin-block-start:-1px;
   background:var(--branco);
-  min-height:calc(210 * var(--u));
-  padding-block:calc(29 * var(--u)) calc(24 * var(--u));
+  /* 210u e a altura da faixa na arte. Travada no desktop; abaixo de
+     1100px ela volta a crescer para caber o texto em duas linhas. */
+  height:calc(210 * var(--u));
+  display:grid;align-items:start;
+  /* 29u do topo poe o icone em 737u, como na arte; os ~60u que sobram
+     embaixo tambem existem na arte (o texto acaba em ~853u de 918u) */
+  padding-block-start:calc(29 * var(--u));
 }
 
 .hero__onda{
-  position:absolute;inset-inline:0;inset-block-end:100%;
+  position:absolute;inset-inline:0;
+  inset-block-end:calc(100% - 1px);   /* entra 1px na faixa branca */
+  display:block;
   width:100%;height:calc(68 * var(--u));
 }
 
@@ -282,6 +295,7 @@ body>*{--u:min(100cqw / 1713, 100svh / 918, 1.25px)}
 
 .linhas{
   position:relative;
+  margin-block-start:-1px;      /* mesma emenda, mesmo tratamento */
   overflow:hidden;
   background:var(--navy);
   padding-block:clamp(70px,9vw,150px) clamp(48px,6vw,104px);
@@ -292,6 +306,7 @@ body>*{--u:min(100cqw / 1713, 100svh / 918, 1.25px)}
    feita por uma onda, nao por uma linha reta. */
 .linhas__onda{
   position:absolute;inset-block-start:0;inset-inline:0;z-index:0;
+  display:block;
   width:100%;height:clamp(40px,6vw,96px);
 }
 
@@ -474,7 +489,13 @@ body>*{--u:min(100cqw / 1713, 100svh / 918, 1.25px)}
   .produto+.produto{margin-inline-start:-4%}
 }
 
-@media (max-width:1100px){
+@media (max-width:1099px){
+  /* a faixa deixa de ser travada: o texto do pilar passa a duas linhas */
+  .hero__base{
+    height:auto;
+    min-height:calc(210 * var(--u));
+    padding-block:calc(22 * var(--u));
+  }
   .pilar{padding-inline:clamp(6px,1.2vw,18px)}
 }
 
@@ -603,7 +624,7 @@ body>*{--u:min(100cqw / 1713, 100svh / 918, 1.25px)}
   .hero__onda{height:calc(26 * var(--um))}
 
   .hero__base{
-    min-height:0;
+    height:auto;min-height:0;
     padding-block:calc(26 * var(--um)) calc(30 * var(--um));
   }
 
