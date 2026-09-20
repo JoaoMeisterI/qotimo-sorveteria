@@ -22,7 +22,11 @@
 
 <header class="topo">
   <nav class="nav" aria-label="Principal">
-    <ul class="nav__links">
+    <button class="nav__menu" type="button" aria-expanded="false" aria-controls="nav-painel">
+      <span class="nav__traco"></span>
+      <span class="nav__rotulo">Menu</span>
+    </button>
+    <ul class="nav__links" id="nav-painel">
       <li><a href="#inicio">Início</a></li>
       <!-- TODO Fase 5: destino — hoje aponta para a seção de linhas -->
       <li><a href="#linhas">Produtos</a></li>

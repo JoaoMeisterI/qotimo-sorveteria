@@ -459,34 +459,161 @@ body>*{--u:min(100cqw / 1713, 100svh / 918, 1.25px)}
   .pilar{padding-inline:clamp(6px,1.2vw,18px)}
 }
 
-@media (max-width:899px){
-  /* empilhado: a altura volta a seguir o conteudo */
-  .hero{height:auto;min-height:0}
+/* ============ COMPOSICAO EMPILHADA (sem arte de referencia) ============
+   Derivada da desktop, mesmas camadas e mesma tecnica: um quadro de 390 de
+   largura e uma unidade so.  --um = min(100cqw/390, 1.7px)
+   O teto de 1,7px e o que impede o tablet em retrato de virar um vazio azul.
+   ====================================================================== */
+@media (max-width:899px),(orientation:portrait) and (max-width:1099px){
+
+  body>*{--um:min(100cqw / 390, 1.7px)}
+
+  /* ---- menu: hamburguer + CTA ---- */
+  .topo{
+    inset-block-start:calc(16 * var(--um));
+    padding-inline:calc(14 * var(--um));
+  }
+  .nav{
+    width:100%;
+    justify-content:space-between;
+    gap:calc(10 * var(--um));
+    height:calc(54 * var(--um));
+    padding-inline:calc(16 * var(--um)) calc(7 * var(--um));
+  }
+
+  .nav__menu{
+    display:flex;align-items:center;gap:calc(9 * var(--um));
+    background:none;border:0;padding:0;cursor:pointer;
+    font:inherit;color:var(--navy);
+  }
+  .nav__rotulo{
+    font-size:max(13px,calc(16 * var(--um)));font-weight:700;
+  }
+  /* tres tracos desenhados com sombras, para nao precisar de mais markup */
+  .nav__traco,
+  .nav__traco::before,
+  .nav__traco::after{
+    display:block;
+    width:calc(20 * var(--um));height:calc(2.5 * var(--um));
+    background:var(--navy);border-radius:2px;
+    transition:transform .25s,opacity .2s;
+  }
+  .nav__traco{position:relative}
+  .nav__traco::before,.nav__traco::after{content:"";position:absolute;inset-inline-start:0}
+  .nav__traco::before{inset-block-start:calc(-7 * var(--um))}
+  .nav__traco::after{inset-block-start:calc(7 * var(--um))}
+
+  .nav__menu[aria-expanded="true"] .nav__traco{background:transparent}
+  .nav__menu[aria-expanded="true"] .nav__traco::before{transform:translateY(calc(7 * var(--um))) rotate(45deg)}
+  .nav__menu[aria-expanded="true"] .nav__traco::after{transform:translateY(calc(-7 * var(--um))) rotate(-45deg)}
+
+  /* painel: some do fluxo e vira lista abaixo da pilula */
+  .nav__links{
+    position:absolute;
+    inset-block-start:calc(62 * var(--um));
+    inset-inline:0;
+    display:grid;gap:0;
+    background:var(--branco);
+    border-radius:calc(22 * var(--um));
+    box-shadow:0 10px 30px rgb(0 20 45 / .22);
+    padding:calc(6 * var(--um)) 0;
+    opacity:0;visibility:hidden;transform:translateY(calc(-8 * var(--um)));
+    /* visibility sem transicao na abertura (senao o link ainda nao e
+       focavel quando o script manda o foco) e so no fim do fade ao fechar */
+    transition:opacity .2s,transform .2s,visibility 0s .2s;
+  }
+  .nav__links.is-aberto{
+    opacity:1;visibility:visible;transform:none;
+    transition:opacity .2s,transform .2s,visibility 0s;
+  }
+  .nav__links a{
+    display:block;
+    padding:calc(12 * var(--um)) calc(22 * var(--um));
+    font-size:max(15px,calc(17 * var(--um)));
+  }
+
+  .nav__cta{
+    width:calc(128 * var(--um));height:calc(40 * var(--um));
+    font-size:max(13px,calc(15 * var(--um)));
+  }
+
+  /* ---- heroi empilhado: um eixo central so ---- */
+  .hero{
+    display:block;
+    padding-block-end:0;
+  }
+  .hero__faixa--topo{height:calc(126 * var(--um))}
+  .hero__faixa--base{
+    inset-block-start:auto;
+    inset-block-end:calc(96 * var(--um));
+    height:calc(300 * var(--um));
+  }
 
   .hero__palco{
-    display:grid;grid-template-columns:minmax(0,1fr);
-    justify-items:center;
+    width:100%;height:auto;
+    display:flex;flex-direction:column;align-items:center;
     text-align:center;
-    gap:var(--sp-s);
-    /* folga para o menu, que quebra em linhas ate a Fase 5 trazer o hamburguer */
-    padding-block-start:clamp(172px,26vh,230px);
+    padding:calc(150 * var(--um)) calc(20 * var(--um)) 0;
   }
-  /* faixa do topo mais baixa: o logo nao cai em cima do vermelho */
-  .hero__faixa--topo{height:clamp(120px,18vh,200px)}
-  .hero__faixa--base{height:clamp(240px,44vh,520px)}
 
   .hero__copy{
-    max-width:none;justify-items:center;order:1;
-    margin-block-end:clamp(16px,4vh,44px);
+    position:static;width:100%;
+    display:flex;flex-direction:column;align-items:center;
   }
-  .hero__cascao{position:static;transform:none;order:2;justify-content:center;align-self:auto}
-  .hero__cascao img{
-    height:auto;
-    width:min(52%,260px);
-    margin-block-end:clamp(-96px,-15vw,-44px);  /* a onda cobre a ponta */
+  .hero__logo{width:calc(289 * var(--um))}     /* 74% da largura do quadro */
+  .hero__tagline{
+    margin:calc(14 * var(--um)) 0 0;
+    font-size:max(15px,calc(19 * var(--um)));
+    white-space:normal;
   }
-  .hero__logo{width:min(100%,clamp(220px,52vw,380px))}
+  .btn{
+    margin:calc(18 * var(--um)) 0 0;
+    width:calc(215 * var(--um));height:calc(42 * var(--um));
+    font-size:max(13px,calc(15 * var(--um)));
+  }
+  .btn svg{width:calc(16 * var(--um))}
 
+  .hero__cascao{
+    position:static;
+    margin-block-start:calc(18 * var(--um));
+    /* a onda esconde ~18% da altura do cascao */
+    margin-block-end:calc(-45 * var(--um));
+  }
+  .hero__cascao img{width:calc(234 * var(--um))}   /* objeto = 55% do quadro */
+
+  .hero__onda{height:calc(26 * var(--um))}
+
+  .hero__base{
+    min-height:0;
+    padding-block:calc(26 * var(--um)) calc(30 * var(--um));
+  }
+
+  /* pilares FORA do palco, em fluxo, uma coluna */
+  .pilares{
+    width:100%;
+    padding-inline:calc(24 * var(--um));
+    grid-template-columns:minmax(0,1fr);
+    row-gap:calc(20 * var(--um));
+  }
+  .pilar{gap:calc(16 * var(--um));align-items:center}
+  .pilar:not(:last-child)::after{
+    inset-inline:0;inset-block-start:auto;inset-block-end:calc(-10 * var(--um));
+    translate:0 0;
+    width:100%;height:1px;
+  }
+  .pilar__icone{width:calc(60 * var(--um))}
+  .pilar__texto{margin-block-start:0}
+  .pilar__texto h2,
+  .pilar:nth-child(1) .pilar__texto h2{
+    font-size:max(15px,calc(19 * var(--um)));max-width:none;
+  }
+  .pilar__texto p,
+  .pilar:nth-child(2) .pilar__texto p,
+  .pilar:nth-child(3) .pilar__texto p{
+    font-size:max(13px,calc(15 * var(--um)));max-width:none;
+  }
+
+  /* ---- linhas ---- */
   .linhas__head{max-width:none}
   .linhas__board{grid-template-columns:minmax(0,1fr)}
 

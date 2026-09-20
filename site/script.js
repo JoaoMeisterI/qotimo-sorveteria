@@ -15,6 +15,58 @@
 
   if (reduzido) return iniciarAncoras();
 
+  /* --- menu empilhado: hamburguer + painel -------------------------------
+     Funciona sem CSS de estado: o botao so alterna aria-expanded e a classe.
+     Fecha com Esc, ao clicar num link e ao clicar fora; enquanto aberto o
+     Tab circula dentro do painel.
+     --------------------------------------------------------------------- */
+
+  var btnMenu = document.querySelector('.nav__menu');
+  var painel = document.querySelector('.nav__links');
+
+  if (btnMenu && painel) {
+    var abrir = function (sim) {
+      btnMenu.setAttribute('aria-expanded', sim ? 'true' : 'false');
+      painel.classList.toggle('is-aberto', sim);
+      if (sim) {
+        // o painel so fica focavel depois que visibility sai de hidden
+        window.requestAnimationFrame(function () {
+          var primeiro = painel.querySelector('a');
+          if (primeiro) primeiro.focus();
+        });
+      }
+    };
+    var aberto = function () { return btnMenu.getAttribute('aria-expanded') === 'true'; };
+
+    btnMenu.addEventListener('click', function () { abrir(!aberto()); });
+
+    painel.addEventListener('click', function (ev) {
+      if (ev.target.closest('a')) abrir(false);
+    });
+
+    document.addEventListener('keydown', function (ev) {
+      if (!aberto()) return;
+      if (ev.key === 'Escape') { abrir(false); btnMenu.focus(); return; }
+      if (ev.key !== 'Tab') return;
+      // foco preso: botao + links do painel
+      var foco = [btnMenu].concat(Array.prototype.slice.call(painel.querySelectorAll('a')));
+      var i = foco.indexOf(document.activeElement);
+      if (i === -1) return;
+      var prox = ev.shiftKey ? i - 1 : i + 1;
+      if (prox < 0) prox = foco.length - 1;
+      if (prox >= foco.length) prox = 0;
+      ev.preventDefault();
+      foco[prox].focus();
+    });
+
+    document.addEventListener('click', function (ev) {
+      if (aberto() && !ev.target.closest('.nav')) abrir(false);
+    });
+
+    /* ao voltar para a composicao de mesa o painel nao pode ficar preso */
+    window.matchMedia('(max-width:899px)').addEventListener('change', function () { abrir(false); });
+  }
+
   /* --- entrada ao rolar --------------------------------------------------
      Cada bloco sobe e aparece quando entra na tela. Blocos que entram
      juntos recebem 90 ms de intervalo entre si.
