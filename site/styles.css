@@ -121,10 +121,11 @@ a{color:inherit;text-decoration:none}
 .hero{
   position:relative;
   overflow:hidden;
-  height:100svh;
-  min-height:620px;
+  /* min-height, nao height: em telas muito baixas o heroi cresce em vez de
+     espremer o texto por baixo da onda. */
+  min-height:100svh;
   display:grid;
-  grid-template-rows:minmax(0,1fr) auto;   /* palco | base branca */
+  grid-template-rows:minmax(auto,1fr) auto;   /* palco | base branca */
   background:var(--navy);
   isolation:isolate;
 }
@@ -137,13 +138,16 @@ a{color:inherit;text-decoration:none}
   position:absolute;inset-inline:0;z-index:0;
   width:100%;
 }
-/* Alturas em vw casadas com o viewBox de cada camada (344, 514 e 68 sobre
-   1713). A escala vertical fica IGUAL a horizontal, entao as ondas nunca
-   distorcem: sao exatamente as curvas dos fundos de referencia. */
-.hero__faixa--topo{inset-block-start:0;height:20.08vw;min-height:118px}
+/* Cada medida do heroi e min(Xvw, Ysvh), com X e Y tirados da MESMA
+   referencia (1713 x 918): X = px/1713, Y = px/918. Assim a composicao
+   escala pela dimensao que aperta primeiro, como a arte faria.
+   Em telas ate ~1,86:1 quem manda e a largura e as ondas saem sem
+   distorcao nenhuma; acima disso passa a mandar a altura, senao as duas
+   faixas somariam mais que a tela e se sobreporiam. */
+.hero__faixa--topo{inset-block-start:0;height:min(20.08vw,37.47svh);min-height:110px}
 /* ancorada na base: a 1713px de largura ela cai exatamente em y=404..918,
    como no fundo de referencia. */
-.hero__faixa--base{inset-block-end:0;height:30.01vw;min-height:176px}
+.hero__faixa--base{inset-block-end:0;height:min(30.01vw,55.99svh);min-height:170px}
 
 .hero__palco{
   position:relative;z-index:1;
@@ -155,7 +159,9 @@ a{color:inherit;text-decoration:none}
   /* 15,47vw = 265/1713: a mesma distancia que o logo tem do topo na
      referencia. Ancorado no inicio, nao centralizado — e o que evita o
      vao entre a faixa vermelha e o logo em telas altas. */
-  padding:max(104px,15.47vw) var(--gutter) 0;
+  /* o rodape reserva a altura da onda, que avanca por cima do palco:
+     assim o botao nunca fica por baixo dela */
+  padding:max(104px,min(15.47vw,28.87svh)) var(--gutter) min(3.97vw,7.41svh);
   display:grid;align-items:start;
 }
 
@@ -173,8 +179,9 @@ a{color:inherit;text-decoration:none}
 }
 
 .hero__logo{
-  width:clamp(230px,32vw,545px);   /* teto na largura da arte; o
-                                      arquivo tem 602px, entao nunca amplia */
+  /* 545px e a largura na arte (59,37svh sobre 918): tambem limitado pela
+     altura, senao numa janela baixa o logo come o espaco do botao */
+  width:min(clamp(230px,32vw,545px),59.37svh);
   max-width:100%;
   height:auto;
 }
@@ -210,7 +217,7 @@ a{color:inherit;text-decoration:none}
   inset-inline-start:50.7%;
   transform:translateX(-50%);
   /* base logo abaixo da crista da onda: ela corta o cascao, mas so a ponta */
-  inset-block-end:-0.7vw;   /* o palco ja termina onde a faixa branca comeca */
+  inset-block-end:min(-0.7vw,-1.3svh);  /* o palco ja acaba onde o branco comeca */
   display:flex;
 }
 .hero__cascao img{
@@ -222,7 +229,7 @@ a{color:inherit;text-decoration:none}
      da faixa branca: a onda cruza o cascao em qualquer altura de janela. */
   /* 20,7vw = 355/1713, a largura do cascao na referencia. Teto de 355px
      para que acima de 1713px so as margens cresçam. */
-  width:min(20.7vw,355px);
+  width:min(20.72vw,38.67svh,355px);
   height:auto;
   max-width:none;
 }
@@ -237,14 +244,14 @@ a{color:inherit;text-decoration:none}
 .hero__base{
   position:relative;z-index:2;
   background:var(--branco);
-  min-height:max(170px,12.26vw);
+  min-height:max(160px,min(12.26vw,22.88svh));
   display:grid;align-items:center;
   padding:clamp(14px,2.2vw,30px) var(--gutter);
 }
 
 .hero__onda{
   position:absolute;inset-inline:0;inset-block-end:100%;
-  width:100%;height:3.97vw;min-height:24px;
+  width:100%;height:min(3.97vw,7.41svh);min-height:22px;
 }
 
 .pilares{
