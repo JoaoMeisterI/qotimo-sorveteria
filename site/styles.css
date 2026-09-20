@@ -115,23 +115,32 @@ a{color:inherit;text-decoration:none}
 
 /* ----------------------------------------------------------------- heroi */
 
-/* Altura DEFINIDA e com teto: o heroi inteiro (menu -> pilares) cabe numa
-   tela. E o teto de 900px que faz 2560 e 3440 crescerem so na margem. */
+/* A SECAO ocupa a tela inteira, para dar sensacao de secao e nao deixar a
+   proxima aparecer no topo. Quem tem teto e o CONTEUDO (logo, cascao,
+   tipografia), nao a caixa — e o que segura o layout em telas enormes. */
 .hero{
   position:relative;
   overflow:hidden;
-  height:clamp(560px,100svh,900px);
+  height:100svh;
+  min-height:620px;
   display:grid;
   grid-template-rows:minmax(0,1fr) auto;   /* palco | base branca */
   background:var(--navy);
   isolation:isolate;
 }
 
-/* camada 1+2 — navy e faixas vermelhas, independentes da altura do conteudo */
-.hero__ceu{
-  position:absolute;inset:0;z-index:0;
-  width:100%;height:100%;
+/* camada 1+2 — as duas faixas vermelhas sao ANCORADAS (uma no topo, outra
+   na base) e tem altura propria, em vez de esticar com o heroi. E isso que
+   mantem o miolo sempre azul: o logo nunca cai em cima do vermelho, por
+   mais alta que seja a janela. */
+.hero__faixa{
+  position:absolute;inset-inline:0;z-index:0;
+  width:100%;
 }
+.hero__faixa--topo{inset-block-start:0;height:clamp(220px,34vh,480px)}
+  /* alta de proposito: a maior parte fica atras da faixa branca. O que
+     interessa e onde a borda de cima cruza — a ~62% da altura, como na arte */
+.hero__faixa--base{inset-block-end:0;height:clamp(320px,58vh,820px)}
 
 .hero__palco{
   position:relative;z-index:1;
@@ -142,10 +151,14 @@ a{color:inherit;text-decoration:none}
   gap:var(--sp-m);
   width:100%;max-width:var(--maxw);
   margin-inline:auto;
-  padding:clamp(88px,11vh,140px) var(--gutter) 0;
+  padding:clamp(128px,15vh,210px) var(--gutter) 0;
 }
 
-.hero__copy{display:grid;justify-items:start;gap:var(--sp-m);width:100%}
+.hero__copy{
+  display:grid;justify-items:start;gap:var(--sp-m);width:100%;
+  /* mantem o botao "Explore Nossos Sabores" longe da crista da onda */
+  margin-block-end:clamp(80px,12vh,150px);
+}
 
 .hero__titulo{
   display:grid;gap:clamp(10px,1.4vw,22px);
@@ -185,16 +198,19 @@ a{color:inherit;text-decoration:none}
 .hero__cascao{
   min-height:0;
   align-self:stretch;
-  display:flex;align-items:flex-start;justify-content:flex-start;
+  display:flex;align-items:flex-end;justify-content:flex-start;
 }
 .hero__cascao img{
-  /* O cascao deste pacote e mais alongado que o da arte (0,40 contra 0,54).
-     A largura foi calibrada para que a parte VISIVEL acima da onda — creme
-     mais o trecho de waffle — reproduza a proporcao da tela aprovada. */
-  width:clamp(170px,23vw,343px);
+  /* O cascao deste pacote e mais alongado que o da arte (0,40 contra 0,54);
+     a medida foi calibrada pela parte VISIVEL acima da onda.
+     Dimensionado pela ALTURA disponivel, nao pela largura — assim nunca e
+     cortado no topo quando a janela e baixa. Teto de 860px = 343px de
+     largura, o valor da arte. A margem negativa empurra a base para dentro
+     da faixa branca: a onda cruza o cascao em qualquer altura de janela. */
+  height:min(140%,clamp(426px,57.7vw,860px));
+  width:auto;
   max-width:100%;
-  height:auto;
-  margin-block-start:clamp(-52px,-5vh,-18px);  /* topo do objeto a ~15% */
+  margin-block-end:clamp(-150px,-14vh,-70px);
 }
 
 /* camada 3 — onda branca DESENHADA NA FRENTE do cascao (z-index maior):
@@ -252,14 +268,15 @@ a{color:inherit;text-decoration:none}
   position:relative;
   overflow:hidden;
   background:var(--navy);
-  padding-block:clamp(28px,3.4vw,58px) clamp(36px,5vw,88px);
+  padding-block:clamp(70px,9vw,150px) clamp(48px,6vw,104px);
   isolation:isolate;
 }
 
-/* faixas full-bleed na secao inteira, nao ancoradas ao board */
-.linhas__ceu{
-  position:absolute;inset:0;z-index:0;
-  width:100%;height:100%;
+/* Fundo de uma cor so. A passagem do branco dos pilares para o azul e
+   feita por uma onda, nao por uma linha reta. */
+.linhas__onda{
+  position:absolute;inset-block-start:0;inset-inline:0;z-index:0;
+  width:100%;height:clamp(40px,6vw,96px);
 }
 
 .linhas__inner{
@@ -269,7 +286,7 @@ a{color:inherit;text-decoration:none}
   padding-inline:var(--gutter);
 }
 
-.linhas__head{margin-block-end:clamp(6px,1vw,16px)}
+.linhas__head{margin-block-end:clamp(16px,2.2vw,40px)}
 
 .linhas__eyebrow{
   font-size:var(--fs-legenda);
@@ -296,7 +313,7 @@ a{color:inherit;text-decoration:none}
 .linhas__board{
   display:grid;
   grid-template-columns:repeat(2,minmax(0,1fr));
-  gap:clamp(20px,2.8vw,48px);
+  gap:clamp(30px,3.6vw,62px);
   max-width:1654px;
   margin-inline:auto;
 }
@@ -315,8 +332,8 @@ a{color:inherit;text-decoration:none}
    Transborda um pouco o card para os quatro se entrelacarem como na arte. */
 .linha__blob{
   position:absolute;z-index:-2;
-  inset-block-start:-7%;inset-inline-start:-3%;
-  width:106%;height:114%;max-width:none;
+  inset-block-start:-12%;inset-inline-start:-5%;
+  width:110%;height:124%;max-width:none;
   filter:drop-shadow(0 12px 34px rgb(0 15 35 / .20));
 }
 .linha--espelhada .linha__blob{transform:scaleX(-1)}
@@ -380,8 +397,8 @@ a{color:inherit;text-decoration:none}
    maior, como na arte. Nenhum percentual por produto. */
 .linha__produtos{
   position:absolute;z-index:0;
-  inset-block-end:11%;
-  inset-inline-end:4%;
+  inset-block-end:13%;
+  inset-inline-end:6%;
   width:calc(var(--pw,66) * 1%);
   height:calc(var(--ph,95) * 1%);
   display:flex;align-items:flex-end;justify-content:center;
@@ -438,7 +455,14 @@ a{color:inherit;text-decoration:none}
     /* folga para o menu, que quebra em linhas ate a Fase 5 trazer o hamburguer */
     padding-block-start:clamp(172px,26vh,230px);
   }
-  .hero__copy{justify-items:center;order:1}
+  /* faixa do topo mais baixa: o logo nao cai em cima do vermelho */
+  .hero__faixa--topo{height:clamp(120px,18vh,200px)}
+  .hero__faixa--base{height:clamp(240px,44vh,520px)}
+
+  .hero__copy{
+    justify-items:center;order:1;
+    margin-block-end:clamp(16px,4vh,44px);
+  }
   .hero__cascao{order:2;justify-content:center;align-self:auto}
   .hero__cascao img{
     width:min(52%,260px);
@@ -465,6 +489,7 @@ a{color:inherit;text-decoration:none}
     justify-items:center;
   }
   .linha__gotas{inset-block-start:3%;inset-inline-end:3%;width:clamp(30px,7vw,50px)}
+  .linha__blob{inset-inline-start:-3%;width:106%}
 
   .linha__produtos{
     position:static;
@@ -487,9 +512,13 @@ a{color:inherit;text-decoration:none}
 
 .tem-motion .reveal{
   opacity:0;
-  transform:translateY(18px);
-  transition:opacity .55s ease var(--d,0ms),transform .55s ease var(--d,0ms);
+  transform:translateY(26px);
+  transition:opacity .7s cubic-bezier(.22,.7,.3,1) var(--d,0ms),
+             transform .7s cubic-bezier(.22,.7,.3,1) var(--d,0ms);
 }
+
+/* paralaxe: o script escreve o transform, o CSS so prepara a camada */
+.hero__faixa,.hero__cascao img{will-change:transform}
 .tem-motion .reveal.is-visible{opacity:1;transform:none}
 
 @media (prefers-reduced-motion:reduce){
