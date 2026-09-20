@@ -137,37 +137,37 @@ a{color:inherit;text-decoration:none}
   position:absolute;inset-inline:0;z-index:0;
   width:100%;
 }
-.hero__faixa--topo{inset-block-start:0;height:clamp(220px,34vh,480px)}
-  /* alta de proposito: a maior parte fica atras da faixa branca. O que
-     interessa e onde a borda de cima cruza — a ~62% da altura, como na arte */
-.hero__faixa--base{inset-block-end:0;height:clamp(320px,58vh,820px)}
+/* Altura em vw, casada com o viewBox (344/1711 = 20,11%): a escala
+   vertical fica IGUAL a horizontal, entao as ondas nunca distorcem —
+   sao as mesmas curvas medidas na arte aprovada. */
+.hero__faixa--topo{inset-block-start:0;height:20.11vw;min-height:120px}
+/* idem: 529/1711 = 30,92%. Boa parte fica atras da faixa branca. */
+.hero__faixa--base{inset-block-end:0;height:30.92vw;min-height:200px}
 
 .hero__palco{
   position:relative;z-index:1;
   min-height:0;
-  display:grid;
-  grid-template-columns:minmax(0,1fr) minmax(0,1.35fr);
-  align-items:center;
-  gap:var(--sp-m);
   width:100%;max-width:var(--maxw);
   margin-inline:auto;
-  padding:clamp(128px,15vh,210px) var(--gutter) 0;
+  /* o topo acompanha a faixa vermelha (16,2vw), entao o logo entra logo
+     abaixo dela — sem vao e sem cair em cima do vermelho */
+  padding:max(110px,16.2vw) var(--gutter) 0;
 }
 
 .hero__copy{
-  display:grid;justify-items:start;gap:var(--sp-m);width:100%;
-  /* mantem o botao "Explore Nossos Sabores" longe da crista da onda */
-  margin-block-end:clamp(80px,12vh,150px);
+  display:grid;justify-items:start;
+  gap:clamp(12px,1.5vw,24px);
+  width:100%;max-width:42%;
 }
 
 .hero__titulo{
-  display:grid;gap:clamp(10px,1.4vw,22px);
+  display:grid;gap:clamp(8px,1.1vw,16px);
   width:100%;                 /* nao encolhe junto com a tagline */
   font-size:inherit;font-weight:inherit;
 }
 
 .hero__logo{
-  width:clamp(230px,34vw,580px);   /* teto 580px = largura na arte; o
+  width:clamp(230px,32vw,545px);   /* teto na largura da arte; o
                                       arquivo tem 602px, entao nunca amplia */
   max-width:100%;
   height:auto;
@@ -195,10 +195,14 @@ a{color:inherit;text-decoration:none}
 
 /* cascao: a linha de base e a onda branca, por isso ele pode transbordar
    para baixo — a linha 1 do grid tem altura definida (minmax(0,1fr)). */
+/* Fora do fluxo e ancorado na ONDA, nao na linha do grid: e assim que a
+   arte compoe (o cascao cruza a altura do logo, lado a lado). Solta do
+   grid ele volta a ter o tamanho certo. */
 .hero__cascao{
-  min-height:0;
-  align-self:stretch;
-  display:flex;align-items:flex-end;justify-content:flex-start;
+  position:absolute;z-index:1;
+  inset-inline-start:40%;
+  inset-block-end:-5vh;
+  display:flex;
 }
 .hero__cascao img{
   /* O cascao deste pacote e mais alongado que o da arte (0,40 contra 0,54);
@@ -207,10 +211,14 @@ a{color:inherit;text-decoration:none}
      cortado no topo quando a janela e baixa. Teto de 860px = 343px de
      largura, o valor da arte. A margem negativa empurra a base para dentro
      da faixa branca: a onda cruza o cascao em qualquer altura de janela. */
-  height:min(140%,clamp(426px,57.7vw,860px));
+  /* Arquivo aparado na ponta: a tela agora e 1:1,746 e o objeto tem a
+     proporcao da arte (0,54).
+     Cresce com a altura da janela para nao abrir um vao entre o texto e o
+     cascao em telas altas, mas para no teto de 629px = 360px de largura,
+     que e a proporcao da arte sobre o conteudo travado em 1711px. */
+  height:min(70vh,40vw,629px);
   width:auto;
-  max-width:100%;
-  margin-block-end:clamp(-150px,-14vh,-70px);
+  max-width:none;
 }
 
 /* camada 3 — onda branca DESENHADA NA FRENTE do cascao (z-index maior):
@@ -448,7 +456,7 @@ a{color:inherit;text-decoration:none}
   .hero{height:auto;min-height:0}
 
   .hero__palco{
-    grid-template-columns:minmax(0,1fr);
+    display:grid;grid-template-columns:minmax(0,1fr);
     justify-items:center;
     text-align:center;
     gap:var(--sp-s);
@@ -460,13 +468,13 @@ a{color:inherit;text-decoration:none}
   .hero__faixa--base{height:clamp(240px,44vh,520px)}
 
   .hero__copy{
-    justify-items:center;order:1;
+    max-width:none;justify-items:center;order:1;
     margin-block-end:clamp(16px,4vh,44px);
   }
-  .hero__cascao{order:2;justify-content:center;align-self:auto}
+  .hero__cascao{position:static;order:2;justify-content:center;align-self:auto}
   .hero__cascao img{
+    height:auto;
     width:min(52%,260px);
-    margin-block-start:0;
     margin-block-end:clamp(-96px,-15vw,-44px);  /* a onda cobre a ponta */
   }
   .hero__logo{width:min(100%,clamp(220px,52vw,380px))}
