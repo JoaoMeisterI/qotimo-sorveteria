@@ -105,6 +105,7 @@
   var hero = document.querySelector('.hero');
   var faixas = document.querySelectorAll('.hero__faixa');
   var cascao = document.querySelector('.hero__cascao img');
+  var copy = document.querySelector('.hero__copy');
 
   if (hero && (faixas.length || cascao)) {
     var pendente = false;
@@ -124,6 +125,15 @@
       });
       if (cascao) cascao.style.transform =
         'translate3d(0,' + (p * altura * -0.034).toFixed(1) + 'px,0)';
+
+      /* O texto sobe um pouco mais que o resto e esmaece: da a leitura de
+         que a primeira tela esta saindo, sem esconder nada antes da hora
+         (so comeca a apagar depois de 35% do heroi rolado). */
+      if (copy) {
+        var f = Math.max(0, (p - 0.35) / 0.65);
+        copy.style.transform = 'translate3d(0,' + (p * altura * -0.085).toFixed(1) + 'px,0)';
+        copy.style.opacity = (1 - f * 0.85).toFixed(3);
+      }
     };
 
     var aoRolar = function () {

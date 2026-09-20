@@ -132,10 +132,13 @@ body>*{--u:min(100cqw / 1713, 100svh / 918, 1.25px)}
 
 /* ----------------------------------------------------------------- heroi */
 
-/* Palco azul com a altura da arte (708u). SEM 100svh: numa janela mais alta
-   que a proporcao da arte a proxima secao aparece abaixo, de proposito. */
+/* O palco azul mantem a altura da arte (708u) e nunca muda. O heroi, esse,
+   ocupa a tela inteira: a sobra vai toda para a faixa branca, que e a linha
+   "auto" do grid. Assim a segunda secao nao aparece enquanto se esta na
+   primeira, e a composicao azul continua nas proporcoes da arte. */
 .hero{
   position:relative;
+  min-height:100svh;
   overflow:hidden;
   display:grid;
   grid-template-rows:calc(708 * var(--u)) auto;   /* palco | base branca */
@@ -216,13 +219,11 @@ body>*{--u:min(100cqw / 1713, 100svh / 918, 1.25px)}
   position:relative;z-index:2;
   margin-block-start:-1px;
   background:var(--branco);
-  /* 210u e a altura da faixa na arte. Travada no desktop; abaixo de
-     1100px ela volta a crescer para caber o texto em duas linhas. */
-  height:calc(210 * var(--u));
-  display:grid;align-items:start;
-  /* 29u do topo poe o icone em 737u, como na arte; os ~60u que sobram
-     embaixo tambem existem na arte (o texto acaba em ~853u de 918u) */
-  padding-block-start:calc(29 * var(--u));
+  /* 210u e o piso (a altura na arte). A faixa cresce com a janela, o que
+     tambem deixa a area branca maior, como pedido. */
+  min-height:calc(210 * var(--u));
+  display:grid;align-items:center;
+  padding-block:calc(29 * var(--u));
 }
 
 .hero__onda{
@@ -241,6 +242,11 @@ body>*{--u:min(100cqw / 1713, 100svh / 918, 1.25px)}
   display:grid;
   grid-template-columns:calc(446 * var(--u)) calc(469 * var(--u)) 1fr;
   column-gap:calc(56 * var(--u));
+  /* 152u = 210u da faixa menos os 29u de respiro em cima e embaixo. Com o
+     bloco nessa altura, centralizar poe o icone exatamente em 737u quando a
+     faixa tem a altura da arte; quando ela cresce, o bloco fica no meio em
+     vez de sobrar todo o branco embaixo. */
+  min-height:calc(152 * var(--u));
 }
 
 .pilar{
@@ -248,14 +254,6 @@ body>*{--u:min(100cqw / 1713, 100svh / 918, 1.25px)}
   display:flex;align-items:flex-start;
   gap:calc(27 * var(--u));
 }
-.pilar:not(:last-child)::after{
-  content:"";position:absolute;
-  inset-inline-end:0;inset-block-start:50%;
-  translate:0 -50%;
-  width:1px;height:calc(95 * var(--u));
-  background:#DCE5EF;
-}
-
 .pilar__icone{
   flex:0 0 auto;
   display:grid;place-items:center;
@@ -492,7 +490,6 @@ body>*{--u:min(100cqw / 1713, 100svh / 918, 1.25px)}
 @media (max-width:1099px){
   /* a faixa deixa de ser travada: o texto do pilar passa a duas linhas */
   .hero__base{
-    height:auto;
     min-height:calc(210 * var(--u));
     padding-block:calc(22 * var(--u));
   }
@@ -636,11 +633,6 @@ body>*{--u:min(100cqw / 1713, 100svh / 918, 1.25px)}
     row-gap:calc(20 * var(--um));
   }
   .pilar{gap:calc(16 * var(--um));align-items:center}
-  .pilar:not(:last-child)::after{
-    inset-inline:0;inset-block-start:auto;inset-block-end:calc(-10 * var(--um));
-    translate:0 0;
-    width:100%;height:1px;
-  }
   .pilar__icone{width:calc(60 * var(--um))}
   .pilar__texto{margin-block-start:0}
   .pilar__texto h2,
@@ -701,7 +693,7 @@ body>*{--u:min(100cqw / 1713, 100svh / 918, 1.25px)}
 }
 
 /* paralaxe: o script escreve o transform, o CSS so prepara a camada */
-.hero__faixa,.hero__cascao img{will-change:transform}
+.hero__faixa,.hero__cascao img,.hero__copy{will-change:transform}
 .tem-motion .reveal.is-visible{opacity:1;transform:none}
 
 @media (prefers-reduced-motion:reduce){
