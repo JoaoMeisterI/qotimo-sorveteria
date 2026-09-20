@@ -154,7 +154,8 @@ a{color:inherit;text-decoration:none}
 }
 
 .hero__logo{
-  width:clamp(240px,34vw,594px);   /* teto 594px = largura da arte */
+  width:clamp(230px,34vw,580px);   /* teto 580px = largura na arte; o
+                                      arquivo tem 602px, entao nunca amplia */
   max-width:100%;
   height:auto;
 }
@@ -187,7 +188,10 @@ a{color:inherit;text-decoration:none}
   display:flex;align-items:flex-start;justify-content:flex-start;
 }
 .hero__cascao img{
-  width:clamp(150px,24.5vw,419px);   /* objeto ~20,7% da largura da arte */
+  /* O cascao deste pacote e mais alongado que o da arte (0,40 contra 0,54).
+     A largura foi calibrada para que a parte VISIVEL acima da onda — creme
+     mais o trecho de waffle — reproduza a proporcao da tela aprovada. */
+  width:clamp(170px,23vw,343px);
   max-width:100%;
   height:auto;
   margin-block-start:clamp(-52px,-5vh,-18px);  /* topo do objeto a ~15% */
@@ -248,7 +252,7 @@ a{color:inherit;text-decoration:none}
   position:relative;
   overflow:hidden;
   background:var(--navy);
-  padding-block:var(--sp-xl);
+  padding-block:clamp(28px,3.4vw,58px) clamp(36px,5vw,88px);
   isolation:isolate;
 }
 
@@ -265,7 +269,7 @@ a{color:inherit;text-decoration:none}
   padding-inline:var(--gutter);
 }
 
-.linhas__head{margin-block-end:var(--sp-l)}
+.linhas__head{margin-block-end:clamp(6px,1vw,16px)}
 
 .linhas__eyebrow{
   font-size:var(--fs-legenda);
@@ -283,7 +287,7 @@ a{color:inherit;text-decoration:none}
 
 .linhas__sub{
   margin-block-start:var(--sp-s);
-  max-width:32ch;
+  max-width:46ch;          /* uma linha so, como na arte */
   font-size:var(--fs-corpo);
   color:var(--corpo-claro);
   text-wrap:pretty;
@@ -292,7 +296,7 @@ a{color:inherit;text-decoration:none}
 .linhas__board{
   display:grid;
   grid-template-columns:repeat(2,minmax(0,1fr));
-  gap:clamp(24px,3vw,56px);
+  gap:clamp(20px,2.8vw,48px);
   max-width:1654px;
   margin-inline:auto;
 }
@@ -302,38 +306,41 @@ a{color:inherit;text-decoration:none}
 .linha{
   position:relative;
   aspect-ratio:865/332;
-  display:grid;
-  grid-template-columns:minmax(150px,38%) minmax(0,1fr);
+  display:flex;
   align-items:center;
-  gap:clamp(8px,1.2vw,24px);
-  /* o blob curva para dentro nos cantos: o respiro mantem o conteudo
-     inteiro dentro da forma em qualquer largura */
-  padding:clamp(16px,2.4vw,46px) clamp(26px,3.6vw,72px);
+  padding:clamp(10px,1.4vw,24px) clamp(20px,2.8vw,50px);
 }
 
-/* blob branco: mesma forma nos quatro, variacao por espelhamento */
+/* blob branco: mesma forma nos quatro, variacao por espelhamento.
+   Transborda um pouco o card para os quatro se entrelacarem como na arte. */
 .linha__blob{
-  position:absolute;inset:0;z-index:-2;
-  width:100%;height:100%;
-  filter:drop-shadow(0 10px 30px rgb(0 15 35 / .18));
+  position:absolute;z-index:-2;
+  inset-block-start:-7%;inset-inline-start:-3%;
+  width:106%;height:114%;max-width:none;
+  filter:drop-shadow(0 12px 34px rgb(0 15 35 / .20));
 }
 .linha--espelhada .linha__blob{transform:scaleX(-1)}
 
 .linha__gotas{
   position:absolute;z-index:-1;
-  inset-block-start:26%;inset-inline-end:-3.5%;
-  width:clamp(26px,2.8vw,50px);height:auto;
+  inset-block-start:20%;inset-inline-end:6%;
+  width:7%;height:auto;
 }
 .linha--espelhada .linha__gotas{
-  inset-inline-end:auto;inset-inline-start:-3.5%;
+  inset-inline-end:auto;inset-inline-start:-4%;
   transform:scaleX(-1);
 }
 
-.linha__texto{display:grid;justify-items:start;gap:clamp(4px,.6vw,10px)}
+.linha__texto{
+  position:relative;z-index:1;
+  flex:0 1 auto;
+  max-width:calc(90% - var(--pw,66) * 1%);
+  display:grid;justify-items:start;gap:clamp(3px,.5vw,9px);
+}
 
 .linha__num{
   display:grid;place-items:center;
-  width:clamp(34px,3.4vw,60px);aspect-ratio:1;
+  width:clamp(30px,2.8vw,48px);aspect-ratio:1;
   background:var(--vermelho);color:var(--branco);
   border-radius:50%;
   font-size:clamp(.8rem,1.1vw,1.19rem);font-weight:700;
@@ -367,64 +374,52 @@ a{color:inherit;text-decoration:none}
 .linha__btn svg{width:clamp(14px,1.2vw,20px);height:auto;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
 .linha__btn:hover{background:#c5171a;transform:translateY(-2px)}
 
-/* produtos: tela oficial 1200x1200 = linha de base comum.
-   Zero percentual por produto, nenhum estica. */
-/* como na arte, os produtos sobem acima da borda do blob — o mesmo
-   percentual para os quatro cards, nenhum ajuste por produto */
+/* Produtos: cada arquivo recortado na propria silhueta (a tela quadrada de
+   1200x1200 e que os encolhia). Uma regra so para os doze — mesma altura de
+   caixa, alinhados pela base, com leve sobreposicao, e o do meio um pouco
+   maior, como na arte. Nenhum percentual por produto. */
 .linha__produtos{
-  display:flex;align-items:stretch;
-  gap:clamp(4px,.6vw,14px);
-  align-self:end;
-  height:122%;min-height:0;
-  margin-inline-end:calc(-1 * clamp(8px,1.5vw,32px));
-  padding-block:0 1%;
+  position:absolute;z-index:0;
+  inset-block-end:11%;
+  inset-inline-end:4%;
+  width:calc(var(--pw,66) * 1%);
+  height:calc(var(--ph,95) * 1%);
+  display:flex;align-items:flex-end;justify-content:center;
 }
 
 .produto{
-  flex:1 1 0;min-width:0;min-height:0;
-  display:flex;flex-direction:column;justify-content:flex-end;
-  gap:clamp(2px,.4vw,8px);
-  text-align:center;
+  flex:1 1 0;min-width:0;height:100%;
+  display:flex;flex-direction:column;
+  align-items:center;justify-content:flex-end;
+  gap:4%;
 }
+.produto+.produto{margin-inline-start:-6%}
+.produto:nth-child(2){flex-grow:1.2;z-index:2}   /* destaque central */
 
-/* A tela oficial 1200x1200 ja e a linha de base comum: contain dentro da
-   mesma caixa, sem um unico percentual por produto. O transbordo de 28% e
-   igual para os doze — como a tela tem 8% de margem transparente, os
-   objetos so se aproximam, do jeito que a arte compoe. */
 .produto img{
-  flex:1 1 auto;min-height:0;
-  width:128%;margin-inline:-14%;
-  height:100%;
-  object-fit:contain;
-  object-position:center bottom;
+  max-width:100%;max-height:100%;
+  width:auto;height:auto;
+  min-height:0;
 }
-
-.produto span{flex:0 0 auto}
 
 .produto span{
+  flex:0 0 auto;
   font-size:var(--fs-legenda);
   color:var(--corpo);
   line-height:1.2;
-  text-wrap:balance;
+  white-space:nowrap;     /* rotulo de produto, nao texto corrido */
 }
 
 /* ---------------------------------------------------- pontos de quebra */
 
-/* Faixa critica dos notebooks (1024-1200): o card continua 2x2 no board,
-   mas o interior empilha — e o que tirava o botao de cima dos produtos. */
+/* Notebooks estreitos (900-1200): o card fica mais alto para o texto e os
+   produtos caberem sem se tocar. */
 @media (max-width:1199px){
   .linha{
-    aspect-ratio:auto;
-    grid-template-columns:minmax(0,1fr);
-    gap:clamp(12px,1.8vw,22px);
-    padding:clamp(20px,2.6vw,34px) clamp(24px,3.2vw,44px);
+    aspect-ratio:865/400;
+    padding:clamp(16px,2.2vw,30px) clamp(20px,2.6vw,40px);
   }
-  .linha__produtos{
-    height:clamp(130px,17vw,200px);
-    align-self:auto;
-    margin-inline-end:0;
-    padding-block:0;
-  }
+  .linha__produtos{inset-block-end:9%}
 }
 
 @media (max-width:1100px){
@@ -441,29 +436,42 @@ a{color:inherit;text-decoration:none}
     text-align:center;
     gap:var(--sp-s);
     /* folga para o menu, que quebra em linhas ate a Fase 5 trazer o hamburguer */
-    padding-block-start:clamp(150px,24vh,210px);
+    padding-block-start:clamp(172px,26vh,230px);
   }
   .hero__copy{justify-items:center;order:1}
   .hero__cascao{order:2;justify-content:center;align-self:auto}
   .hero__cascao img{
-    width:min(62%,300px);
+    width:min(52%,260px);
     margin-block-start:0;
-    margin-block-end:clamp(-90px,-14vw,-40px);  /* a onda cobre a ponta */
+    margin-block-end:clamp(-96px,-15vw,-44px);  /* a onda cobre a ponta */
   }
   .hero__logo{width:min(100%,clamp(220px,52vw,380px))}
 
   .linhas__head{max-width:none}
   .linhas__board{grid-template-columns:minmax(0,1fr)}
 
-  /* o mobile mantem blob, numero, gotas e faixas — so reorganiza */
+  /* o mobile mantem blob, numero, gotas e faixas — so reorganiza:
+     os produtos voltam ao fluxo, abaixo do texto */
   .linha{
-    gap:clamp(14px,3vw,26px);
-    padding:clamp(26px,6vw,44px) clamp(28px,7vw,48px);
+    aspect-ratio:auto;
+    flex-direction:column;
+    align-items:center;
+    gap:clamp(12px,3vw,22px);
+    padding:clamp(24px,6vw,40px) clamp(26px,6vw,44px) clamp(16px,4vw,30px);
     text-align:center;
   }
-  .linha__texto{justify-items:center}
-  .linha__gotas{inset-block-start:4%;width:clamp(30px,7vw,50px)}
-  .linha__produtos{gap:clamp(6px,2vw,16px)}
+  .linha__texto{
+    max-width:none;width:100%;
+    justify-items:center;
+  }
+  .linha__gotas{inset-block-start:3%;inset-inline-end:3%;width:clamp(30px,7vw,50px)}
+
+  .linha__produtos{
+    position:static;
+    width:100%;
+    height:clamp(150px,40vw,250px);
+  }
+  .produto+.produto{margin-inline-start:-3%}
 }
 
 @media (max-width:560px){
