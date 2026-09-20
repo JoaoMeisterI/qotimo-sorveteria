@@ -73,230 +73,195 @@ a{color:inherit;text-decoration:none}
 }
 .pular:focus{transform:none}
 
+/* ===================== UNIDADE UNICA DE ESCALA =====================
+   Todo o heroi e o menu sao medidos no quadro da arte aprovada, 1713 x 918.
+   Uma unica unidade converte px-da-arte em px-de-tela:
+
+       --u = min(100cqw/1713, 100svh/918, 1.25px)
+
+   - cqw e nao vw: vw inclui a barra de rolagem e isso descasava ~8px.
+   - min() nos dois eixos: a composicao encolhe pelo lado que apertar.
+   - teto de 1.25px: acima disso o quadro para de crescer e sobra margem.
+   O <header class="topo"> fica FORA de .hero, por isso o container e o body
+   e --u e declarado em body>*.
+   ================================================================== */
+
+body{container-type:inline-size}
+body>*{--u:min(100cqw / 1713, 100svh / 918, 1.25px)}
+
 /* ------------------------------------------------------------------ menu */
 
 .topo{
-  position:absolute;inset-block-start:0;inset-inline:0;z-index:5;
-  padding:clamp(12px,1.6vw,26px) var(--gutter) 0;
+  position:absolute;inset-block-start:calc(27 * var(--u));inset-inline:0;z-index:5;
   display:flex;justify-content:center;
+  padding-inline:calc(16 * var(--u));
 }
 
 .nav{
-  display:flex;flex-wrap:wrap;align-items:center;
-  justify-content:center;
-  gap:clamp(8px,1.4vw,22px);
+  display:flex;align-items:center;
+  gap:calc(37 * var(--u));                 /* links -> CTA */
+  height:calc(59 * var(--u));
+  padding-inline:calc(54 * var(--u)) calc(38 * var(--u));
   background:var(--branco);
-  border-radius:var(--raio);
-  padding:clamp(5px,.5vw,8px) clamp(6px,.6vw,10px) clamp(5px,.5vw,8px) clamp(14px,1.8vw,30px);
-  max-width:100%;
+  border-radius:999px;
   box-shadow:0 6px 24px rgb(0 20 45 / .16);
 }
 
-.nav__links{
-  display:flex;flex-wrap:wrap;justify-content:center;
-  gap:clamp(10px,1.9vw,34px);
-}
+.nav__links{display:flex;align-items:center;gap:calc(53 * var(--u))}
 
 .nav__links a{
-  display:block;
-  padding:clamp(5px,.5vw,8px) clamp(2px,.4vw,6px);
-  font-size:var(--fs-menu);font-weight:600;color:var(--navy);
+  font-size:max(13px,calc(18 * var(--u)));
+  font-weight:700;color:var(--navy);
+  white-space:nowrap;
 }
 .nav__links a:hover{color:var(--vermelho)}
 
 .nav__cta{
+  flex:0 0 auto;
+  display:grid;place-items:center;
+  width:calc(160 * var(--u));height:calc(42 * var(--u));
   background:var(--vermelho);color:var(--branco);
-  font-size:var(--fs-menu);font-weight:600;
-  padding:clamp(8px,.85vw,13px) clamp(16px,1.9vw,32px);
-  border-radius:var(--raio);
+  font-size:max(13px,calc(18 * var(--u)));font-weight:700;
+  border-radius:999px;
+  white-space:nowrap;
   transition:background .2s;
 }
 .nav__cta:hover{background:#c5171a}
 
+.nav__menu{display:none}      /* hamburguer: so na composicao empilhada */
+
 /* ----------------------------------------------------------------- heroi */
 
-/* A SECAO ocupa a tela inteira, para dar sensacao de secao e nao deixar a
-   proxima aparecer no topo. Quem tem teto e o CONTEUDO (logo, cascao,
-   tipografia), nao a caixa — e o que segura o layout em telas enormes. */
+/* Palco azul com a altura da arte (708u). SEM 100svh: numa janela mais alta
+   que a proporcao da arte a proxima secao aparece abaixo, de proposito. */
 .hero{
   position:relative;
   overflow:hidden;
-  /* min-height, nao height: em telas muito baixas o heroi cresce em vez de
-     espremer o texto por baixo da onda. */
-  min-height:100svh;
-  /* altura da faixa branca, tambem usada para medir a area azul que sobra.
-     NAO chamar de --branco: esse nome ja e o token da cor. */
-  --faixa-h:max(160px,12.26vw,22.88svh);
   display:grid;
-  grid-template-rows:minmax(auto,1fr) auto;   /* palco | base branca */
+  grid-template-rows:calc(708 * var(--u)) auto;   /* palco | base branca */
   background:var(--navy);
   isolation:isolate;
 }
 
-/* camada 1+2 — as duas faixas vermelhas sao ANCORADAS (uma no topo, outra
-   na base) e tem altura propria, em vez de esticar com o heroi. E isso que
-   mantem o miolo sempre azul: o logo nunca cai em cima do vermelho, por
-   mais alta que seja a janela. */
-.hero__faixa{
-  position:absolute;inset-inline:0;z-index:0;
-  width:100%;
-}
-/* Cada medida do heroi e min(Xvw, Ysvh), com X e Y tirados da MESMA
-   referencia (1713 x 918): X = px/1713, Y = px/918. Assim a composicao
-   escala pela dimensao que aperta primeiro, como a arte faria.
-   Em telas ate ~1,86:1 quem manda e a largura e as ondas saem sem
-   distorcao nenhuma; acima disso passa a mandar a altura, senao as duas
-   faixas somariam mais que a tela e se sobreporiam. */
-.hero__faixa--topo{inset-block-start:0;height:min(20.08vw,37.47svh);min-height:110px}
-/* ancorada na base: a 1713px de largura ela cai exatamente em y=404..918,
-   como no fundo de referencia. */
-.hero__faixa--base{inset-block-end:0;height:min(30.01vw,55.99svh);min-height:170px}
+/* faixas full-bleed, nas coordenadas da arte (A: 0..344, B: 404..918) */
+.hero__faixa{position:absolute;inset-inline:0;z-index:0;width:100%}
+.hero__faixa--topo{inset-block-start:0;height:calc(344 * var(--u))}
+.hero__faixa--base{inset-block-start:calc(404 * var(--u));height:calc(514 * var(--u))}
 
+/* quadro de 1713u centralizado: tudo dentro dele usa as coordenadas da arte */
 .hero__palco{
   position:relative;z-index:1;
-  min-height:0;
-  width:100%;max-width:var(--maxw);
+  width:calc(1713 * var(--u));max-width:100%;
   margin-inline:auto;
-  /* o topo acompanha a faixa vermelha (16,2vw), entao o logo entra logo
-     abaixo dela — sem vao e sem cair em cima do vermelho */
-  /* 15,47vw = 265/1713: a mesma distancia que o logo tem do topo na
-     referencia. Ancorado no inicio, nao centralizado — e o que evita o
-     vao entre a faixa vermelha e o logo em telas altas. */
-  /* o rodape reserva a altura da onda, que avanca por cima do palco:
-     assim o botao nunca fica por baixo dela */
-  padding:max(104px,min(15.47vw,28.87svh)) var(--gutter) min(3.97vw,7.41svh);
-  display:grid;align-items:start;
+  height:100%;
 }
 
 .hero__copy{
-  display:grid;justify-items:start;
-  gap:clamp(12px,1.5vw,24px);
-  width:100%;max-width:40%;
-  align-self:start;
+  position:absolute;
+  inset-block-start:calc(262 * var(--u));
+  inset-inline-start:calc(71 * var(--u));
+  width:calc(640 * var(--u));
 }
 
-.hero__titulo{
-  display:grid;gap:clamp(8px,1.1vw,16px);
-  width:100%;                 /* nao encolhe junto com a tagline */
-  font-size:inherit;font-weight:inherit;
-}
+.hero__titulo{display:block;font-size:inherit;font-weight:inherit}
 
-.hero__logo{
-  /* 545px e a largura na arte (59,37svh sobre 918): tambem limitado pela
-     altura, senao numa janela baixa o logo come o espaco do botao */
-  width:min(clamp(230px,32vw,545px),59.37svh);
-  max-width:100%;
-  height:auto;
-}
+.hero__logo{width:calc(600 * var(--u));max-width:none;height:auto}
 
 .hero__tagline{
-  font-size:var(--fs-tagline);
-  font-weight:700;
+  display:block;
+  margin-block-start:0;
+  margin-inline-start:calc(9 * var(--u));
+  font-size:max(17px,calc(29 * var(--u)));
+  font-weight:700;line-height:1.2;
   color:var(--branco);
-  line-height:1.2;
-  text-wrap:balance;
+  white-space:nowrap;
 }
 
 .btn{
-  display:inline-flex;align-items:center;gap:clamp(8px,1vw,16px);
+  display:inline-flex;align-items:center;justify-content:center;
+  gap:calc(14 * var(--u));
+  margin-block-start:calc(20 * var(--u));
+  margin-inline-start:calc(9 * var(--u));
+  width:calc(295 * var(--u));height:calc(47 * var(--u));
   background:var(--vermelho);color:var(--branco);
-  font-size:var(--fs-corpo);font-weight:600;
-  padding:clamp(11px,1.15vw,18px) clamp(20px,2.2vw,36px);
-  border-radius:var(--raio);
-  border:2px solid rgb(255 255 255 / .85);
+  font-size:max(13px,calc(17 * var(--u)));font-weight:600;
+  border:0;                      /* na arte o botao nao tem contorno */
+  border-radius:999px;
   transition:transform .2s,background .2s;
 }
-.btn svg{width:clamp(16px,1.4vw,22px);height:auto;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.btn svg{width:calc(22 * var(--u));height:auto;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
 .btn:hover{background:#c5171a;transform:translateY(-2px)}
 
-/* cascao: a linha de base e a onda branca, por isso ele pode transbordar
-   para baixo — a linha 1 do grid tem altura definida (minmax(0,1fr)). */
-/* Fora do fluxo e ancorado na ONDA, nao na linha do grid: e assim que a
-   arte compoe (o cascao cruza a altura do logo, lado a lado). Solta do
-   grid ele volta a ter o tamanho certo. */
+/* cascao: recortado da propria arte. A tela tem margem esq 39 / topo 31,
+   entao left 677u + top 128u poem o objeto em x 692 / y 140, como na arte. */
 .hero__cascao{
   position:absolute;z-index:1;
-  /* centro do cascao a 50,7% da largura (868/1713), como na referencia */
-  inset-inline-start:50.7%;
-  transform:translateX(-50%);
-  /* base logo abaixo da crista da onda: ela corta o cascao, mas so a ponta */
-  inset-block-end:min(-0.7vw,-1.3svh);  /* o palco ja acaba onde o branco comeca */
-  display:flex;
+  inset-block-start:calc(128 * var(--u));
+  inset-inline-start:calc(677 * var(--u));
+  transform:none;
+  display:block;
 }
 .hero__cascao img{
-  /* O cascao deste pacote e mais alongado que o da arte (0,40 contra 0,54);
-     a medida foi calibrada pela parte VISIVEL acima da onda.
-     Dimensionado pela ALTURA disponivel, nao pela largura — assim nunca e
-     cortado no topo quando a janela e baixa. Teto de 860px = 343px de
-     largura, o valor da arte. A margem negativa empurra a base para dentro
-     da faixa branca: a onda cruza o cascao em qualquer altura de janela. */
-  /* A largura sai do MAIOR entre as duas leituras da referencia — 20,72vw
-     (355/1713) e 34,9svh —, porque numa janela alta a medida por largura
-     deixa o cascao pequeno e longe do titulo. O ultimo termo e a trava:
-     o cascao nunca passa de 88% da area azul que sobra acima da onda,
-     entao nunca e cortado no topo, nem em tela larga e baixa. */
-  width:min(max(min(20.72vw,355px),34.9svh),
-            calc((100svh - var(--faixa-h)) * .88 / 1.746));
-  height:auto;
-  max-width:none;
+  width:calc(366 * var(--u));
+  max-width:none;height:auto;
 }
 
-/* camada 3 — onda branca DESENHADA NA FRENTE do cascao (z-index maior):
-   e ela que corta o cone, em qualquer viewport. */
-/* a base branca ocupa ~24% da altura do heroi, pondo a crista da onda
-   em ~72% — a mesma linha da arte aprovada */
-/* 12,26vw = 210/1713: a mesma altura que a faixa branca tem na
-   referencia, o que mantem a onda e a faixa vermelha de baixo na relacao
-   certa em qualquer largura. */
+/* onda branca na FRENTE do cascao: e ela que corta a ponta */
 .hero__base{
   position:relative;z-index:2;
   background:var(--branco);
-  /* max, nao min: e a altura que mantem a onda em 77% da tela, como na
-     referencia. Com min, em janela alta a faixa encolhia, a onda descia e
-     o cascao — que e ancorado nela — descia junto, saindo de perto do
-     titulo. */
-  min-height:var(--faixa-h);
-  display:grid;align-items:center;
-  padding:clamp(14px,2.2vw,30px) var(--gutter);
+  min-height:calc(210 * var(--u));
+  padding-block:calc(29 * var(--u)) calc(24 * var(--u));
 }
 
 .hero__onda{
   position:absolute;inset-inline:0;inset-block-end:100%;
-  width:100%;height:min(3.97vw,7.41svh);min-height:22px;
+  width:100%;height:calc(68 * var(--u));
 }
 
+/* pilares: colunas nas coordenadas da arte (146 / 648 / 1170),
+   divisorias em 592 e 1117 */
 .pilares{
-  display:grid;
-  grid-template-columns:repeat(3,minmax(0,1fr));
-  gap:var(--sp-m);
-  width:100%;max-width:var(--content);
+  width:calc(1713 * var(--u));max-width:100%;
   margin-inline:auto;
+  padding-inline:calc(146 * var(--u));
+  display:grid;
+  grid-template-columns:calc(446 * var(--u)) calc(469 * var(--u)) 1fr;
+  column-gap:calc(56 * var(--u));
 }
 
 .pilar{
-  display:flex;align-items:center;gap:clamp(12px,1.4vw,24px);
-  padding-inline:clamp(10px,1.6vw,28px);
+  position:relative;
+  display:flex;align-items:flex-start;
+  gap:calc(27 * var(--u));
 }
-.pilar+.pilar{border-inline-start:1px solid #DCE5EF}
+.pilar:not(:last-child)::after{
+  content:"";position:absolute;
+  inset-inline-end:0;inset-block-start:50%;
+  translate:0 -50%;
+  width:1px;height:calc(95 * var(--u));
+  background:#DCE5EF;
+}
 
 .pilar__icone{
   flex:0 0 auto;
   display:grid;place-items:center;
-  width:clamp(48px,4.6vw,78px);aspect-ratio:1;
+  width:calc(109 * var(--u));aspect-ratio:1;
   background:var(--navy);border-radius:50%;
 }
-.pilar__icone svg{width:62%;height:auto}
+.pilar__icone svg{width:55%;height:auto}
 
 .pilar__texto h2{
-  font-size:clamp(1rem,1.5vw,1.44rem);
-  font-weight:700;color:var(--navy);line-height:1.2;
-  text-wrap:balance;
+  font-size:max(14px,calc(23.5 * var(--u)));
+  font-weight:800;color:var(--navy);line-height:1.18;
+  max-width:calc(280 * var(--u));
 }
 .pilar__texto p{
-  margin-block-start:.35em;
-  font-size:var(--fs-corpo);
+  margin-block-start:calc(6 * var(--u));
+  font-size:max(12.5px,calc(17.5 * var(--u)));
+  line-height:1.35;
   color:var(--corpo);
-  text-wrap:pretty;
+  max-width:calc(300 * var(--u));
 }
 
 /* ---------------------------------------------------------------- linhas */
