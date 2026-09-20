@@ -124,6 +124,9 @@ a{color:inherit;text-decoration:none}
   /* min-height, nao height: em telas muito baixas o heroi cresce em vez de
      espremer o texto por baixo da onda. */
   min-height:100svh;
+  /* altura da faixa branca, tambem usada para medir a area azul que sobra.
+     NAO chamar de --branco: esse nome ja e o token da cor. */
+  --faixa-h:max(160px,12.26vw,22.88svh);
   display:grid;
   grid-template-rows:minmax(auto,1fr) auto;   /* palco | base branca */
   background:var(--navy);
@@ -227,9 +230,13 @@ a{color:inherit;text-decoration:none}
      cortado no topo quando a janela e baixa. Teto de 860px = 343px de
      largura, o valor da arte. A margem negativa empurra a base para dentro
      da faixa branca: a onda cruza o cascao em qualquer altura de janela. */
-  /* 20,7vw = 355/1713, a largura do cascao na referencia. Teto de 355px
-     para que acima de 1713px so as margens cresçam. */
-  width:min(20.72vw,38.67svh,355px);
+  /* A largura sai do MAIOR entre as duas leituras da referencia — 20,72vw
+     (355/1713) e 34,9svh —, porque numa janela alta a medida por largura
+     deixa o cascao pequeno e longe do titulo. O ultimo termo e a trava:
+     o cascao nunca passa de 88% da area azul que sobra acima da onda,
+     entao nunca e cortado no topo, nem em tela larga e baixa. */
+  width:min(max(min(20.72vw,355px),34.9svh),
+            calc((100svh - var(--faixa-h)) * .88 / 1.746));
   height:auto;
   max-width:none;
 }
@@ -244,7 +251,11 @@ a{color:inherit;text-decoration:none}
 .hero__base{
   position:relative;z-index:2;
   background:var(--branco);
-  min-height:max(160px,min(12.26vw,22.88svh));
+  /* max, nao min: e a altura que mantem a onda em 77% da tela, como na
+     referencia. Com min, em janela alta a faixa encolhia, a onda descia e
+     o cascao — que e ancorado nela — descia junto, saindo de perto do
+     titulo. */
+  min-height:var(--faixa-h);
   display:grid;align-items:center;
   padding:clamp(14px,2.2vw,30px) var(--gutter);
 }
