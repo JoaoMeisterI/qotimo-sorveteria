@@ -486,6 +486,88 @@ body>*{--u:min(100cqw / 1713, 100svh / 918, 1.25px)}
   white-space:nowrap;     /* rotulo de produto, nao texto corrido */
 }
 
+/* ----------------------------------------------------------------- sobre
+   Metade azul, metade vermelha. A divisa entre as duas e ondulada, como o
+   resto do site: vertical na composicao de mesa, horizontal quando empilha.
+   ======================================================================= */
+
+.sobre{
+  position:relative;
+  overflow:hidden;
+  background:var(--navy);
+  display:grid;
+  grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);
+  align-items:stretch;
+  gap:clamp(28px,4vw,80px);
+  padding:clamp(56px,7vw,120px) var(--gutter);
+  isolation:isolate;
+}
+
+/* O bloco vermelho vai da coluna ate a borda direita da tela; a divisa e
+   uma faixa estreita colada na esquerda dele, que desenha so a ondulacao.
+   (Fazer o SVG ocupar a metade inteira punha a curva longe da coluna e os
+   numeros caiam em cima do azul.) */
+.sobre__vermelho{
+  position:relative;z-index:1;
+  background:var(--vermelho);
+  margin-block:calc(-1 * clamp(56px,7vw,120px));   /* colar no topo e na base */
+  margin-inline-end:calc(-1 * var(--gutter));
+  padding:clamp(56px,7vw,120px) var(--gutter) clamp(56px,7vw,120px) 0;
+  display:grid;align-items:center;
+}
+.sobre__divisa{
+  position:absolute;z-index:0;
+  inset-block:0;
+  inset-inline-end:100%;
+  width:clamp(44px,5.2vw,96px);height:100%;
+  max-width:none;
+}
+.sobre__onda{display:none}
+
+.sobre__texto{
+  position:relative;z-index:1;
+  max-width:62ch;
+  display:grid;gap:clamp(12px,1.2vw,20px);
+}
+.sobre__texto p{
+  font-size:var(--fs-corpo);
+  line-height:1.62;
+  color:var(--corpo-claro);
+  text-wrap:pretty;
+}
+
+.sobre__eyebrow{
+  font-size:var(--fs-legenda);
+  font-weight:700;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--branco);
+}
+.sobre__titulo{
+  font-size:var(--fs-titulo);      /* mesmo teto de 64px da secao Linhas */
+  font-weight:800;line-height:1.04;
+  color:var(--branco);
+  margin-block-end:clamp(6px,.8vw,14px);
+}
+
+/* marcos: numeros sobre o vermelho */
+.marcos{
+  display:grid;gap:clamp(18px,2.2vw,34px);
+  padding-inline-start:clamp(14px,2vw,32px);
+}
+.marcos li{
+  display:grid;gap:calc(2px + .1vw);
+}
+.marcos strong{
+  font-size:clamp(2rem,3.4vw,3rem);
+  font-weight:800;line-height:1;
+  color:var(--branco);
+}
+.marcos span{
+  font-size:var(--fs-corpo);
+  color:#FFE3E3;                   /* 4,6:1 sobre o vermelho da marca */
+  line-height:1.35;
+  text-wrap:pretty;
+}
+
 /* ---------------------------------------------------- pontos de quebra */
 
 /* Notebooks estreitos (900-1200): o card fica mais alto para o texto e os
@@ -688,6 +770,30 @@ body>*{--u:min(100cqw / 1713, 100svh / 918, 1.25px)}
     justify-items:center;
   }
   .linha__blob{inset-inline-start:-3%;width:106%}
+
+  /* sobre: empilha, e a divisa vira onda horizontal no topo do vermelho */
+  .sobre{
+    grid-template-columns:minmax(0,1fr);
+    gap:0;
+    padding:clamp(44px,9vw,72px) var(--gutter) 0;
+  }
+  .sobre__divisa{display:none}
+  .sobre__vermelho{
+    margin:clamp(44px,9vw,72px) calc(-1 * var(--gutter)) 0;
+    padding:clamp(28px,6vw,48px) var(--gutter) clamp(40px,8vw,64px);
+    background:var(--vermelho);
+  }
+  .sobre__onda{
+    display:block;
+    position:absolute;
+    inset-inline:0;inset-block-end:100%;
+    width:100%;height:clamp(34px,7vw,70px);
+  }
+  .marcos{
+    padding-inline-start:0;
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:clamp(18px,4vw,30px);
+  }
   .rolar{display:none}   /* empilhado: os pilares ja preenchem a faixa */
 
   .linha__produtos{
