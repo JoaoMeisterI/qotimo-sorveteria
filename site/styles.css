@@ -328,8 +328,21 @@ body>*{--u:min(100cqw / 1713, 100svh / 918, 1.25px)}
   position:relative;
   overflow:hidden;
   background:var(--navy);
-  padding-block:clamp(70px,9vw,150px) clamp(48px,6vw,104px);
+  /* topo maior que antes: as gotas da calda descem ate ~9vw */
+  padding-block:clamp(96px,12vw,200px) clamp(48px,6vw,104px);
   isolation:isolate;
+}
+
+/* calda branca: continua o contorno branco da base do Sobre e escorre em
+   gotas. "slice" mantem as gotas redondas em qualquer largura — em tela
+   estreita corta as laterais em vez de achatar. */
+.linhas__calda{
+  position:absolute;z-index:0;
+  inset-block-start:-1px;inset-inline:0;   /* 1px sob a emenda, sem fio azul */
+  display:block;
+  width:100%;
+  height:calc(clamp(56px,9.73vw,166px) + 1px);
+  pointer-events:none;
 }
 
 .linhas__inner{
@@ -491,24 +504,31 @@ body>*{--u:min(100cqw / 1713, 100svh / 918, 1.25px)}
   grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);
   align-items:stretch;
   gap:clamp(28px,4vw,80px);
-  padding:clamp(56px,7vw,120px) var(--gutter);
+  /* respiro vertical em UMA variavel: o bloco vermelho desconta exatamente
+     este valor para encostar no topo e na base da secao. Quando eram dois
+     numeros soltos eles desencontraram e sobrou uma faixa azul. */
+  --sobre-pad:clamp(96px,10vw,180px);
+  padding:var(--sobre-pad) var(--gutter);
+  min-height:100svh;                 /* a secao ocupa a tela: e outra pagina */
   isolation:isolate;
 }
 
-/* transicoes: o branco dos pilares entra por cima, e a base volta a ser
-   azul para emendar com a secao Linhas sem corte reto */
+/* transicoes: o branco dos pilares entra por cima; embaixo, um contorno
+   branco ondulado fecha o quadro e escorre como calda na secao Linhas */
 .sobre__topo,.sobre__base{
   position:absolute;inset-inline:0;z-index:2;
   display:block;
-  width:100%;height:clamp(40px,6vw,96px);
+  width:100%;
+  /* 1px a mais e 1px para fora: as duas emendas caem em coordenada
+     fracionaria e sem a sobreposicao aparece um fio do vermelho
+     misturado com o branco (medido em 217,175,182) */
+  height:calc(clamp(40px,6vw,96px) + 1px);
   pointer-events:none;
 }
-.sobre__topo{inset-block-start:0}
-.sobre__base{inset-block-end:0}
+.sobre__topo{inset-block-start:-1px}
+.sobre__base{inset-block-end:-1px}
 
 /* o conteudo precisa ficar longe das duas ondas */
-.sobre{padding-block:clamp(96px,10vw,180px)}
-
 /* O bloco vermelho vai da coluna ate a borda direita da tela; a divisa e
    uma faixa estreita colada na esquerda dele, que desenha so a ondulacao.
    (Fazer o SVG ocupar a metade inteira punha a curva longe da coluna e os
@@ -516,9 +536,13 @@ body>*{--u:min(100cqw / 1713, 100svh / 918, 1.25px)}
 .sobre__vermelho{
   position:relative;z-index:1;
   background:var(--vermelho);
-  margin-block:calc(-1 * clamp(56px,7vw,120px));   /* colar no topo e na base */
+  /* O vermelho vai de ponta a ponta, mas as duas bordas ficam 8px para
+     dentro, escondidas sob as ondas (que cobrem pelo menos ~10px). Se ele
+     encostasse na borda da secao, a junção branco/branco de cima deixava
+     vazar 1px de vermelho misturado em algumas combinações de zoom. */
+  margin-block:calc(8px - var(--sobre-pad));
   margin-inline-end:calc(-1 * var(--gutter));
-  padding:clamp(56px,7vw,120px) var(--gutter) clamp(56px,7vw,120px) 0;
+  padding:calc(var(--sobre-pad) - 8px) var(--gutter) calc(var(--sobre-pad) - 8px) 0;
   display:grid;align-items:center;
 }
 .sobre__divisa{
@@ -832,7 +856,7 @@ body>*{--u:min(100cqw / 1713, 100svh / 918, 1.25px)}
 }
 
 /* paralaxe: o script escreve o transform, o CSS so prepara a camada */
-.hero__faixa,.hero__cascao img,.hero__copy{will-change:transform}
+.hero__faixa,.hero__cascao img,.hero__copy,.marcos{will-change:transform}
 .tem-motion .reveal.is-visible{opacity:1;transform:none}
 
 @media (prefers-reduced-motion:reduce){

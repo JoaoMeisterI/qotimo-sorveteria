@@ -152,6 +152,34 @@
     pintar();
   }
 
+  /* --- paralaxe leve na secao Sobre ---------------------------------------
+     Os marcos sobem um pouco enquanto a secao passa. Referencia e a propria
+     secao, nao a pagina, entao o efeito vale em qualquer posicao dela.
+     --------------------------------------------------------------------- */
+
+  var sobre = document.querySelector('.sobre');
+  var marcos = document.querySelector('.marcos');
+
+  if (sobre && marcos) {
+    var pend2 = false;
+    var pintarSobre = function () {
+      pend2 = false;
+      var r = sobre.getBoundingClientRect();
+      var alt = window.innerHeight + r.height;
+      var q = Math.min(1, Math.max(0, (window.innerHeight - r.top) / alt));
+      marcos.style.transform =
+        'translate3d(0,' + ((0.5 - q) * r.height * 0.08).toFixed(1) + 'px,0)';
+    };
+    var aoRolar2 = function () {
+      if (pend2) return;
+      pend2 = true;
+      window.requestAnimationFrame(pintarSobre);
+    };
+    window.addEventListener('scroll', aoRolar2, { passive: true });
+    window.addEventListener('resize', aoRolar2, { passive: true });
+    pintarSobre();
+  }
+
   iniciarAncoras();
 
   /* --- rolagem suave nas âncoras internas -------------------------------- */
