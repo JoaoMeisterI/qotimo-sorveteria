@@ -326,19 +326,10 @@ body>*{--u:min(100cqw / 1713, 100svh / 918, 1.25px)}
 
 .linhas{
   position:relative;
-  margin-block-start:-1px;      /* mesma emenda, mesmo tratamento */
   overflow:hidden;
   background:var(--navy);
   padding-block:clamp(70px,9vw,150px) clamp(48px,6vw,104px);
   isolation:isolate;
-}
-
-/* Fundo de uma cor so. A passagem do branco dos pilares para o azul e
-   feita por uma onda, nao por uma linha reta. */
-.linhas__onda{
-  position:absolute;inset-block-start:0;inset-inline:0;z-index:0;
-  display:block;
-  width:100%;height:clamp(40px,6vw,96px);
 }
 
 .linhas__inner{
@@ -493,6 +484,7 @@ body>*{--u:min(100cqw / 1713, 100svh / 918, 1.25px)}
 
 .sobre{
   position:relative;
+  margin-block-start:-1px;      /* emenda com a faixa branca do heroi */
   overflow:hidden;
   background:var(--navy);
   display:grid;
@@ -502,6 +494,20 @@ body>*{--u:min(100cqw / 1713, 100svh / 918, 1.25px)}
   padding:clamp(56px,7vw,120px) var(--gutter);
   isolation:isolate;
 }
+
+/* transicoes: o branco dos pilares entra por cima, e a base volta a ser
+   azul para emendar com a secao Linhas sem corte reto */
+.sobre__topo,.sobre__base{
+  position:absolute;inset-inline:0;z-index:2;
+  display:block;
+  width:100%;height:clamp(40px,6vw,96px);
+  pointer-events:none;
+}
+.sobre__topo{inset-block-start:0}
+.sobre__base{inset-block-end:0}
+
+/* o conteudo precisa ficar longe das duas ondas */
+.sobre{padding-block:clamp(96px,10vw,180px)}
 
 /* O bloco vermelho vai da coluna ate a borda direita da tela; a divisa e
    uma faixa estreita colada na esquerda dele, que desenha so a ondulacao.
@@ -518,8 +524,11 @@ body>*{--u:min(100cqw / 1713, 100svh / 918, 1.25px)}
 .sobre__divisa{
   position:absolute;z-index:0;
   inset-block:0;
-  inset-inline-end:100%;
-  width:clamp(44px,5.2vw,96px);height:100%;
+  /* 1px de sobreposicao com o bloco: sem isso a emenda cai em coordenada
+     fracionaria e aparece um fio vertical, como ja tinha acontecido na
+     faixa branca do heroi */
+  inset-inline-end:calc(100% - 1px);
+  width:calc(clamp(44px,5.2vw,96px) + 1px);height:100%;
   max-width:none;
 }
 .sobre__onda{display:none}
