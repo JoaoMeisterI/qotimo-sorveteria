@@ -600,7 +600,13 @@ body>*{
   grid-template-columns:minmax(0,37fr) minmax(0,60fr);
   column-gap:clamp(32px,3.4vw,64px);
   align-items:center;
-  padding-block:clamp(104px,8.2vw,144px) clamp(92px,8.6vw,156px);
+  /* o conteudo encosta no topo em vez de ficar centralizado na secao: em
+     telas altas a centralizacao empurrava o titulo para o meio e deixava
+     um vazio navy grande logo abaixo do heroi */
+  align-content:start;
+  /* topo mais curto: a onda vermelha agora nasce la em cima, na faixa
+     branca do heroi, entao o conteudo nao precisa esperar por ela */
+  padding-block:clamp(48px,3.8vw,72px) clamp(92px,8.6vw,156px);
   padding-inline:max(var(--gutter),(100% - 1560px) / 2);
   /* o topo saiu daqui e virou .historia__faixa (precisa subir para dentro
      do heroi); aqui fica so a onda de baixo, que emoldura os marcos.
@@ -724,7 +730,14 @@ body>*{
   /* sobe para dentro do branco da onda de baixo */
   margin-block-start:calc(-1 * clamp(30px,4.6vw,80px));
   padding:0 var(--gutter) clamp(44px,4.6vw,80px);
-  background:linear-gradient(transparent clamp(30px,4.6vw,80px),var(--branco) 0);
+  /* Branco chapado, e nao um gradiente que so comeca depois da parte
+     sobreposta. O gradiente tinha uma parada dura exatamente na borda de
+     baixo do palco; como essa borda cai em pixel fracionario, sobrava uma
+     linha de 1px meio transparente e o navy da secao aparecia por ela —
+     era o "risco azul". Chapado nao tem emenda: a parte que fica por cima
+     do palco cai sempre dentro do branco da onda de baixo (a onda tem
+     ~5,1% da largura de branco no pe, e esta sobreposicao no maximo 4,6%). */
+  background:var(--branco);
 }
 .marco{
   display:flex;align-items:center;
