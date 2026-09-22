@@ -45,7 +45,7 @@ window.QOTIMO_UNIDADES = [
   {
     id: 'fachada-azul-01',
     name: null,                           // PENDENTE: nome oficial
-    city: null,                           // PENDENTE: cidade
+    city: 'Corupá',                       // confirmado pelo cliente
     address: null,                        // PENDENTE
     phone: null,                          // PENDENTE
     openingHours: null,                   // PENDENTE
@@ -62,7 +62,7 @@ window.QOTIMO_UNIDADES = [
   {
     id: 'fachada-azul-02',
     name: null,                           // PENDENTE: nome oficial
-    city: null,                           // PENDENTE: cidade
+    city: 'Corupá',                       // confirmado pelo cliente
     address: null,                        // PENDENTE
     phone: null,                          // PENDENTE
     openingHours: null,                   // PENDENTE
@@ -79,7 +79,7 @@ window.QOTIMO_UNIDADES = [
   {
     id: 'origem-area-verde',
     name: null,                           // PENDENTE: nome oficial
-    city: null,                           // PENDENTE: cidade
+    city: 'Corupá',                       // confirmado pelo cliente
     address: null,                        // PENDENTE
     phone: null,                          // PENDENTE
     openingHours: null,                   // PENDENTE

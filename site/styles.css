@@ -142,6 +142,20 @@ body>*{--u:min(100cqw / 1713, 100svh / 918, 1.25px)}
   overflow:hidden;
   display:grid;
   grid-template-rows:calc(708 * var(--u)) auto;   /* palco | base branca */
+  /* por padrao a linha "auto" esticaria para preencher qualquer sobra de
+     100svh (align-content normal = stretch em grid). Em telas com --u
+     limitado pela largura (proporcao mais alta que a da arte) isso inchava
+     a faixa branca. "start" trava a faixa branca no tamanho do conteudo;
+     a sobra vira navy — a mesma cor da secao seguinte, entao ela nunca
+     aparece antes da hora.
+
+     (Cogitamos uma 3a linha "minmax(0,1fr)" para essa sobra, mas com
+     min-height no lugar de height o Grid nao tem um tamanho definido para
+     dividir: o fr passa a se comportar como "auto" — do tamanho do
+     conteudo — e o heroi acabava maior que 100svh. "start" + .rolar
+     absoluto (ancorado no proprio .hero, nao no .hero__base) evita essa
+     armadilha.) */
+  align-content:start;
   background:var(--navy);
   isolation:isolate;
 }
@@ -309,17 +323,10 @@ body>*{--u:min(100cqw / 1713, 100svh / 918, 1.25px)}
    da arte nao ha vao, e ele nao aparece. */
 .rolar{display:none}
 
-@media (max-aspect-ratio:16/9){
-.rolar{
-  position:absolute;
-  inset-block-end:calc(26 * var(--u));
-  inset-inline:0;
-  display:grid;justify-items:center;gap:calc(6 * var(--u));
-  color:var(--corpo);
-  /* o script apaga isso conforme a rolagem avanca */
-  opacity:var(--rolar-op,1);
-  transition:opacity .25s;
-}
+/* estilo do indicador (visibilidade e o min-height extra da faixa branca
+   ficam la embaixo, depois do breakpoint de 1099px — aquele bloco tambem
+   mexe no min-height do .hero__base, e precisa vir DEPOIS para nao ser
+   sobrescrito quando as duas condicoes coincidem: janela estreita E alta). */
 .rolar__texto{
   font-size:max(11px,calc(14 * var(--u)));
   font-weight:600;letter-spacing:.08em;text-transform:uppercase;
@@ -333,8 +340,6 @@ body>*{--u:min(100cqw / 1713, 100svh / 918, 1.25px)}
 @keyframes descer{
   0%,100%{transform:translateY(0);opacity:.55}
   50%    {transform:translateY(calc(9 * var(--u)));opacity:1}
-}
-.rolar:hover{color:var(--vermelho)}
 }
 
 /* ---------------------------------------------------------------- linhas */
@@ -1022,6 +1027,40 @@ body>*{--u:min(100cqw / 1713, 100svh / 918, 1.25px)}
     padding-block:calc(22 * var(--u));
   }
   .pilar{padding-inline:clamp(6px,1.2vw,18px)}
+}
+
+/* limiar mais apertado que o 16/9: e o ponto em que a sobra abaixo dos
+   pilares (918u de arte vs. 100svh) fica grande o bastante para caber o
+   indicador (~83u) sem que os +82u do min-height abaixo empurrem o heroi
+   para alem de 100svh. Calculo: 1713*(1-0.5359r)/r >= ~110u <=> r<=~1,68.
+   Vem DEPOIS do breakpoint de 1099px de proposito: os dois mexem no
+   min-height do .hero__base, e como janela estreita + alta e uma
+   combinacao possivel, quem estiver por ultimo no arquivo e quem vale. */
+@media (max-aspect-ratio:5/3){
+  /* so nessa faixa (janela mais alta que a arte) o indicador aparece — e
+     so aqui a faixa branca ganha um pouco mais de piso (210u -> 292u)
+     para ter onde por ele sem encostar nos pilares. Fora daqui a faixa
+     fica no minimo de sempre (210u, ou 210u com padding menor <1099px). */
+  .hero__base{
+    min-height:calc(292 * var(--u));
+    /* align-items:center (regra base) reparte espaco extra em cima E
+       embaixo dos pilares — com a faixa mais alta isso empurrava os
+       pilares pra baixo, direto em cima do indicador. "start" fixa os
+       pilares logo apos o padding-top de sempre; toda a folga nova
+       sobra abaixo, que e onde o indicador mora. */
+    align-items:start;
+  }
+  .rolar{
+    position:absolute;
+    inset-block-end:calc(26 * var(--u));
+    inset-inline:0;
+    display:grid;justify-items:center;gap:calc(6 * var(--u));
+    color:var(--corpo);
+    /* o script apaga isso conforme a rolagem avanca */
+    opacity:var(--rolar-op,1);
+    transition:opacity .25s;
+  }
+  .rolar:hover{color:var(--vermelho)}
 }
 
 /* ============ COMPOSICAO EMPILHADA (sem arte de referencia) ============
