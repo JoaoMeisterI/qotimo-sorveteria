@@ -134,59 +134,102 @@
     </div>
   </section>
 
-  <!-- ===================== SOBRE ===================== -->
-  <section class="sobre" id="sobre" aria-labelledby="sobre-titulo">
+  <!-- ===================== NOSSA HISTORIA ===================== -->
+  <section class="historia" id="sobre" aria-labelledby="historia-titulo">
 
-    <!-- a metade vermelha: divisa ondulada na vertical (mesa) e
-         onda na horizontal quando empilha -->
-
-    <svg class="sobre__topo" viewBox="0 0 1440 90" preserveAspectRatio="none" aria-hidden="true" focusable="false">
+    <!-- o branco dos pilares do heroi entra por cima, em onda -->
+    <svg class="historia__topo" viewBox="0 0 1440 90" preserveAspectRatio="none" aria-hidden="true" focusable="false">
       <path fill="#FFFFFF" d="M0 0L1440 0L1440 26C1381.7 32.3 1203.3 61.7 1090 64C976.7 66.3 871.7 38.7 760 40C648.3 41.3 546.7 71.3 420 72C293.3 72.7 70 48.7 0 44Z"/>
     </svg>
 
-    <div class="sobre__texto reveal">
-      <p class="sobre__eyebrow">Sobre nós</p>
-      <h2 class="sobre__titulo" id="sobre-titulo">Nossa história</h2>
+    <div class="historia__palco">
+      <div class="historia__texto">
+        <p class="historia__eyebrow reveal">Sobre nós</p>
+        <h2 class="historia__titulo reveal" id="historia-titulo">Uma história feita de sabor</h2>
+        <p class="historia__sub reveal">Mais que sorvetes, uma trajetória de sonhos.</p>
 
-      <p>Com mais de duas décadas de trajetória, a empresa familiar Qótimo Sorvetes foi
-        estabelecida em 2000 na cidade de Jaraguá do Sul/SC, realizando assim o sonho de
-        Ademir e Renata de criar sorvetes que unissem qualidade e amor.</p>
+        <div class="historia__corpo reveal">
+          <p>Com mais de duas décadas de trajetória, a empresa familiar Qótimo Sorvetes foi
+            estabelecida em 2000 na cidade de Jaraguá do Sul/SC, realizando assim o sonho de
+            Ademir e Renata de criar sorvetes que unissem qualidade e amor.</p>
+          <p>Ademir acumulou vasta experiência ao longo de muitos anos na Duas Rodas Industrial,
+            onde teve a oportunidade de se familiarizar com o desenvolvimento e a produção das
+            melhores matérias-primas para a fabricação de sorvetes.</p>
+          <p>Hoje, contando com a colaboração do filho mais velho, Igor, a Qótimo opera em um novo
+            parque fabril com mais de 600 m², além de dispor de logística própria e seis
+            sorveterias. A produção de açaí e uma variedade de sabores de sorvetes e picolés
+            posicionam a empresa de maneira sólida para a expansão no varejo nacional.</p>
+        </div>
 
-      <p>Ademir acumulou vasta experiência ao longo de muitos anos na Duas Rodas Industrial,
-        onde teve a oportunidade de se familiarizar com o desenvolvimento e a produção das
-        melhores matérias-primas para a fabricação de sorvetes.</p>
+        <a class="btn-pill historia__btn reveal" href="#unidades">
+          Conheça nossas unidades
+          <svg viewBox="0 0 20 14" aria-hidden="true" focusable="false"><path d="M1 7h17.5M12.4 1.2 18.5 7l-6.1 5.8"/></svg>
+        </a>
+      </div>
 
-      <p>Como em todo empreendimento, os primeiros passos foram repletos de desafios. No
-        entanto, com determinação e inúmeras histórias para compartilhar, os fundadores se
-        viram dividindo sua residência com a modesta fábrica de sorvetes, que contava com um
-        equipamento limitado. Com o passar do tempo, a empresa cresceu de forma constante, e a
-        marca começou a conquistar credibilidade no mercado, tornando a expansão para uma
-        unidade fabril maior uma necessidade inevitável.</p>
+      <!-- fotos: a historica e a protagonista; as outras duas encostam nela -->
+      <div class="fotos">
+        <svg class="gotas gotas--a" viewBox="0 0 90 120" aria-hidden="true" focusable="false">
+          <path d="M70 6C52 14 26 34 18 60c-6 20 6 34 22 32 14-2 20-16 16-30-4-14 2-34 14-56z"/>
+          <path d="M14 96c-8 2-12 10-8 16s14 6 16-2c2-6-2-12-8-14z"/>
+        </svg>
+        <svg class="gotas gotas--b" viewBox="0 0 90 120" aria-hidden="true" focusable="false">
+          <path d="M70 6C52 14 26 34 18 60c-6 20 6 34 22 32 14-2 20-16 16-30-4-14 2-34 14-56z"/>
+          <path d="M14 96c-8 2-12 10-8 16s14 6 16-2c2-6-2-12-8-14z"/>
+        </svg>
 
-      <p>Hoje, contando com a colaboração do filho mais velho, Igor, a Qótimo opera em um novo
-        parque fabril com mais de 600 m², além de dispor de logística própria e seis
-        sorveterias. A produção de açaí e uma variedade de sabores de sorvetes e picolés
-        posicionam a empresa de maneira sólida para a expansão no varejo nacional.</p>
+        <figure class="foto foto--principal reveal">
+          <img src="assets/historia/fachada-historica-560.webp"
+               srcset="assets/historia/fachada-historica-560.webp 560w, assets/historia/fachada-historica-1000.webp 1000w"
+               sizes="(max-width: 767px) 92vw, (max-width: 1099px) 60vw, 34vw"
+               width="1000" height="1250" loading="lazy" decoding="async"
+               alt="Letreiro histórico da Qótimo Sorvetes em fachada azul-turquesa e duas mãos segurando casquinhas cobertas de chocolate">
+        </figure>
+
+        <figure class="foto foto--area reveal">
+          <img src="assets/unidades/origem-area-verde-480.webp"
+               srcset="assets/unidades/origem-area-verde-480.webp 480w, assets/unidades/origem-area-verde-900.webp 900w"
+               sizes="(max-width: 767px) 46vw, (max-width: 1099px) 40vw, 25vw"
+               width="900" height="600" loading="lazy" decoding="async"
+               alt="Casa azul-turquesa da Qótimo com o logotipo na fachada, cercada de gramado, palmeiras e morros">
+        </figure>
+
+        <figure class="foto foto--interior reveal">
+          <img src="assets/historia/interior-retro-440.webp"
+               srcset="assets/historia/interior-retro-440.webp 440w, assets/historia/interior-retro-800.webp 800w"
+               sizes="(max-width: 767px) 46vw, (max-width: 1099px) 40vw, 24vw"
+               width="800" height="1200" loading="lazy" decoding="async"
+               alt="Interior em estilo retrô com o logotipo Qótimo na parede, piso xadrez e três lambretas coloridas">
+        </figure>
+
+        <p class="selo reveal" aria-label="Desde 2000"><span>Desde</span><strong>2000</strong></p>
+      </div>
     </div>
 
-    <div class="sobre__vermelho">
-      <svg class="sobre__divisa" viewBox="0 0 120 1000" preserveAspectRatio="none" aria-hidden="true" focusable="false">
-      <path fill="#E52023" d="M65.1 0C66.2 11.9 70.9 47.6 72 71.4C73.2 95.2 73.2 119 72 142.9C70.8 166.7 67.7 190.5 64.9 214.3C62 238.1 57.8 261.9 54.9 285.7C52.1 309.5 49.1 333.3 48 357.1C46.8 381 46.8 404.8 48 428.6C49.2 452.4 52.3 476.2 55.1 500C58 523.8 62.2 547.6 65.1 571.4C67.9 595.2 70.9 619 72 642.9C73.2 666.7 73.2 690.5 72 714.3C70.8 738.1 67.7 761.9 64.9 785.7C62 809.5 57.8 833.3 54.9 857.1C52.1 881 49.1 904.8 48 928.6C46.8 952.4 48 988.1 48 1000L120 1000L120 0Z"/>
-    </svg>
-      <svg class="sobre__onda" viewBox="0 0 1440 90" preserveAspectRatio="none" aria-hidden="true" focusable="false">
-        <path fill="#E52023" d="M0 46C30 40.7 116.7 13 180 14C243.3 15 310 51.3 380 52C450 52.7 526.7 18.7 600 18C673.3 17.3 746.7 47.7 820 48C893.3 48.3 970 20.7 1040 20C1110 19.3 1173.3 43 1240 44C1306.7 45 1406.7 29 1440 26L1440 90L0 90Z"/>
-      </svg>
-      <ul class="marcos">
-      <li class="reveal"><strong>2000</strong><span>Ano de fundação, em Jaraguá do Sul/SC</span></li>
-      <li class="reveal"><strong>600 m²</strong><span>Parque fabril próprio</span></li>
-      <li class="reveal"><strong>6</strong><span>Sorveterias</span></li>
-        <li class="reveal"><strong>Própria</strong><span>Logística de entrega</span></li>
-      </ul>
-    </div>
-
-    <svg class="sobre__base" viewBox="0 0 1440 90" preserveAspectRatio="none" aria-hidden="true" focusable="false">
-      <path fill="#FFFFFF" d="M0 46C30 40.7 116.7 13 180 14C243.3 15 310 51.3 380 52C450 52.7 526.7 18.7 600 18C673.3 17.3 746.7 47.7 820 48C893.3 48.3 970 20.7 1040 20C1110 19.3 1173.3 43 1240 44C1306.7 45 1406.7 29 1440 26L1440 90L0 90Z"/>
-    </svg>
+    <!-- marcos na faixa branca -->
+    <ul class="historia__marcos" aria-label="A Qótimo em números">
+      <li class="marco reveal">
+        <span class="marco__icone" aria-hidden="true">
+          <svg viewBox="0 0 32 32"><rect x="5" y="7" width="22" height="20" rx="3"/><path d="M5 13h22M11 4v6M21 4v6"/></svg>
+        </span>
+        <p><strong class="marco__num" data-conta="2000" data-de="1980">2000</strong>
+          <span>Ano de fundação, em Jaraguá do Sul/SC</span></p>
+      </li>
+      <li class="marco reveal">
+        <span class="marco__icone" aria-hidden="true">
+          <svg viewBox="0 0 32 32"><path d="M4 27V14l7 4v-4l7 4v-4l7 4V5h3v22z"/><path d="M4 27h24"/></svg>
+        </span>
+        <p><strong class="marco__num"><span data-conta="600">600</span> m²</strong>
+          <span>Parque fabril próprio</span></p>
+      </li>
+      <li class="marco reveal">
+        <span class="marco__icone" aria-hidden="true">
+          <svg viewBox="0 0 32 32"><path d="M5 12l2-7h18l2 7"/><path d="M5 12c0 2 1.8 3.5 3.7 3.5S12.3 14 12.3 12c0 2 1.7 3.5 3.7 3.5s3.7-1.5 3.7-3.5c0 2 1.7 3.5 3.6 3.5S27 14 27 12z"/><path d="M7 16v11h18V16M13 27v-6h6v6"/></svg>
+        </span>
+        <p><strong class="marco__num"><span data-conta="6">6</span> sorveterias</strong>
+          <span>Sabor perto de você</span></p>
+      </li>
+    </ul>
   </section>
 
   <!-- ===================== LINHAS ===================== -->
@@ -195,7 +238,7 @@
     <!-- calda branca escorrendo do contorno da secao anterior: marca que
          aqui comeca outro quadro -->
     <svg class="linhas__calda" viewBox="0 0 1440 140" preserveAspectRatio="xMidYMin slice" aria-hidden="true" focusable="false">
-      <path fill="#FFFFFF" d="M0 0H1440V12.2L1439.2 12.1C1421 12.1 1415 20.5 1413 45.2C1413 49.7 1417 54.3 1417 62.1C1417 71.4 1411.1 75 1404 75C1396.9 75 1391 71.4 1391 62.1C1391 54.3 1395 49.7 1395 45.2C1393 19.1 1387 10.7 1368.8 10.7L1346.8 13.1C1332 13.1 1327 20 1325.4 29.2C1325.4 33 1328.6 36.7 1328.6 43.1C1328.6 50.7 1323.8 53.7 1318 53.7C1312.2 53.7 1307.4 50.7 1307.4 43.1C1307.4 36.7 1310.6 33 1310.6 29.2C1309 19.1 1304 12.1 1289.2 12.1L1254.8 16.2C1231.7 16.2 1224 27 1221.5 64.7C1221.5 70.5 1226.5 76.3 1226.5 86.2C1226.5 98.1 1219.1 102.7 1210 102.7C1200.9 102.7 1193.5 98.1 1193.5 86.2C1193.5 76.3 1198.5 70.5 1198.5 64.7C1196 26.1 1188.3 15.3 1165.2 15.3L1130 16.3C1113.5 16.3 1108 24 1106.2 39C1106.2 43.1 1109.8 47.2 1109.8 54.3C1109.8 62.8 1104.5 66.1 1098 66.1C1091.5 66.1 1086.2 62.8 1086.2 54.3C1086.2 47.2 1089.8 43.1 1089.8 39C1088 18.6 1082.5 10.9 1066 10.9L1039.4 8.5C1011.4 8.5 1002 21.6 998.9 78.4C998.9 85.5 1005.1 92.5 1005.1 104.5C1005.1 119 996 124.6 985 124.6C974 124.6 964.9 119 964.9 104.5C964.9 92.5 971.1 85.5 971.1 78.4C968 23.6 958.6 10.5 930.6 10.5L893.6 15.2C880.4 15.2 876 21.4 874.6 28.1C874.6 31.4 877.4 34.7 877.4 40.3C877.4 47.1 873.2 49.8 868 49.8C862.8 49.8 858.6 47.1 858.6 40.3C858.6 34.7 861.4 31.4 861.4 28.1C860 24.5 855.6 18.3 842.4 18.3L801.6 15.8C780.1 15.8 773 25.8 770.7 57.8C770.7 63.2 775.3 68.6 775.3 77.8C775.3 88.8 768.4 93.1 760 93.1C751.6 93.1 744.7 88.8 744.7 77.8C744.7 68.6 749.3 63.2 749.3 57.8C747 24.3 739.9 14.3 718.4 14.3L668.8 9.8C654 9.8 649 16.7 647.4 25.8C647.4 29.5 650.6 33.2 650.6 39.6C650.6 47.2 645.8 50.2 640 50.2C634.2 50.2 629.4 47.2 629.4 39.6C629.4 33.2 632.6 29.5 632.6 25.8C631 18.5 626 11.6 611.2 11.6L591.2 9.8C564.8 9.8 556 22.2 553.1 71C553.1 77.6 558.9 84.2 558.9 95.5C558.9 109.1 550.4 114.4 540 114.4C529.6 114.4 521.1 109.1 521.1 95.5C521.1 84.2 526.9 77.6 526.9 71C524 29.8 515.2 17.5 488.8 17.5L436.4 16.2C416.6 16.2 410 25.4 407.8 39.7C407.8 44.7 412.2 49.7 412.2 58.2C412.2 68.4 405.8 72.3 398 72.3C390.2 72.3 383.8 68.4 383.8 58.2C383.8 49.7 388.2 44.7 388.2 39.7C386 25 379.4 15.8 359.6 15.8L287.6 12.4C274.4 12.4 270 18.6 268.6 20.1C268.6 23.4 271.4 26.7 271.4 32.4C271.4 39.2 267.2 41.8 262 41.8C256.8 41.8 252.6 39.2 252.6 32.4C252.6 26.7 255.4 23.4 255.4 20.1C254 15.9 249.6 9.7 236.4 9.7L220.8 8.4C197.7 8.4 190 19.2 187.5 50.6C187.5 56.3 192.5 62.1 192.5 72C192.5 83.9 185.1 88.6 176 88.6C166.9 88.6 159.5 83.9 159.5 72C159.5 62.1 164.5 56.3 164.5 50.6C162 26.8 154.3 16 131.2 16L90 14.8C73.5 14.8 68 22.5 66.2 34.6C66.2 38.7 69.8 42.8 69.8 49.9C69.8 58.4 64.5 61.7 58 61.7C51.5 61.7 46.2 58.4 46.2 49.9C46.2 42.8 49.8 38.7 49.8 34.6C48 27.6 42.5 19.9 26 19.9L0 16.9Z"/>
+      <path fill="#FFFFFF" d="M0 0H1440V5.5L1439.2 5.5C1421 5.5 1415 13.9 1413 38.6C1413 43.1 1417 47.7 1417 55.5C1417 64.8 1411.1 68.4 1404 68.4C1396.9 68.4 1391 64.8 1391 55.5C1391 47.7 1395 43.1 1395 38.6C1393 12.9 1387 4.5 1368.8 4.5L1346.8 6C1332 6 1327 13 1325.4 22.2C1325.4 26 1328.6 29.7 1328.6 36C1328.6 43.7 1323.8 46.7 1318 46.7C1312.2 46.7 1307.4 43.7 1307.4 36C1307.4 29.7 1310.6 26 1310.6 22.2C1309 12.8 1304 5.8 1289.2 5.8L1254.8 8.6C1231.7 8.6 1224 19.4 1221.5 57.2C1221.5 63 1226.5 68.7 1226.5 78.6C1226.5 90.5 1219.1 95.2 1210 95.2C1200.9 95.2 1193.5 90.5 1193.5 78.6C1193.5 68.7 1198.5 63 1198.5 57.2C1196 19 1188.3 8.2 1165.2 8.2L1130 8.7C1113.5 8.7 1108 16.4 1106.2 31.3C1106.2 35.5 1109.8 39.6 1109.8 46.7C1109.8 55.2 1104.5 58.5 1098 58.5C1091.5 58.5 1086.2 55.2 1086.2 46.7C1086.2 39.6 1089.8 35.5 1089.8 31.3C1088 12.5 1082.5 4.8 1066 4.8L1039.4 3.1C1011.4 3.1 1002 16.2 998.9 72.6C998.9 79.6 1005.1 86.6 1005.1 98.6C1005.1 113.1 996 118.7 985 118.7C974 118.7 964.9 113.1 964.9 98.6C964.9 86.6 971.1 79.6 971.1 72.6C968 17.7 958.6 4.6 930.6 4.6L893.6 7.9C880.4 7.9 876 14.1 874.6 19.9C874.6 23.2 877.4 26.5 877.4 32.2C877.4 39 873.2 41.6 868 41.6C862.8 41.6 858.6 39 858.6 32.2C858.6 26.5 861.4 23.2 861.4 19.9C860 16.3 855.6 10.2 842.4 10.2L801.6 8.6C780.1 8.6 773 18.6 770.7 50.6C770.7 56 775.3 61.4 775.3 70.6C775.3 81.6 768.4 85.9 760 85.9C751.6 85.9 744.7 81.6 744.7 70.6C744.7 61.4 749.3 56 749.3 50.6C747 17.2 739.9 7.2 718.4 7.2L668.8 4C654 4 649 10.9 647.4 19.2C647.4 22.9 650.6 26.6 650.6 33C650.6 40.6 645.8 43.6 640 43.6C634.2 43.6 629.4 40.6 629.4 33C629.4 26.6 632.6 22.9 632.6 19.2C631 11.9 626 5 611.2 5L591.2 4C564.8 4 556 16.3 553.1 63C553.1 69.6 558.9 76.2 558.9 87.5C558.9 101.1 550.4 106.4 540 106.4C529.6 106.4 521.1 101.1 521.1 87.5C521.1 76.2 526.9 69.6 526.9 63C524 21.8 515.2 9.5 488.8 9.5L436.4 8.8C416.6 8.8 410 18.1 407.8 32.4C407.8 37.4 412.2 42.3 412.2 50.8C412.2 61 405.8 65 398 65C390.2 65 383.8 61 383.8 50.8C383.8 42.3 388.2 37.4 388.2 32.4C386 17.5 379.4 8.3 359.6 8.3L287.6 5.7C274.4 5.7 270 11.8 268.6 13.4C268.6 16.7 271.4 20 271.4 25.7C271.4 32.5 267.2 35.1 262 35.1C256.8 35.1 252.6 32.5 252.6 25.7C252.6 20 255.4 16.7 255.4 13.4C254 10 249.6 3.8 236.4 3.8L220.8 3C197.7 3 190 13.8 187.5 42.9C187.5 48.7 192.5 54.5 192.5 64.4C192.5 76.3 185.1 80.9 176 80.9C166.9 80.9 159.5 76.3 159.5 64.4C159.5 54.5 164.5 48.7 164.5 42.9C162 19.2 154.3 8.4 131.2 8.4L90 7.9C73.5 7.9 68 15.6 66.2 25.9C66.2 30 69.8 34.1 69.8 41.2C69.8 49.7 64.5 53 58 53C51.5 53 46.2 49.7 46.2 41.2C46.2 34.1 49.8 30 49.8 25.9C48 18.9 42.5 11.2 26 11.2L0 9.2Z"/>
     </svg>
 
     <div class="linhas__inner">
@@ -272,9 +315,33 @@
     </div>
   </section>
 
+  <!-- ===================== NOSSAS UNIDADES ===================== -->
+  <section class="unidades" id="unidades" aria-labelledby="unidades-titulo">
+    <div class="unidades__inner">
+
+      <header class="unidades__head">
+        <p class="unidades__eyebrow reveal">Onde estamos</p>
+        <h2 class="unidades__titulo reveal" id="unidades-titulo">Encontre a Qótimo mais perto de você</h2>
+        <p class="unidades__sub reveal">Sabor, carinho e momentos especiais em cada unidade.</p>
+      </header>
+
+      <!-- os botoes de cidade sao gerados de QOTIMO_CIDADES (data/unidades.js) -->
+      <div class="filtros reveal" role="group" aria-label="Filtrar unidades por cidade">
+        <button class="filtro" type="button" data-cidade="" aria-pressed="true">Todas</button>
+      </div>
+
+      <!-- cards gerados de QOTIMO_UNIDADES; o aviso abaixo anuncia a troca de filtro -->
+      <ul class="grade" data-qtd="0"></ul>
+      <p class="grade__vazio" hidden></p>
+      <p class="visually-hidden" aria-live="polite" id="unidades-status"></p>
+
+      <noscript><p class="grade__vazio">Ative o JavaScript para ver a lista de unidades.</p></noscript>
+    </div>
+  </section>
 
 </main>
 
+<script src="data/unidades.js" defer></script>
 <script src="script.js" defer></script>
 </body>
 </html>

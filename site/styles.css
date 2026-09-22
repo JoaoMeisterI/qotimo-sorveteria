@@ -147,7 +147,13 @@ body>*{--u:min(100cqw / 1713, 100svh / 918, 1.25px)}
 }
 
 /* faixas full-bleed, nas coordenadas da arte (A: 0..344, B: 404..918) */
-.hero__faixa{position:absolute;inset-inline:0;z-index:0;width:100%}
+.hero__faixa{
+  position:absolute;z-index:0;
+  /* 2px para fora de cada lado (o .hero corta o excesso): com escala de
+     tela fracionaria (125%/150%) a faixa terminava antes da borda e
+     sobrava uma coluna azul na direita */
+  inset-inline:-2px;width:calc(100% + 4px);max-width:none;
+}
 .hero__faixa--topo{inset-block-start:0;height:calc(344 * var(--u))}
 .hero__faixa--base{inset-block-start:calc(404 * var(--u));height:calc(514 * var(--u))}
 
@@ -219,6 +225,10 @@ body>*{--u:min(100cqw / 1713, 100svh / 918, 1.25px)}
   position:relative;z-index:2;
   margin-block-start:-1px;
   background:var(--branco);
+  /* a faixa vermelha continua por tras desta area; na borda direita, com
+     escala fracionaria, o ultimo pixel misturava os dois e virava um fio
+     rosa. A sombra (cortada pelo .hero) cobre essa coluna. */
+  box-shadow:0 0 0 3px var(--branco);
   /* 210u e o piso (a altura na arte). A faixa cresce com a janela, o que
      tambem deixa a area branca maior, como pedido. */
   min-height:calc(210 * var(--u));
@@ -227,10 +237,15 @@ body>*{--u:min(100cqw / 1713, 100svh / 918, 1.25px)}
 }
 
 .hero__onda{
-  position:absolute;inset-inline:0;
+  position:absolute;
   inset-block-end:calc(100% - 1px);   /* entra 1px na faixa branca */
   display:block;
-  width:100%;height:calc(68 * var(--u));
+  /* mesma folga lateral das faixas, e uma sombra branca chapada por baixo
+     que cobre a costura: sem ela o vermelho da faixa vazava 1px de fio
+     ao longo da base e subindo pela borda direita */
+  inset-inline:-2px;width:calc(100% + 4px);max-width:none;
+  height:calc(68 * var(--u));
+  box-shadow:0 3px 0 var(--branco);
 }
 
 /* pilares: colunas nas coordenadas da arte (146 / 648 / 1170),
@@ -333,14 +348,13 @@ body>*{--u:min(100cqw / 1713, 100svh / 918, 1.25px)}
   isolation:isolate;
 }
 
-/* calda branca: continua o contorno branco da base do Sobre e escorre em
+/* calda branca: continua a faixa branca dos marcos da historia e escorre em
    gotas. "slice" mantem as gotas redondas em qualquer largura — em tela
    estreita corta as laterais em vez de achatar. */
 .linhas__calda{
   position:absolute;z-index:0;
-  inset-block-start:-1px;inset-inline:0;   /* 1px sob a emenda, sem fio azul */
-  display:block;
-  width:100%;
+  inset-block-start:-1px;                  /* 1px sob a emenda, sem fio azul */
+  inset-inline:-2px;width:calc(100% + 4px);max-width:none;
   height:calc(clamp(56px,9.73vw,166px) + 1px);
   pointer-events:none;
 }
@@ -490,115 +504,490 @@ body>*{--u:min(100cqw / 1713, 100svh / 918, 1.25px)}
   white-space:nowrap;     /* rotulo de produto, nao texto corrido */
 }
 
-/* ----------------------------------------------------------------- sobre
-   Metade azul, metade vermelha. A divisa entre as duas e ondulada, como o
-   resto do site: vertical na composicao de mesa, horizontal quando empilha.
-   ======================================================================= */
+/* ----------------------------------------------------- utilitarios comuns */
 
-.sobre{
-  position:relative;
-  margin-block-start:-1px;      /* emenda com a faixa branca do heroi */
-  overflow:hidden;
-  background:var(--navy);
-  display:grid;
-  grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);
-  align-items:stretch;
-  gap:clamp(28px,4vw,80px);
-  /* respiro vertical em UMA variavel: o bloco vermelho desconta exatamente
-     este valor para encostar no topo e na base da secao. Quando eram dois
-     numeros soltos eles desencontraram e sobrou uma faixa azul. */
-  --sobre-pad:clamp(96px,10vw,180px);
-  padding:var(--sobre-pad) var(--gutter);
-  min-height:100svh;                 /* a secao ocupa a tela: e outra pagina */
-  isolation:isolate;
+.visually-hidden{
+  position:absolute!important;
+  width:1px;height:1px;margin:-1px;padding:0;
+  overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0;
 }
 
-/* transicoes: o branco dos pilares entra por cima; embaixo, um contorno
-   branco ondulado fecha o quadro e escorre como calda na secao Linhas */
-.sobre__topo,.sobre__base{
-  position:absolute;inset-inline:0;z-index:2;
-  display:block;
-  width:100%;
-  /* 1px a mais e 1px para fora: as duas emendas caem em coordenada
-     fracionaria e sem a sobreposicao aparece um fio do vermelho
-     misturado com o branco (medido em 217,175,182) */
+/* botao em pilula das secoes novas: mesma familia do "Explore Nossos
+   Sabores", mas medido em px fluido (fora do quadro --u do heroi) */
+.btn-pill{
+  display:inline-flex;align-items:center;justify-content:center;
+  gap:12px;
+  min-height:clamp(46px,3.3vw,56px);
+  padding-inline:clamp(22px,1.9vw,32px);
+  background:var(--vermelho);color:var(--branco);
+  font-size:clamp(.95rem,1.05vw,1.1rem);font-weight:600;
+  border-radius:var(--raio);
+  white-space:nowrap;
+  transition:transform .2s,background .2s;
+}
+.btn-pill svg{width:20px;height:auto;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.btn-pill:hover{background:#c5171a;transform:translateY(-2px)}
+
+/* ======================================================== NOSSA HISTORIA
+   O fundo e o arquivo entregue (fundo-nossa-historia), fatiado em duas
+   tiras: as ondas de cima e as de baixo. O meio e azul liso. Assim as
+   ondas mantem o desenho em qualquer altura de secao — com um unico
+   "cover" elas ficavam gigantes no celular. As tiras tem as bordas
+   internas esmaecidas para o azul, sem emenda.
+   ======================================================================= */
+
+.historia{
+  position:relative;
+  isolation:isolate;
+  display:flex;flex-direction:column;
+  min-height:max(900px,100svh);         /* ocupa a tela: e outro quadro */
+  background:var(--navy);
+  scroll-margin-top:0;
+}
+
+/* branco dos pilares do heroi entrando em onda */
+.historia__topo{
+  position:absolute;z-index:3;
+  inset-block-start:-1px;
+  inset-inline:-2px;width:calc(100% + 4px);max-width:none;
   height:calc(clamp(40px,6vw,96px) + 1px);
   pointer-events:none;
 }
-.sobre__topo{inset-block-start:-1px}
-.sobre__base{inset-block-end:-1px}
 
-/* o conteudo precisa ficar longe das duas ondas */
-/* O bloco vermelho vai da coluna ate a borda direita da tela; a divisa e
-   uma faixa estreita colada na esquerda dele, que desenha so a ondulacao.
-   (Fazer o SVG ocupar a metade inteira punha a curva longe da coluna e os
-   numeros caiam em cima do azul.) */
-.sobre__vermelho{
+.historia__palco{
+  --fundo-w:max(100%,1100px);           /* abaixo disso as ondas param de encolher */
+  flex:1 0 auto;
   position:relative;z-index:1;
-  background:var(--vermelho);
-  /* O vermelho vai de ponta a ponta, mas as duas bordas ficam 8px para
-     dentro, escondidas sob as ondas (que cobrem pelo menos ~10px). Se ele
-     encostasse na borda da secao, a junção branco/branco de cima deixava
-     vazar 1px de vermelho misturado em algumas combinações de zoom. */
-  margin-block:calc(8px - var(--sobre-pad));
-  margin-inline-end:calc(-1 * var(--gutter));
-  padding:calc(var(--sobre-pad) - 8px) var(--gutter) calc(var(--sobre-pad) - 8px) 0;
-  display:grid;align-items:center;
+  display:grid;
+  grid-template-columns:minmax(0,37fr) minmax(0,60fr);
+  column-gap:clamp(32px,3.4vw,64px);
+  align-items:center;
+  padding-block:clamp(104px,8.2vw,144px) clamp(92px,8.6vw,156px);
+  padding-inline:max(var(--gutter),(100% - 1560px) / 2);
+  background:
+    url("assets/fundos/historia-topo.webp") center top / var(--fundo-w) auto no-repeat,
+    url("assets/fundos/historia-base.webp") center bottom / var(--fundo-w) auto no-repeat,
+    var(--navy);
 }
-.sobre__divisa{
-  position:absolute;z-index:0;
-  inset-block:0;
-  /* 1px de sobreposicao com o bloco: sem isso a emenda cai em coordenada
-     fracionaria e aparece um fio vertical, como ja tinha acontecido na
-     faixa branca do heroi */
-  inset-inline-end:calc(100% - 1px);
-  width:calc(clamp(44px,5.2vw,96px) + 1px);height:100%;
-  max-width:none;
-}
-.sobre__onda{display:none}
 
-.sobre__texto{
-  position:relative;z-index:1;
-  max-width:62ch;
+.historia__texto{display:grid;justify-items:start}
+
+.historia__eyebrow{
+  font-size:var(--fs-legenda);
+  font-weight:700;letter-spacing:.22em;text-transform:uppercase;
+  color:var(--branco);
+}
+.historia__titulo{
+  margin-block-start:clamp(10px,1vw,18px);
+  font-size:clamp(2.3rem,4.1vw,4.4rem);  /* ~70px na arte de 1711 */
+  font-weight:800;line-height:1.02;
+  letter-spacing:-.01em;
+  color:var(--branco);
+  max-width:9.5em;
+  text-wrap:balance;
+}
+.historia__sub{
+  margin-block-start:clamp(10px,1vw,16px);
+  font-size:clamp(1.05rem,1.35vw,1.4rem);
+  font-weight:600;line-height:1.3;
+  color:var(--branco);
+}
+.historia__corpo{
   display:grid;gap:clamp(12px,1.2vw,20px);
+  margin-block-start:clamp(20px,2.2vw,36px);
+  max-width:60ch;
 }
-.sobre__texto p{
-  font-size:var(--fs-corpo);
-  line-height:1.62;
+.historia__corpo p{
+  font-size:clamp(.94rem,.98vw,1.05rem);
+  line-height:1.6;
   color:var(--corpo-claro);
   text-wrap:pretty;
 }
+.historia__btn{margin-block-start:clamp(24px,2.4vw,40px)}
 
-.sobre__eyebrow{
-  font-size:var(--fs-legenda);
-  font-weight:700;letter-spacing:.14em;text-transform:uppercase;
-  color:var(--branco);
-}
-.sobre__titulo{
-  font-size:var(--fs-titulo);      /* mesmo teto de 64px da secao Linhas */
-  font-weight:800;line-height:1.04;
-  color:var(--branco);
-  margin-block-end:clamp(6px,.8vw,14px);
+/* --- fotos: composicao em % de uma caixa 980x700, como no mockup ------- */
+
+.fotos{
+  position:relative;
+  container-type:inline-size;          /* o selo mede o texto pela caixa */
+  aspect-ratio:980/700;
+  width:100%;
 }
 
-/* marcos: numeros sobre o vermelho */
-.marcos{
-  display:grid;gap:clamp(18px,2.2vw,34px);
-  padding-inline-start:clamp(14px,2vw,32px);
+.foto{
+  position:absolute;margin:0;
+  padding:clamp(6px,1.1cqi,12px);
+  background:var(--branco);
+  border-radius:clamp(14px,2.4cqi,26px);
+  box-shadow:0 18px 44px rgb(0 18 40 / .38);
 }
-.marcos li{
-  display:grid;gap:calc(2px + .1vw);
+.foto img{
+  width:100%;height:100%;
+  object-fit:cover;
+  border-radius:clamp(9px,1.6cqi,17px);
 }
-.marcos strong{
-  font-size:clamp(2rem,3.4vw,3rem);
-  font-weight:800;line-height:1;
-  color:var(--branco);
+.foto--principal{
+  inset-inline-start:1%;inset-block-start:4%;
+  width:56%;height:91%;
+  rotate:-1.5deg;
+  z-index:1;
 }
-.marcos span{
-  font-size:var(--fs-corpo);
-  color:#FFE3E3;                   /* 4,6:1 sobre o vermelho da marca */
+.foto--principal img{object-position:50% 18%}     /* o letreiro fica inteiro */
+.foto--area{
+  inset-inline-start:57.5%;inset-block-start:9%;
+  width:41.5%;height:42%;
+  rotate:1.5deg;
+  z-index:2;
+}
+.foto--area img{object-position:60% 55%}
+.foto--interior{
+  inset-inline-start:54.5%;inset-block-start:50%;
+  width:40%;height:49%;
+  rotate:1.2deg;
+  z-index:3;
+}
+.foto--interior img{object-position:50% 36%}     /* logo na parede + lambretas */
+
+/* selo "Desde 2000": HTML, nao imagem */
+.selo{
+  position:absolute;z-index:4;
+  inset-inline-start:46.5%;inset-block-start:-3%;
+  width:15.5%;aspect-ratio:1;
+  display:grid;place-content:center;justify-items:center;
+  background:var(--vermelho);color:var(--branco);
+  border:clamp(3px,.7cqi,7px) solid var(--branco);
+  border-radius:50%;
+  box-shadow:0 10px 26px rgb(0 18 40 / .35);
+  rotate:-6deg;
+  line-height:1;
+}
+.selo span{
+  font-size:max(10px,1.7cqi);font-weight:700;
+  letter-spacing:.2em;text-transform:uppercase;
+  padding-inline-start:.2em;              /* compensa o espaco da ultima letra */
+}
+.selo strong{font-size:max(20px,4.4cqi);font-weight:800;margin-block-start:.12em}
+
+/* gotas de apoio: dois grupos, so decoracao */
+.gotas{position:absolute;z-index:0;fill:var(--vermelho);pointer-events:none}
+.gotas--a{inset-inline-start:-6.5%;inset-block-start:15%;width:7.5%;rotate:-18deg}
+.gotas--b{inset-inline-end:-4.5%;inset-block-end:27%;width:5.5%;rotate:150deg}   /* acima da onda vermelha, senao some nela */
+
+/* --- marcos na faixa branca ------------------------------------------- */
+
+.historia__marcos{
+  position:relative;z-index:2;
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,auto));
+  justify-content:center;
+  column-gap:clamp(24px,4vw,72px);
+  /* sobe para dentro do branco da onda de baixo */
+  margin-block-start:calc(-1 * clamp(30px,4.6vw,80px));
+  padding:0 var(--gutter) clamp(44px,4.6vw,80px);
+  background:linear-gradient(transparent clamp(30px,4.6vw,80px),var(--branco) 0);
+}
+.marco{
+  display:flex;align-items:center;
+  gap:clamp(14px,1.6vw,28px);
+}
+.marco + .marco{
+  border-inline-start:1px solid #D5DFEA;
+  padding-inline-start:clamp(24px,4vw,72px);
+}
+.marco__icone{
+  flex:0 0 auto;
+  display:grid;place-items:center;
+  width:clamp(58px,5.6vw,96px);aspect-ratio:1;
+  background:var(--vermelho);
+  border-radius:50%;
+}
+.marco__icone svg{
+  width:46%;height:auto;
+  fill:none;stroke:var(--branco);stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;
+}
+.marco p{display:grid;gap:2px}
+.marco__num{
+  font-size:clamp(1.6rem,2.35vw,2.5rem);
+  font-weight:800;line-height:1.05;
+  color:var(--navy);
+  font-variant-numeric:tabular-nums;
+  white-space:nowrap;
+}
+.marco p > span{
+  font-size:clamp(.8rem,.9vw,.95rem);
+  color:var(--corpo);
   line-height:1.35;
-  text-wrap:pretty;
+}
+
+/* ======================================================= NOSSAS UNIDADES
+   Fundo entregue (fundo-nossas-unidades), ancorado no topo e medido pela
+   largura; abaixo da onda a secao continua branca. O corte azul/branco do
+   gradiente cai numa linha em que a imagem e opaca (400 de 660), entao
+   nunca aparece.
+   ======================================================================= */
+
+.unidades{
+  --uw:max(100cqw,1100px);
+  position:relative;
+  isolation:isolate;
+  min-height:100svh;
+  padding-block:clamp(84px,8vw,140px) clamp(64px,7vw,120px);
+  background:
+    url("assets/fundos/unidades.webp") center top / var(--uw) auto no-repeat,
+    linear-gradient(var(--navy) calc(var(--uw) * 400 / 1711), var(--branco) 0);
+  scroll-margin-top:0;
+}
+
+.unidades__inner{
+  width:100%;max-width:1600px;
+  margin-inline:auto;
+  padding-inline:var(--gutter);
+}
+
+.unidades__head{display:grid;justify-items:center;text-align:center}
+
+/* vermelho puro sobre o azul fica em 2,5:1 — como pilula, o texto branco
+   sobre o vermelho passa (4,6:1) e a cor continua a da arte */
+.unidades__eyebrow{
+  padding:6px 16px;
+  background:var(--vermelho);color:var(--branco);
+  border-radius:var(--raio);
+  font-size:var(--fs-legenda);
+  font-weight:700;letter-spacing:.16em;text-transform:uppercase;
+}
+.unidades__titulo{
+  margin-block-start:clamp(12px,1.2vw,20px);
+  font-size:clamp(2rem,3.9vw,4.1rem);
+  font-weight:800;line-height:1.05;
+  letter-spacing:-.01em;
+  color:var(--branco);
+  text-wrap:balance;
+}
+.unidades__sub{
+  margin-block-start:clamp(8px,.8vw,14px);
+  font-size:clamp(1rem,1.45vw,1.5rem);
+  color:var(--branco);
+  text-wrap:balance;
+}
+
+/* --- filtros ----------------------------------------------------------- */
+
+.filtros{
+  display:flex;justify-content:center;
+  gap:clamp(8px,1vw,16px);
+  margin-block:clamp(22px,2.4vw,40px);
+  padding:6px;                           /* espaco para o anel de foco */
+}
+.filtro{
+  flex:0 0 auto;
+  min-height:clamp(42px,2.9vw,50px);
+  padding-inline:clamp(18px,1.8vw,30px);
+  border:0;border-radius:var(--raio);
+  background:var(--branco);color:var(--navy);
+  font:inherit;font-size:clamp(.9rem,1vw,1.05rem);font-weight:700;
+  box-shadow:0 6px 18px rgb(0 18 40 / .18);
+  cursor:pointer;
+  transition:background .2s,color .2s,transform .2s;
+}
+.filtro:hover{transform:translateY(-2px)}
+.filtro[aria-pressed="true"]{background:var(--vermelho);color:var(--branco)}
+.filtro:focus-visible{outline:3px solid var(--branco);outline-offset:3px}
+
+/* --- grade ------------------------------------------------------------- */
+
+.grade{
+  display:grid;
+  gap:clamp(14px,1.4vw,24px);
+  transition:opacity .16s ease,transform .16s ease;
+}
+.grade.is-trocando{opacity:0;transform:translateY(8px)}
+
+/* 1 a 3 cards: colunas iguais, centralizadas */
+.grade[data-layout="simples"]{
+  grid-template-columns:repeat(auto-fit,minmax(min(100%,320px),460px));
+  justify-content:center;
+}
+
+/* os quatro: destaque a esquerda ocupando duas linhas, dois menores em
+   cima e o quarto deitado embaixo — a grade editorial do mockup */
+.grade[data-layout="editorial"]{
+  grid-template-columns:minmax(0,1.72fr) minmax(0,1fr) minmax(0,1fr);
+}
+.grade[data-layout="editorial"] .card--destaque{grid-row:span 2}
+.grade[data-layout="editorial"] .card:nth-child(4){grid-column:2 / span 2}
+
+.card > article{
+  height:100%;
+  display:flex;flex-direction:column;
+  padding:clamp(6px,.55vw,10px);
+  background:var(--branco);
+  border-radius:clamp(18px,1.6vw,26px);
+  box-shadow:0 16px 40px rgb(0 18 40 / .2);
+  transition:transform .25s ease,box-shadow .25s ease;
+}
+.card__foto{
+  position:relative;
+  aspect-ratio:16/10;
+  overflow:hidden;
+  border-radius:clamp(13px,1.2vw,19px);
+  background:#E7EEF6;
+}
+.card__foto img{
+  position:absolute;inset:0;
+  width:100%;height:100%;
+  object-fit:cover;
+  transition:transform .4s ease;
+}
+.card__info{
+  display:grid;gap:6px;align-content:start;
+  padding:clamp(12px,1.1vw,18px) clamp(10px,1vw,16px) clamp(10px,.9vw,14px);
+}
+.card__nome{
+  font-size:clamp(1.15rem,1.45vw,1.55rem);
+  font-weight:800;line-height:1.15;
+  color:var(--navy);
+}
+.card__end{
+  display:flex;align-items:flex-start;gap:8px;
+  font-size:clamp(.82rem,.9vw,.95rem);
+  line-height:1.4;
+  color:var(--corpo);
+}
+.card__end svg{flex:0 0 auto;width:13px;margin-block-start:.2em;fill:var(--navy)}
+.card__end--pendente{color:#546A82}      /* 5,3:1 sobre branco */
+.card__status{
+  display:flex;align-items:center;gap:8px;
+  font-size:clamp(.82rem,.9vw,.95rem);font-weight:700;
+  color:#9A1C1F;
+}
+.card__status::before{content:"";width:11px;height:11px;border-radius:50%;background:currentColor}
+.card__status.is-aberto{color:#15803D}    /* 5:1 sobre branco */
+.card__link{
+  justify-self:start;
+  display:inline-flex;align-items:center;gap:8px;
+  margin-block-start:4px;
+  font-size:clamp(.85rem,.95vw,1rem);font-weight:700;
+  color:var(--navy);
+}
+.card__link svg,.card__acao svg{width:18px;height:auto;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.card__link:hover{color:var(--vermelho)}
+
+/* destaque: foto preenche a altura, nome maior, botao a direita */
+.card--destaque .card__foto{flex:1 1 auto;min-height:clamp(240px,24vw,420px);aspect-ratio:auto}
+.card--destaque .card__info{
+  grid-template-columns:minmax(0,1fr) auto;
+  column-gap:16px;align-items:center;
+  padding-block:clamp(14px,1.4vw,22px);
+}
+.card--destaque .card__info > :not(.card__acao){grid-column:1}
+.card--destaque .card__acao{grid-column:2;grid-row:1 / span 3}
+.card--destaque .card__nome{font-size:clamp(1.5rem,2.3vw,2.4rem)}
+
+/* quarto card deitado: foto a esquerda, texto a direita */
+.grade[data-layout="editorial"] .card:nth-child(4) > article{flex-direction:row;align-items:stretch}
+.grade[data-layout="editorial"] .card:nth-child(4) .card__foto{flex:0 0 64%;aspect-ratio:auto;min-height:clamp(170px,13vw,230px)}
+.grade[data-layout="editorial"] .card:nth-child(4) .card__info{align-content:center;padding-inline:clamp(14px,1.4vw,24px)}
+
+.grade__vazio{
+  max-width:560px;
+  margin:clamp(8px,1vw,16px) auto 0;
+  padding:clamp(20px,2vw,30px);
+  background:var(--branco);color:var(--navy);
+  border-radius:clamp(18px,1.6vw,26px);
+  box-shadow:0 16px 40px rgb(0 18 40 / .2);
+  font-weight:600;text-align:center;
+  text-wrap:balance;
+}
+
+@media (hover:hover){
+  .card > article:hover{transform:translateY(-6px);box-shadow:0 22px 48px rgb(0 18 40 / .26)}
+  .card > article:hover .card__foto img{transform:scale(1.02)}
+}
+
+/* ------------------------------------------- historia + unidades: quebras */
+
+/* tablet: texto em cima, fotos embaixo; grade com o destaque na largura */
+@media (max-width:1099px){
+  .historia{min-height:100svh}
+  .historia__palco{
+    grid-template-columns:minmax(0,1fr);
+    row-gap:clamp(40px,7vw,64px);
+    padding-block:clamp(96px,14vw,130px) clamp(90px,16vw,150px);
+  }
+  .historia__corpo{max-width:68ch}
+  .fotos{max-width:860px;justify-self:center}
+
+  /* tres colunas iguais com o icone em cima: lado a lado nao cabia em 768 */
+  .historia__marcos{
+    grid-template-columns:repeat(3,minmax(0,1fr));
+    justify-content:stretch;
+    column-gap:0;
+  }
+  .marco{flex-direction:column;text-align:center;gap:10px;padding-inline:clamp(8px,2vw,20px)}
+  .marco + .marco{padding-inline-start:clamp(8px,2vw,20px)}
+  .marco__num{font-size:clamp(1.4rem,3.4vw,2rem)}
+
+  .grade[data-layout="editorial"]{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .grade[data-layout="editorial"] .card--destaque{grid-row:auto;grid-column:1 / -1}
+  .grade[data-layout="editorial"] .card:nth-child(4){grid-column:1 / -1}
+  .card--destaque .card__foto{min-height:0;aspect-ratio:16/9}
+}
+
+/* celular: uma coluna; fotos viram grade de duas, sem rotacao */
+@media (max-width:767px){
+  .historia__titulo{max-width:none}
+  .historia__btn{width:100%}
+
+  .fotos{
+    aspect-ratio:auto;
+    display:grid;
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:12px;
+  }
+  .foto{position:relative;inset:auto;width:auto;height:auto;rotate:none;padding:6px}
+  .foto--principal{grid-column:1 / -1;aspect-ratio:1}
+  .foto--area,.foto--interior{aspect-ratio:1}
+  .selo{
+    inset-inline:auto 10px;inset-block-start:-18px;
+    width:26%;
+  }
+  .selo span{font-size:max(9px,3.2cqi)}
+  .selo strong{font-size:max(18px,7.4cqi)}
+  .gotas--b{display:none}
+  .gotas--a{inset-inline-start:-3%;inset-block-start:auto;inset-block-end:47%;width:12%}
+
+  /* marcos: lista vertical, um por linha */
+  .historia__marcos{
+    grid-template-columns:minmax(0,1fr);
+    justify-content:stretch;
+    row-gap:18px;
+    padding-inline:var(--gutter);
+  }
+  .marco{flex-direction:row;text-align:start;gap:16px;padding-inline:0}
+  .marco + .marco{
+    border-inline-start:0;padding-inline-start:0;
+    border-block-start:1px solid #D5DFEA;padding-block-start:18px;
+  }
+
+  /* filtros rolam na horizontal, sem quebrar linha */
+  .filtros{
+    justify-content:flex-start;
+    overflow-x:auto;
+    scroll-snap-type:x proximity;
+    scroll-padding-inline:var(--gutter);   /* sem isso o snap cola o 1o botao na borda */
+    scrollbar-width:none;
+    margin-inline:calc(-1 * var(--gutter));
+    padding-inline:var(--gutter);
+  }
+  .filtros::-webkit-scrollbar{display:none}
+  .filtro{scroll-snap-align:start}
+
+  .grade[data-layout="editorial"]{grid-template-columns:minmax(0,1fr)}
+  .grade[data-layout="editorial"] .card:nth-child(4) > article{flex-direction:column}
+  .grade[data-layout="editorial"] .card:nth-child(4) .card__foto{flex:none;aspect-ratio:16/10;min-height:0}
+  .card--destaque .card__foto{aspect-ratio:4/3}
+  .card--destaque .card__info{grid-template-columns:minmax(0,1fr)}
+  .card--destaque .card__acao{grid-column:1;grid-row:auto;justify-self:start}
 }
 
 /* ---------------------------------------------------- pontos de quebra */
@@ -804,29 +1193,6 @@ body>*{--u:min(100cqw / 1713, 100svh / 918, 1.25px)}
   }
   .linha__blob{inset-inline-start:-3%;width:106%}
 
-  /* sobre: empilha, e a divisa vira onda horizontal no topo do vermelho */
-  .sobre{
-    grid-template-columns:minmax(0,1fr);
-    gap:0;
-    padding:clamp(44px,9vw,72px) var(--gutter) 0;
-  }
-  .sobre__divisa{display:none}
-  .sobre__vermelho{
-    margin:clamp(44px,9vw,72px) calc(-1 * var(--gutter)) 0;
-    padding:clamp(28px,6vw,48px) var(--gutter) clamp(40px,8vw,64px);
-    background:var(--vermelho);
-  }
-  .sobre__onda{
-    display:block;
-    position:absolute;
-    inset-inline:0;inset-block-end:100%;
-    width:100%;height:clamp(34px,7vw,70px);
-  }
-  .marcos{
-    padding-inline-start:0;
-    grid-template-columns:repeat(2,minmax(0,1fr));
-    gap:clamp(18px,4vw,30px);
-  }
   .rolar{display:none}   /* empilhado: os pilares ja preenchem a faixa */
 
   .linha__produtos{
@@ -856,7 +1222,7 @@ body>*{--u:min(100cqw / 1713, 100svh / 918, 1.25px)}
 }
 
 /* paralaxe: o script escreve o transform, o CSS so prepara a camada */
-.hero__faixa,.hero__cascao img,.hero__copy,.marcos{will-change:transform}
+.hero__faixa,.hero__cascao img,.hero__copy{will-change:transform}
 .tem-motion .reveal.is-visible{opacity:1;transform:none}
 
 @media (prefers-reduced-motion:reduce){
