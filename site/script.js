@@ -157,6 +157,53 @@
     }
 
     contadores();
+    paralaxeHistoria();
+  }
+
+  /* --- paralaxe da secao Nossa historia -----------------------------------
+     Texto, fotos e gotas sobem em ritmos diferentes enquanto a secao passa.
+     E o que da vida ao vao navy entre o heroi e o titulo: em vez de um
+     bloco parado, o conteudo atravessa esse espaco conforme a rolagem.
+
+     A onda vermelha do topo NAO entra: ela esta ancorada no fim da faixa
+     branca do heroi (nasce por baixo dela) e qualquer deslocamento
+     descolaria a emenda, mostrando a borda reta da arte.
+     --------------------------------------------------------------------- */
+
+  function paralaxeHistoria() {
+    var seccao = document.querySelector('.historia');
+    var camadas = [
+      [document.querySelector('.historia__texto'), 34],
+      [document.querySelector('.fotos'), 64],
+      [document.querySelector('.gotas--a'), 96],
+      [document.querySelector('.gotas--b'), -80]
+    ].filter(function (c) { return c[0]; });
+
+    if (!seccao || !camadas.length) return;
+
+    var pendente = false;
+
+    var pintar = function () {
+      pendente = false;
+      var r = seccao.getBoundingClientRect();
+      /* 0 quando a secao encosta na base da tela, 1 quando sai pelo topo */
+      var q = (window.innerHeight - r.top) / (window.innerHeight + r.height);
+      q = Math.min(1, Math.max(0, q));
+      camadas.forEach(function (c) {
+        c[0].style.transform =
+          'translate3d(0,' + ((0.5 - q) * c[1]).toFixed(1) + 'px,0)';
+      });
+    };
+
+    var aoRolar = function () {
+      if (pendente) return;
+      pendente = true;
+      window.requestAnimationFrame(pintar);
+    };
+
+    window.addEventListener('scroll', aoRolar, { passive: true });
+    window.addEventListener('resize', aoRolar, { passive: true });
+    pintar();
   }
 
   /* Sem animacao para quem pediu movimento reduzido: o conteudo ja esta

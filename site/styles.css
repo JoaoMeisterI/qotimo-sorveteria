@@ -1318,6 +1318,39 @@ body>*{
 .hero__faixa,.hero__cascao img,.hero__copy{will-change:transform}
 .tem-motion .reveal.is-visible{opacity:1;transform:none}
 
+/* "Sobre nós" se escreve sozinho quando a secao entra na tela.
+   O texto continua inteiro no HTML (leitor de tela le normal); o que anima
+   e um recorte que abre em passos, um por letra. Vem depois da regra do
+   .reveal de proposito: aqui o fade/slide padrao e trocado pela escrita.
+   O .historia__texto e grid com justify-items:start, entao o <p> ja tem a
+   largura do proprio texto — o recorte nao atravessa a coluna inteira. */
+.tem-motion .historia__eyebrow{
+  opacity:1;transform:none;
+  clip-path:inset(0 100% 0 0);
+}
+.tem-motion .historia__eyebrow.is-visible{
+  animation:escrever .9s steps(9) var(--d,0ms) forwards;
+}
+@keyframes escrever{to{clip-path:inset(0 -.14em 0 0)}}
+
+/* cursor: aparece quando a escrita termina, pisca e some */
+.tem-motion .historia__eyebrow::after{
+  content:"";
+  display:inline-block;
+  width:.1em;height:.95em;
+  margin-inline-start:.24em;
+  vertical-align:-.08em;
+  background:currentColor;
+  opacity:0;
+}
+.tem-motion .historia__eyebrow.is-visible::after{
+  animation:cursor .5s steps(1) calc(var(--d,0ms) + .9s) 4 forwards;
+}
+@keyframes cursor{0%,49%{opacity:1}50%,100%{opacity:0}}
+
+/* as camadas que o script move na rolagem */
+.historia__texto,.fotos,.gotas{will-change:transform}
+
 @media (prefers-reduced-motion:reduce){
   *,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}
   .tem-motion .reveal{opacity:1;transform:none}
