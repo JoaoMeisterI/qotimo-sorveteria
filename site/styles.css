@@ -87,7 +87,13 @@ a{color:inherit;text-decoration:none}
    ================================================================== */
 
 body{container-type:inline-size}
-body>*{--u:min(100cqw / 1713, 100svh / 918, 1.25px)}
+body>*{
+  --u:min(100cqw / 1713, 100svh / 918, 1.25px);
+  /* altura da faixa branca do heroi, em unidades da arte. Fica aqui (e nao
+     so no .hero__base) porque a secao seguinte precisa saber onde o heroi
+     termina para encaixar a onda vermelha. Vira 292 em telas altas. */
+  --faixa-u:210;
+}
 
 /* ------------------------------------------------------------------ menu */
 
@@ -245,7 +251,7 @@ body>*{--u:min(100cqw / 1713, 100svh / 918, 1.25px)}
   box-shadow:0 0 0 3px var(--branco);
   /* 210u e o piso (a altura na arte). A faixa cresce com a janela, o que
      tambem deixa a area branca maior, como pedido. */
-  min-height:calc(210 * var(--u));
+  min-height:calc(var(--faixa-u) * var(--u));
   display:grid;align-items:center;
   padding-block:calc(29 * var(--u));
 }
@@ -261,6 +267,7 @@ body>*{--u:min(100cqw / 1713, 100svh / 918, 1.25px)}
   height:calc(68 * var(--u));
   box-shadow:0 3px 0 var(--branco);
 }
+
 
 /* pilares: colunas nas coordenadas da arte (146 / 648 / 1170),
    divisorias em 592 e 1117 */
@@ -546,16 +553,42 @@ body>*{--u:min(100cqw / 1713, 100svh / 918, 1.25px)}
   isolation:isolate;
   display:flex;flex-direction:column;
   min-height:max(900px,100svh);         /* ocupa a tela: e outro quadro */
+  /* quanto as duas camadas do topo (onda vermelha e onda branca) sobem
+     para encostar no fim da faixa branca do heroi. Zero quando o heroi ja
+     termina exatamente em 100svh (telas largas, sem sobra navy). */
+  --sobe:min(0px,calc((708 + var(--faixa-u)) * var(--u) - 100svh));
   background:var(--navy);
   scroll-margin-top:0;
 }
 
-/* branco dos pilares do heroi entrando em onda */
-.historia__topo{
-  position:absolute;z-index:3;
-  inset-block-start:-1px;
+/* Sem onda branca no topo: o heroi ja termina em navy (a sobra da faixa
+   branca) e a onda daqui virava uma tarja branca solta no meio de dois
+   navies. Quem faz a transicao agora e o .hero__fim, na base do heroi.
+
+   A onda vermelha do alto da arte virou esta camada. Ela SOBE para dentro
+   da sobra navy do heroi (que e da mesma cor), parando exatamente onde a
+   faixa branca termina — ou seja, nasce por baixo da onda branca, como as
+   faixas do heroi nascem por baixo da onda dos pilares. Resolve as duas
+   coisas de uma vez: o vermelho deixa de aparecer cortado na emenda e a
+   sobra navy deixa de ser um bloco morto entre as duas telas.
+
+   A conta: fim da faixa branca = (708 + --faixa-u) * --u; fim do heroi =
+   100svh. A diferenca (negativa quando sobra navy) e o quanto subir. */
+.historia__faixa{
+  --fundo-w:max(100cqw,1100px);
+  position:absolute;z-index:0;
+  inset-block-start:var(--sobe);
   inset-inline:-2px;width:calc(100% + 4px);max-width:none;
-  height:calc(clamp(40px,6vw,96px) + 1px);
+  height:calc(var(--fundo-w) * 232 / 1711);
+  background:url("assets/fundos/historia-topo.webp") center top / var(--fundo-w) auto no-repeat;
+  pointer-events:none;
+}
+
+.historia__topo{
+  position:absolute;z-index:1;        /* por cima da faixa vermelha */
+  inset-block-start:var(--sobe);
+  inset-inline:-2px;width:calc(100% + 4px);max-width:none;
+  height:calc(64 * var(--u));
   pointer-events:none;
 }
 
@@ -569,10 +602,12 @@ body>*{--u:min(100cqw / 1713, 100svh / 918, 1.25px)}
   align-items:center;
   padding-block:clamp(104px,8.2vw,144px) clamp(92px,8.6vw,156px);
   padding-inline:max(var(--gutter),(100% - 1560px) / 2);
+  /* o topo saiu daqui e virou .historia__faixa (precisa subir para dentro
+     do heroi); aqui fica so a onda de baixo, que emoldura os marcos.
+     SEM cor de fundo: o navy vem da secao, e um fundo opaco aqui tapava a
+     onda vermelha (que fica atras, em z-index 0). */
   background:
-    url("assets/fundos/historia-topo.webp") center top / var(--fundo-w) auto no-repeat,
-    url("assets/fundos/historia-base.webp") center bottom / var(--fundo-w) auto no-repeat,
-    var(--navy);
+    url("assets/fundos/historia-base.webp") center bottom / var(--fundo-w) auto no-repeat;
 }
 
 .historia__texto{display:grid;justify-items:start}
@@ -695,8 +730,9 @@ body>*{--u:min(100cqw / 1713, 100svh / 918, 1.25px)}
   display:flex;align-items:center;
   gap:clamp(14px,1.6vw,28px);
 }
+/* sem divisoria vertical entre os marcos: o espaco ja separa os tres, e o
+   fio ficava solto no meio do branco */
 .marco + .marco{
-  border-inline-start:1px solid #D5DFEA;
   padding-inline-start:clamp(24px,4vw,72px);
 }
 .marco__icone{
@@ -965,14 +1001,12 @@ body>*{--u:min(100cqw / 1713, 100svh / 918, 1.25px)}
   .historia__marcos{
     grid-template-columns:minmax(0,1fr);
     justify-content:stretch;
-    row-gap:18px;
+    row-gap:26px;                     /* sem fio separando, o vao e maior */
     padding-inline:var(--gutter);
   }
   .marco{flex-direction:row;text-align:start;gap:16px;padding-inline:0}
-  .marco + .marco{
-    border-inline-start:0;padding-inline-start:0;
-    border-block-start:1px solid #D5DFEA;padding-block-start:18px;
-  }
+  /* empilhado tambem sem fio: quem separa e o espaco entre as linhas */
+  .marco + .marco{padding-inline-start:0}
 
   /* filtros rolam na horizontal, sem quebrar linha */
   .filtros{
@@ -1023,7 +1057,7 @@ body>*{--u:min(100cqw / 1713, 100svh / 918, 1.25px)}
 @media (max-width:1099px){
   /* a faixa deixa de ser travada: o texto do pilar passa a duas linhas */
   .hero__base{
-    min-height:calc(210 * var(--u));
+    min-height:calc(var(--faixa-u) * var(--u));
     padding-block:calc(22 * var(--u));
   }
   .pilar{padding-inline:clamp(6px,1.2vw,18px)}
@@ -1041,8 +1075,8 @@ body>*{--u:min(100cqw / 1713, 100svh / 918, 1.25px)}
      so aqui a faixa branca ganha um pouco mais de piso (210u -> 292u)
      para ter onde por ele sem encostar nos pilares. Fora daqui a faixa
      fica no minimo de sempre (210u, ou 210u com padding menor <1099px). */
+  body>*{--faixa-u:292}
   .hero__base{
-    min-height:calc(292 * var(--u));
     /* align-items:center (regra base) reparte espaco extra em cima E
        embaixo dos pilares — com a faixa mais alta isso empurrava os
        pilares pra baixo, direto em cima do indicador. "start" fixa os
@@ -1233,6 +1267,13 @@ body>*{--u:min(100cqw / 1713, 100svh / 918, 1.25px)}
   .linha__blob{inset-inline-start:-3%;width:106%}
 
   .rolar{display:none}   /* empilhado: os pilares ja preenchem a faixa */
+
+  /* Empilhado o heroi nao tem sobra navy (ele cresce com o conteudo e
+     termina em branco), entao as camadas do topo da secao seguinte nao
+     sobem: ficam na propria emenda. Sem isso a conta de --sobe, que
+     pressupoe o heroi de 100svh, jogava as duas la para o meio do heroi. */
+  .historia{--sobe:0px}
+  .historia__topo{height:clamp(26px,7vw,54px)}
 
   .linha__produtos{
     position:static;
