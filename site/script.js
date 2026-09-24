@@ -738,7 +738,7 @@
       if (id === '#') return;
 
       var alvo = document.querySelector(id);
-      if (!alvo) return;                      // TODO Fase 5: #contato
+      if (!alvo) return;                      // ancora que nao existe na pagina
 
       ev.preventDefault();
       alvo.scrollIntoView({ behavior: reduzido ? 'auto' : 'smooth', block: 'start' });

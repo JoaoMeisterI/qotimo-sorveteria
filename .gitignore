@@ -1,0 +1,16 @@
+# O repositorio guarda SO o site publicado (pasta site/) e este README.
+# Tudo o mais na raiz (identidade, auditorias, briefs, versoes antigas,
+# rascunhos) fica apenas no computador. Lista de permissao: qualquer pasta
+# nova criada aqui na raiz ja nasce fora do git.
+/*
+!/.gitignore
+!/README.md
+!/site/
+
+# tarefas e referencias de trabalho, dentro do site
+/site/tarefas/
+
+# lixo de sistema
+Thumbs.db
+desktop.ini
+.DS_Store

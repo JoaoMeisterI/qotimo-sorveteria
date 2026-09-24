@@ -64,7 +64,7 @@
           <svg class="dock__icone" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M3.5 11 12 4l8.5 7M6 9.5V20h4.5v-5.5h3V20H18V9.5"/></svg>
           <span class="dock__rotulo">Início</span>
         </a>
-        <!-- TODO Fase 5: destino — hoje aponta para a seção de linhas -->
+        <!-- Produtos = a seção das linhas (não há página própria de produtos) -->
         <a class="dock__item" href="#linhas" data-secao="linhas">
           <svg class="dock__icone" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M7.6 10.2a4.4 4.4 0 1 1 8.8 0M7 10.2h10L12 21z"/></svg>
           <span class="dock__rotulo">Produtos</span>
@@ -77,8 +77,9 @@
           <svg class="dock__icone" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 20s-7.5-4.6-7.5-10.2A4.1 4.1 0 0 1 12 7.6a4.1 4.1 0 0 1 7.5 2.2C19.5 15.4 12 20 12 20z"/></svg>
           <span class="dock__rotulo">Sobre nós</span>
         </a>
-        <!-- TODO Fase 5: destino — seção #contato ainda não existe -->
-        <a class="dock__item dock__item--mesa" href="#contato">
+        <!-- Contato e "Peça agora" levam às Unidades (endereço e mapa de cada
+             loja) até existir telefone/WhatsApp — ver phone: null em data/unidades.js -->
+        <a class="dock__item dock__item--mesa" href="#unidades">
           <svg class="dock__icone" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4.5 5.5h15v10.5h-8.5l-4.5 3.8V16h-2z"/></svg>
           <span class="dock__rotulo">Contato</span>
         </a>
@@ -87,13 +88,12 @@
           <span class="dock__rotulo">Mais</span>
         </button>
       </div>
-      <!-- TODO Fase 5: destino — WhatsApp ou seção #contato -->
-      <a class="dock__cta dock__cta--barra" href="#contato">Peça agora</a>
+      <a class="dock__cta dock__cta--barra" href="#unidades">Peça agora</a>
     </div>
     <ul class="dock__painel" id="dock-painel" hidden>
       <li><a href="#linhas">Linhas</a></li>
-      <li><a href="#contato">Contato</a></li>
-      <li><a class="dock__cta" href="#contato">Peça agora</a></li>
+      <li><a href="#unidades">Contato</a></li>
+      <li><a class="dock__cta" href="#unidades">Peça agora</a></li>
     </ul>
   </nav>
 </header>
