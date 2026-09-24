@@ -204,46 +204,158 @@ body>*{
   --faixa-u:210;
 }
 
-/* ------------------------------------------------------------------ menu */
+/* ------------------------------------------------------------------ menu
+   Uma barra so para todas as telas (a do celular, levada para o topo).
+   Fica no topo da pagina e rola junto com ela: nao e fixa.
+   Tudo sai de --dh (altura da barra): a bola, a gola branca e o quanto o
+   icone ativo sobe acompanham a escala. --topo-y deixa folga em cima para
+   a bola, que sobra acima da barra. */
+
+body>*{
+  --dh:clamp(48px,calc(60 * var(--u)),62px);
+  --topo-y:max(24px,calc(28 * var(--u)));
+}
 
 .topo{
-  position:absolute;inset-block-start:calc(27 * var(--u));inset-inline:0;z-index:5;
+  position:absolute;inset-block-start:var(--topo-y);inset-inline:0;z-index:5;
   display:flex;justify-content:center;
-  padding-inline:calc(16 * var(--u));
+  padding-inline:16px;
 }
 
-.nav{
-  display:flex;align-items:center;
-  gap:calc(37 * var(--u));                 /* links -> CTA */
-  height:calc(59 * var(--u));
-  padding-inline:calc(54 * var(--u)) calc(38 * var(--u));
+.dock{
+  position:relative;
+  --col:max(84px,calc(96 * var(--u)));    /* largura de cada item do trilho */
+}
+
+.dock__barra{
+  position:relative;
+  display:flex;align-items:stretch;
+  height:var(--dh);
+  /* A gola (.dock__curva, 1,94 x --dh) e mais larga que a coluna do item.
+     No PRIMEIRO item ela passava da borda esquerda e caia sobre o canto
+     arredondado — onde a barra ja e transparente — e sobrava uma ponta
+     branca solta. Folga so o bastante para a gola comecar na parte reta do
+     topo: meia gola (.97) + ~45% do raio do canto (.36 x .45 = .16), menos
+     meia coluna. */
+  padding-inline-start:max(0px,calc(var(--dh) * 1.13 - var(--col) / 2));
+  padding-inline-end:calc(var(--dh) * .14);
   background:var(--branco);
-  border-radius:999px;
-  box-shadow:0 6px 24px rgb(0 20 45 / .16);
+  border-radius:calc(var(--dh) * .36);
+  box-shadow:0 10px 28px rgb(0 20 45 / .24);
 }
 
-.nav__links{display:flex;align-items:center;gap:calc(53 * var(--u))}
+/* trilho dos itens: colunas iguais; a marca anda uma coluna por vez */
+.dock__trilho{
+  --n:5;
+  position:relative;
+  display:grid;grid-template-columns:repeat(var(--n),minmax(0,1fr));
+  width:calc(var(--n) * var(--col));
+}
 
-.nav__links a{
-  font-size:max(13px,calc(18 * var(--u)));
-  font-weight:700;color:var(--navy);
+/* marca do item ativo: curva que sobe da barra + bola vermelha */
+.dock__marca{
+  position:absolute;inset-block-start:0;inset-inline-start:0;
+  width:calc(100% / var(--n));height:0;
+  translate:calc(var(--i,0) * 100%) 0;
+  transition:translate var(--t-medio) var(--ease),opacity var(--t-rapido) ease;
+  pointer-events:none;
+}
+.dock.sem-ativo .dock__marca{opacity:0}
+.dock__curva{
+  position:absolute;inset-block-end:-2px;inset-inline-start:50%;
+  width:calc(var(--dh) * 1.94);height:calc(var(--dh) * .52);max-width:none;
+  translate:-50% 0;
+  filter:drop-shadow(0 -3px 4px rgb(0 20 45 / .07));
+}
+.dock__bola{
+  position:absolute;inset-inline-start:50%;
+  inset-block-start:calc(var(--dh) * -.34);
+  width:calc(var(--dh) * .74);height:calc(var(--dh) * .74);
+  margin-inline-start:calc(var(--dh) * -.37);
+  border-radius:50%;
+  background:var(--vermelho);
+  box-shadow:0 6px 14px rgb(229 32 35 / .38);
+}
+
+.dock__item{
+  position:relative;z-index:1;
+  display:flex;flex-direction:column;align-items:center;justify-content:flex-end;
+  gap:4px;
+  min-width:0;min-height:44px;
+  padding:0 2px calc(var(--dh) * .16);
+  border:0;background:none;
+  font:inherit;color:var(--navy);
+  cursor:pointer;
+  -webkit-tap-highlight-color:transparent;
+}
+.dock__icone{
+  width:22px;height:22px;
+  fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round;
+  transition:translate var(--t-medio) var(--ease),color var(--t-rapido) ease,scale var(--t-toque) ease;
+}
+.dock__mais .dock__icone{fill:currentColor;stroke:none}
+.dock__rotulo{
+  font-size:12.5px;font-weight:600;line-height:1;
+  color:#4A6484;                       /* 5,6:1 sobre branco */
   white-space:nowrap;
+  transition:color var(--t-rapido) ease;
 }
-.nav__links a:hover{color:var(--vermelho)}
+/* ativo: o icone sobe para dentro da bola */
+.dock__item[aria-current] .dock__icone{translate:0 calc(var(--dh) * -.4);color:var(--branco)}
+.dock__item[aria-current] .dock__rotulo{color:var(--vermelho);font-weight:700}
+.dock__mais[aria-expanded="true"] .dock__rotulo{color:var(--vermelho)}
+.dock__item:active .dock__icone{scale:.88}
+.dock__item:focus-visible{outline:3px solid var(--vermelho);outline-offset:-5px;border-radius:16px}
+@media (hover:hover){
+  .dock__item:not([aria-current]):hover .dock__icone,
+  .dock__item:not([aria-current]):hover .dock__rotulo{color:var(--vermelho)}
+}
 
-.nav__cta{
-  flex:0 0 auto;
+/* mesa: Linhas e Contato na barra; "Mais" e o painel so no celular */
+.dock__mais{display:none}
+
+.dock__cta--barra{
+  align-self:center;
   display:grid;place-items:center;
-  width:calc(160 * var(--u));height:calc(42 * var(--u));
+  min-height:44px;
+  margin-inline-start:calc(var(--dh) * .1);
+  padding-inline:22px;
   background:var(--vermelho);color:var(--branco);
-  font-size:max(13px,calc(18 * var(--u)));font-weight:700;
-  border-radius:999px;
+  font-size:15px;font-weight:700;
+  border-radius:var(--raio);
   white-space:nowrap;
-  transition:background .2s;
 }
-.nav__cta:hover{background:#c5171a}
+.dock__cta--barra:hover{background:#c5171a}
 
-.dock{display:none}           /* dock: so no celular/tablet em retrato */
+/* painel do "Mais" (celular): abre ABAIXO da barra, altura controlada */
+.dock__painel{
+  position:absolute;inset-inline-end:0;inset-block-start:calc(100% + 12px);
+  width:min(250px,100%);
+  display:grid;gap:2px;
+  padding:8px;
+  background:var(--branco);
+  border-radius:20px;
+  box-shadow:0 16px 40px rgb(0 20 45 / .3);
+  transform-origin:100% 0;
+  animation:dock-abre var(--t-rapido) var(--ease);
+}
+.dock__painel[hidden]{display:none}
+.dock__painel a{
+  display:flex;align-items:center;
+  min-height:46px;padding-inline:16px;
+  border-radius:14px;
+  font-weight:700;color:var(--navy);
+  transition:background var(--t-rapido) ease;
+}
+.dock__painel a:hover{background:#EEF3F9}
+.dock__painel .dock__cta{
+  justify-content:center;margin-block-start:4px;
+  background:var(--vermelho);color:var(--branco);
+  border-radius:var(--raio);
+}
+.dock__painel .dock__cta:hover{background:#c5171a}
+@keyframes dock-abre{from{opacity:0;transform:translateY(-8px) scale(.97)}}
+
 .hero__onda--mob{display:none}
 
 /* ----------------------------------------------------------------- heroi */
@@ -330,7 +442,11 @@ body>*{
   gap:calc(14 * var(--u));
   margin-block-start:calc(20 * var(--u));
   margin-inline-start:calc(9 * var(--u));
-  width:calc(295 * var(--u));height:calc(47 * var(--u));
+  /* largura minima da arte, mas cresce com o texto: com --u pequeno (1024)
+     a fonte para em 13px e a largura fixa quebrava o rotulo em duas linhas */
+  min-width:calc(295 * var(--u));height:calc(47 * var(--u));
+  padding-inline:max(14px,calc(22 * var(--u)));
+  white-space:nowrap;
   background:var(--vermelho);color:var(--branco);
   font-size:max(13px,calc(17 * var(--u)));font-weight:600;
   border:0;                      /* na arte o botao nao tem contorno */
@@ -428,6 +544,30 @@ body>*{
   height:calc(110 * var(--u));           /* viewBox 1713x110 */
   box-shadow:0 3px 0 var(--branco);
 }
+
+/* acentos-laterais.svg (1440x118): calda vermelha e ondinhas navy nas duas
+   pontas de baixo da faixa. O arquivo e um so, com o meio transparente;
+   aqui ele vira dois recortes de 220 unidades, um colado em cada borda da
+   TELA — em tela larga o quadro 1713u fica no centro e os acentos seguem
+   nas pontas, sem esticar o desenho. --ac: px por unidade do SVG (os 1440
+   do arquivo = os 1713u da arte). Fica antes dos pilares no HTML: o texto
+   pinta por cima e nada aqui recebe clique. */
+.hero__acentos{
+  --ac:calc(var(--u) * 1713 / 1440);
+  position:absolute;inset:auto 0 0;
+  height:calc(118 * var(--ac));
+  pointer-events:none;
+}
+.hero__acentos::before,
+.hero__acentos::after{
+  content:"";
+  position:absolute;inset-block-end:0;
+  width:calc(220 * var(--ac));height:100%;
+  background:url("assets/decoracao/acentos-laterais.svg") no-repeat;
+  background-size:calc(1440 * var(--ac)) 100%;
+}
+.hero__acentos::before{inset-inline-start:0;background-position:left bottom}
+.hero__acentos::after{inset-inline-end:0;background-position:right bottom}
 
 
 /* pilares: colunas nas coordenadas da arte (146 / 648 / 1170),
@@ -716,11 +856,28 @@ button.linha__btn{border:0;font-family:inherit;line-height:inherit;cursor:pointe
   position:relative;
   isolation:isolate;
   display:flex;flex-direction:column;
-  min-height:max(900px,100svh);         /* ocupa a tela: e outro quadro */
+  min-height:max(900px,100svh);    /* ocupa a tela: e outro quadro */
   /* quanto as duas camadas do topo (onda vermelha e onda branca) sobem
      para encostar no fim da faixa branca do heroi. Zero quando o heroi ja
      termina exatamente em 100svh (telas largas, sem sobra navy). */
   --sobe:min(0px,calc((708 + var(--faixa-u)) * var(--u) - 100svh));
+  /* enquadramento da tira vermelha do topo (historia-topo.webp, 1711x232).
+     No arquivo o vermelho so comeca a 23% da largura: em tamanho natural
+     sobrava um vao navy sob a faixa branca, da esquerda ate o meio.
+       --onda-esc    ampliacao (1,4x na mesa)
+       --onda-x      ancora horizontal (100% = colada a direita)
+       --onda-corte  px DO ARQUIVO cortados no alto — sobe a onda ate a
+                     borda do fecho branco
+     Medido coluna a coluna contra a curva do .historia__topo: com estes
+     valores o vermelho encosta no branco de ponta a ponta (sem fio navy
+     entre os dois) e a ponta da onda nasce por baixo do fecho perto da
+     borda esquerda. --onda-h e a altura visivel da tira; tambem posiciona
+     a .historia__deco. O celular tem outro enquadramento (mais abaixo). */
+  --onda-esc:1.4;
+  --onda-x:100%;
+  --onda-corte:24;
+  --onda-w:calc(max(100cqw,1100px) * var(--onda-esc));
+  --onda-h:calc(var(--onda-w) * (232 - var(--onda-corte)) / 1711);
   background:var(--navy);
   scroll-margin-top:0;
 }
@@ -739,20 +896,29 @@ button.linha__btn{border:0;font-family:inherit;line-height:inherit;cursor:pointe
    A conta: fim da faixa branca = (708 + --faixa-u) * --u; fim do heroi =
    100svh. A diferenca (negativa quando sobra navy) e o quanto subir. */
 .historia__faixa{
-  --fundo-w:max(100cqw,1100px);
   position:absolute;z-index:0;
   inset-block-start:var(--sobe);
   inset-inline:-2px;width:calc(100% + 4px);max-width:none;
-  height:calc(var(--fundo-w) * 232 / 1711);
-  background:url("assets/fundos/historia-topo.webp") center top / var(--fundo-w) auto no-repeat;
+  height:var(--onda-h);
+  background:url("assets/fundos/historia-topo.webp")
+    var(--onda-x) calc(var(--onda-w) * var(--onda-corte) / -1711) / var(--onda-w) auto no-repeat;
   pointer-events:none;
 }
 
+/* fecho da faixa branca (fecho-faixa-branca.svg, 1440x110). A altura segue
+   a LARGURA na proporcao do viewBox, como a tira vermelha logo abaixo: a
+   curva nunca achata e o vermelho continua encostado nela em qualquer
+   tela. Rasa nas laterais (onde ficam os acentos) e funda no centro (o
+   respiro abaixo do "Role para ver as linhas"). */
 .historia__topo{
   position:absolute;z-index:1;        /* por cima da faixa vermelha */
-  inset-block-start:var(--sobe);
+  /* nasce 2px ACIMA da tira vermelha, por cima do branco do heroi: em
+     zoom fracionario (125%) a primeira linha do SVG sai antialiasada e
+     deixava a tira aparecer num fio rosa/azulado atravessando a pagina */
+  inset-block-start:calc(var(--sobe) - 2px);
   inset-inline:-2px;width:calc(100% + 4px);max-width:none;
-  height:calc(64 * var(--u));
+  height:calc((100cqw + 4px) * 110 / 1440 + 2px);
+  display:block;
   pointer-events:none;
 }
 
@@ -792,7 +958,7 @@ button.linha__btn{border:0;font-family:inherit;line-height:inherit;cursor:pointe
    --deco-sobe puxa o desenho mais para perto da onda vermelha (24px na
    mesa, menos nas telas menores, onde a onda e mais baixa). */
 .historia__deco{
-  --onda-h:calc(max(100cqw,1100px) * 232 / 1711);
+  /* --onda-h vem da .historia (altura real da tira vermelha) */
   --deco-sobe:24px;
   grid-column:1 / -1;
   width:100%;
@@ -1305,10 +1471,16 @@ button.linha__btn{border:0;font-family:inherit;line-height:inherit;cursor:pointe
    combinacao possivel, quem estiver por ultimo no arquivo e quem vale. */
 @media (max-aspect-ratio:5/3){
   /* so nessa faixa (janela mais alta que a arte) o indicador aparece — e
-     so aqui a faixa branca ganha um pouco mais de piso (210u -> 292u)
+     so aqui a faixa branca ganha um pouco mais de piso (210u -> 250u)
      para ter onde por ele sem encostar nos pilares. Fora daqui a faixa
-     fica no minimo de sempre (210u, ou 210u com padding menor <1099px). */
-  body>*{--faixa-u:292}
+     fica no minimo de sempre (210u, ou 210u com padding menor <1099px).
+     Era 292u: com o fecho curvo (.historia__topo) o respiro embaixo da
+     seta vem do mergulho central da curva, e o branco reto sobrando
+     embaixo dos pilares sai daqui. */
+  body>*{--faixa-u:250}
+  /* abaixo de 1100px o texto dos pilares desce para 3-4 linhas e o
+     indicador encostava nele: um pouco mais de piso so aqui */
+  @media (max-width:1099px){body>*{--faixa-u:272}}
   .hero__base{
     /* align-items:center (regra base) reparte espaco extra em cima E
        embaixo dos pilares — com a faixa mais alta isso empurrava os
@@ -1317,9 +1489,15 @@ button.linha__btn{border:0;font-family:inherit;line-height:inherit;cursor:pointe
        sobra abaixo, que e onde o indicador mora. */
     align-items:start;
   }
+  /* o piso de 152u da regra base era para centralizar na faixa de 210u;
+     aqui os pilares encostam no topo, entao o bloco fica do tamanho do
+     texto e a folga vai para o indicador */
+  .pilares{min-height:0}
   .rolar{
     position:absolute;
-    inset-block-end:calc(26 * var(--u));
+    /* rente a base: o fecho (.historia__topo) mergulha logo abaixo da
+       seta, e e ele quem da o respiro ate o vermelho */
+    inset-block-end:calc(8 * var(--u));
     inset-inline:0;
     display:grid;justify-items:center;gap:calc(6 * var(--u));
     color:var(--corpo);
@@ -1438,13 +1616,19 @@ button.linha__btn{border:0;font-family:inherit;line-height:inherit;cursor:pointe
   .linha__blob{inset-inline-start:-3%;width:106%}
 
   .rolar{display:none}   /* empilhado: os pilares ja preenchem a faixa */
+  /* sem folga lateral: a calda encostaria nos textos e no dock */
+  .hero__acentos{display:none}
 
   /* Empilhado o heroi nao tem sobra navy (ele cresce com o conteudo e
      termina em branco), entao as camadas do topo da secao seguinte nao
      sobem: ficam na propria emenda. Sem isso a conta de --sobe, que
-     pressupoe o heroi de 100svh, jogava as duas la para o meio do heroi. */
-  .historia{--sobe:0px}
-  .historia__topo{height:clamp(26px,7vw,54px)}
+     pressupoe o heroi de 100svh, jogava as duas la para o meio do heroi.
+     O fecho mantem a altura proporcional da regra base (7,6vw, a mesma
+     curva da mesa). A tira vermelha muda de enquadramento: no celular
+     aparece so um trecho de ~400px do arquivo, e o recorte da mesa deixava
+     um vao navy de um lado. Este (1,1x, ancora 75%) encosta no fecho de
+     320 a 430px. */
+  .historia{--sobe:0px;--onda-esc:1.1;--onda-x:75%;--onda-corte:68}
 
   .linha__grupo{margin-inline:calc(-1 * clamp(8px,2.6vw,20px))}
 }
@@ -1452,8 +1636,8 @@ button.linha__btn{border:0;font-family:inherit;line-height:inherit;cursor:pointe
 /* ================== MOBILE / TABLET EM RETRATO (revisao) ==================
    Mesma condicao da composicao empilhada; vem depois dela e so refaz o que
    estava errado na tela pequena:
-     - menu: cabecalho so com o CTA + dock fixo embaixo (nada de painel
-       gigante sobre o heroi)
+     - menu: a mesma barra da mesa, no topo, com "Mais" no lugar de
+       Linhas/Contato/Peca agora
      - heroi: cabe na altura real da tela; a onda branca volta a cobrir a
        parte de baixo da casquinha, como na mesa
      - linhas: cartao limpo com raio organico no lugar do blob esticado
@@ -1462,44 +1646,40 @@ button.linha__btn{border:0;font-family:inherit;line-height:inherit;cursor:pointe
 
   /* --um agora tambem respeita a ALTURA: em celular baixo ou deitado o
      quadro encolhe pelo lado que apertar, como o --u da mesa */
-  :root{--dock-h:calc(72px + env(safe-area-inset-bottom,0px))}
-  body>*{--um:min(100cqw / 390, 1.7px, 100svh / 720)}
+  body>*{
+    --um:min(100cqw / 390, 1.7px, 100svh / 720);
+    --dh:62px;
+    --topo-y:max(28px,calc(env(safe-area-inset-top,0px) + 22px));
+  }
 
-  /* o dock e fixo: o fim da pagina precisa de folga para nada ficar
-     escondido atras dele */
-  body{padding-block-end:calc(var(--dock-h) + 8px)}
-
-  /* ---- cabecalho compacto: so o CTA, sem caixa branca ---- */
-  .topo{
-    inset-block-start:max(calc(14 * var(--um)),env(safe-area-inset-top,0px));
-    padding-inline:calc(14 * var(--um));
+  /* ---- menu: 3 destinos + "Mais", largura da tela ---- */
+  .topo{padding-inline:10px}
+  .dock{width:min(100%,460px)}
+  /* mesma folga da mesa para a gola do 1o item, mas aqui a coluna e 1/4 do
+     que sobra da barra: p = A - (largura - p)/8  =>  p = (8A - largura)/7,
+     com A = meia gola (.97 x --dh) + ~45% do raio de 22px (10px) */
+  .dock__barra{
+    padding:0 0 0 max(0px,calc((8 * (var(--dh) * .97 + 10px) - 100%) / 7));
+    border-radius:22px;
   }
-  .nav{
-    width:100%;height:auto;
-    justify-content:flex-end;
-    padding:0;background:none;box-shadow:none;
-  }
-  .nav__links{display:none}
-  .nav__cta{
-    width:auto;height:auto;min-height:44px;
-    padding-inline:20px;
-    font-size:15px;
-    border:2px solid var(--branco);
-    box-shadow:0 8px 20px rgb(0 20 45 / .28);
-  }
+  .dock__trilho{--n:4;width:100%}
+  .dock__item--mesa,.dock__cta--barra{display:none}
+  .dock__mais{display:flex}
+  .dock__rotulo{font-size:11.5px}
 
   /* ---- heroi na altura da tela ----
      --peek: o que sobra embaixo para a onda branca e o comeco dos pilares
-     aparecerem acima do dock. --sobrepoe: quanto da casquinha a onda come
+     aparecerem na primeira tela. --sobrepoe: quanto da casquinha a onda come
      (so o cone; a massa de sorvete fica inteira). */
   .hero{
-    --peek:calc(var(--dock-h) + 34px);
+    --peek:calc(40px + env(safe-area-inset-bottom,0px));
     --sobrepoe:calc(64 * var(--um));
     --palco-h:max(calc(100svh - var(--peek)), calc(540 * var(--um)));
   }
   .hero__palco{
     height:var(--palco-h);
-    padding:calc(86 * var(--um)) calc(20 * var(--um)) 0;
+    /* o menu fica em cima do palco: o logo comeca abaixo dele */
+    padding:calc(var(--topo-y) + var(--dh) + 14 * var(--um)) calc(20 * var(--um)) 0;
   }
   .hero__logo{width:calc(252 * var(--um))}
   .hero__tagline{margin-block-start:calc(10 * var(--um))}
@@ -1534,106 +1714,6 @@ button.linha__btn{border:0;font-family:inherit;line-height:inherit;cursor:pointe
   .hero__onda--mob{display:block;height:calc(52 * var(--um))}
   .hero__base{padding-block:calc(18 * var(--um)) calc(34 * var(--um))}
 
-  /* ---- dock ---- */
-  .dock{
-    display:block;
-    position:fixed;z-index:60;
-    inset-inline-start:50%;
-    inset-block-end:calc(10px + env(safe-area-inset-bottom,0px));
-    width:min(calc(100% - 20px),460px);
-    translate:-50% 0;
-  }
-  .dock__barra{
-    position:relative;
-    display:grid;grid-template-columns:repeat(4,minmax(0,1fr));
-    height:62px;
-    background:var(--branco);
-    border-radius:22px;
-    box-shadow:0 12px 30px rgb(0 20 45 / .3);
-  }
-
-  /* marca do item ativo: curva que sobe da barra + bola vermelha. Anda de
-     um item para outro com translate (sem mexer no layout) */
-  .dock__marca{
-    position:absolute;inset-block-start:0;inset-inline-start:0;
-    width:25%;height:0;
-    translate:calc(var(--i,0) * 100%) 0;
-    transition:translate var(--t-medio) var(--ease),opacity var(--t-rapido) ease;
-    pointer-events:none;
-  }
-  .dock.sem-ativo .dock__marca{opacity:0}
-  .dock__curva{
-    position:absolute;inset-block-end:-2px;inset-inline-start:50%;
-    width:120px;height:32px;max-width:none;   /* gola branca em volta da bola */
-    translate:-50% 0;
-    filter:drop-shadow(0 -3px 4px rgb(0 20 45 / .07));
-  }
-  .dock__bola{
-    position:absolute;inset-block-start:-21px;inset-inline-start:50%;
-    width:46px;height:46px;margin-inline-start:-23px;
-    border-radius:50%;
-    background:var(--vermelho);
-    box-shadow:0 6px 14px rgb(229 32 35 / .38);
-  }
-
-  .dock__item{
-    position:relative;z-index:1;
-    display:flex;flex-direction:column;align-items:center;justify-content:flex-end;
-    gap:4px;
-    min-width:0;min-height:44px;
-    padding:0 2px 10px;
-    border:0;background:none;
-    font:inherit;color:var(--navy);
-    cursor:pointer;
-    -webkit-tap-highlight-color:transparent;
-  }
-  .dock__icone{
-    width:22px;height:22px;
-    fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round;
-    transition:translate var(--t-medio) var(--ease),color var(--t-rapido) ease,scale var(--t-toque) ease;
-  }
-  .dock__mais .dock__icone{fill:currentColor;stroke:none}
-  .dock__rotulo{
-    font-size:11.5px;font-weight:600;line-height:1;
-    color:#4A6484;                       /* 5,6:1 sobre branco */
-    white-space:nowrap;
-    transition:color var(--t-rapido) ease;
-  }
-  /* ativo: o icone sobe para dentro da bola */
-  .dock__item[aria-current] .dock__icone{translate:0 -25px;color:var(--branco)}
-  .dock__item[aria-current] .dock__rotulo{color:var(--vermelho);font-weight:700}
-  .dock__mais[aria-expanded="true"] .dock__rotulo{color:var(--vermelho)}
-  .dock__item:active .dock__icone{scale:.88}
-  .dock__item:focus-visible{outline:3px solid var(--vermelho);outline-offset:-5px;border-radius:16px}
-
-  /* painel do "Mais": altura controlada, acima do dock, sem cobrir a tela */
-  .dock__painel{
-    position:absolute;inset-inline-end:0;inset-block-end:calc(100% + 32px);
-    width:min(250px,100%);
-    display:grid;gap:2px;
-    padding:8px;
-    background:var(--branco);
-    border-radius:20px;
-    box-shadow:0 16px 40px rgb(0 20 45 / .3);
-    transform-origin:100% 100%;
-    animation:dock-abre var(--t-rapido) var(--ease);
-  }
-  .dock__painel[hidden]{display:none}
-  .dock__painel a{
-    display:flex;align-items:center;
-    min-height:46px;padding-inline:16px;
-    border-radius:14px;
-    font-weight:700;color:var(--navy);
-    transition:background var(--t-rapido) ease;
-  }
-  .dock__painel a:hover{background:#EEF3F9}
-  .dock__painel .dock__cta{
-    justify-content:center;margin-block-start:4px;
-    background:var(--vermelho);color:var(--branco);
-    border-radius:var(--raio);
-  }
-  .dock__painel .dock__cta:hover{background:#c5171a}
-
   /* ---- linhas: cartao limpo ----
      O blob da mesa, esticado numa coluna estreita, virava capsula
      irregular e os cartoes se encavalavam. Aqui: fundo branco, raio
@@ -1656,14 +1736,19 @@ button.linha__btn{border:0;font-family:inherit;line-height:inherit;cursor:pointe
   .linha__btn{min-height:44px;padding-inline:20px}
 }
 
-@keyframes dock-abre{from{opacity:0;transform:translateY(8px) scale(.97)}}
-
-/* celular deitado: pouca altura. O quadro ja encolhe pelo --um; aqui so
-   se garante que o CTA e o dock nao comam o heroi */
+/* celular deitado: pouca altura. O quadro ja encolhe pelo --um; aqui a
+   barra fica um pouco mais baixa para sobrar heroi */
 @media (orientation:landscape) and (max-height:500px) and (max-width:1099px){
-  .hero{--peek:calc(var(--dock-h) + 20px)}
-  .dock__barra{height:56px}
-  .dock__item{padding-block-end:7px}
+  body>*{--dh:54px;--topo-y:24px}
+  .hero{--peek:24px}
+}
+
+/* composicao empilhada de 600px para cima (tablet em retrato): a tela ja
+   mostra um trecho largo da tira vermelha e o enquadramento do celular
+   deixava o vermelho escondido sob o fecho a esquerda. 1,4x ancorada em
+   85% encosta no fecho de 600 a 1024px. */
+@media (min-width:600px) and (max-width:899px),(min-width:600px) and (orientation:portrait) and (max-width:1099px){
+  .historia{--onda-esc:1.4;--onda-x:85%;--onda-corte:60}
 }
 
 /* Tablet em retrato: 2 x 2, como pede a referencia. A coluna unica fica so
@@ -1681,7 +1766,6 @@ button.linha__btn{border:0;font-family:inherit;line-height:inherit;cursor:pointe
   .pilares{grid-template-columns:minmax(0,1fr);gap:var(--sp-s)}
   .pilar{padding-inline:0}
   .pilar+.pilar{border-inline-start:0;border-block-start:1px solid #DCE5EF;padding-block-start:var(--sp-s)}
-  .nav{border-radius:clamp(20px,6vw,32px)}
 }
 
 /* ============================================================= CATALOGO
@@ -1905,7 +1989,7 @@ html.catalogo-aberto,html.catalogo-aberto body{overflow:hidden}
    fica o retorno do toque, sem hover preso.
    ======================================================================= */
 
-:is(.btn,.btn-pill,.linha__btn,.nav__cta,.filtro,.catalogo__baixar){
+:is(.btn,.btn-pill,.linha__btn,.dock__cta--barra,.filtro,.catalogo__baixar){
   transition:
     transform var(--t-rapido) var(--ease),
     background-color var(--t-rapido) ease,
@@ -1913,17 +1997,17 @@ html.catalogo-aberto,html.catalogo-aberto body{overflow:hidden}
     color var(--t-rapido) ease;
 }
 @media (hover:hover){
-  :is(.btn,.btn-pill,.linha__btn,.nav__cta):hover{
+  :is(.btn,.btn-pill,.linha__btn,.dock__cta--barra):hover{
     transform:translateY(-2px);
     box-shadow:0 10px 22px rgb(229 32 35 / .34);
   }
 }
-:is(.btn,.btn-pill,.linha__btn,.nav__cta,.filtro):active{
+:is(.btn,.btn-pill,.linha__btn,.dock__cta--barra,.filtro):active{
   transform:translateY(0) scale(.97);
   transition-duration:var(--t-toque);
 }
 /* sobre o azul, o anel de foco vermelho some no botao vermelho: branco */
-:is(.btn,.btn-pill,.nav__cta):focus-visible{outline-color:var(--branco)}
+:is(.btn,.btn-pill):focus-visible{outline-color:var(--branco)}
 .linha__btn:focus-visible{outline-color:var(--navy)}
 
 /* --- cartoes das linhas ---

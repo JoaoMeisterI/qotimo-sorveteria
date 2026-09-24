@@ -270,35 +270,44 @@
   iniciarAncoras();
   cascaoAnimado();
 
-  /* --- dock do celular -----------------------------------------------------
+  /* --- menu (barra no topo, mesa e celular) --------------------------------
      O item ativo acompanha a secao que cruza a faixa central da tela. A
-     marca (curva + bola vermelha) anda por --i; secao sem item no dock
-     (Unidades) apaga a marca em vez de apontar para o lugar errado.
-     "Mais" e um disclosure: abre/fecha por clique, Esc, clique fora e ao
-     escolher um destino; o foco vai para o painel e volta para o botao.
+     marca (curva + bola vermelha) anda por --i, contado so entre os itens
+     VISIVEIS: na mesa "Sobre nos" e o 4o item, no celular o 3o. Secao sem
+     item no menu (Unidades) apaga a marca em vez de apontar errado.
+     "Mais" (so no celular) e um disclosure: abre/fecha por clique, Esc,
+     clique fora e ao escolher um destino; o foco vai para o painel e volta
+     para o botao.
      --------------------------------------------------------------------- */
 
   function iniciarDock() {
     var dock = document.querySelector('.dock');
     if (!dock) return;
-    var itens = Array.prototype.slice.call(dock.querySelectorAll('.dock__item[data-secao]'));
+    var todos = Array.prototype.slice.call(dock.querySelectorAll('.dock__trilho .dock__item'));
+    var itens = todos.filter(function (a) { return a.hasAttribute('data-secao'); });
     var mais = dock.querySelector('.dock__mais');
     var painel = document.getElementById('dock-painel');
+    var atual = 'inicio';
 
     var ativar = function (id) {
-      var idx = -1;
-      itens.forEach(function (a, i) {
+      atual = id;
+      var ativo = null;
+      itens.forEach(function (a) {
         if (a.getAttribute('data-secao') === id) {
           a.setAttribute('aria-current', 'location');
-          idx = i;
+          ativo = a;
         } else {
           a.removeAttribute('aria-current');
         }
       });
+      var visiveis = todos.filter(function (a) { return window.getComputedStyle(a).display !== 'none'; });
+      var idx = ativo ? visiveis.indexOf(ativo) : -1;
       dock.classList.toggle('sem-ativo', idx < 0);
       if (idx >= 0) dock.style.setProperty('--i', idx);
     };
     ativar('inicio');
+    // mesa <-> celular muda quais itens aparecem: recoloca a marca
+    window.addEventListener('resize', function () { ativar(atual); }, { passive: true });
 
     if ('IntersectionObserver' in window) {
       var io = new IntersectionObserver(function (entradas) {
