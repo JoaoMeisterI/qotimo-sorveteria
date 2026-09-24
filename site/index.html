@@ -15,9 +15,32 @@
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="styles.css">
 
+<!-- Fonte de destaque, servida pelo proprio site (ver o @font-face no topo
+     do styles.css, que e onde se troca a fonte). Os dois pesos aparecem
+     acima da dobra — 900 na chamada do heroi, 700 nos tres pilares — entao
+     valem o preload: sem ele o texto pisca em Poppins e reflui. -->
+<link rel="preload" href="assets/fontes/fredoka-black.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="assets/fontes/fredoka-bold.woff2" as="font" type="font/woff2" crossorigin>
+
 <link rel="preload" as="image" href="assets/hero/cascao-hero-760.webp"
       imagesrcset="assets/hero/cascao-hero-500.webp 500w, assets/hero/cascao-hero-760.webp 760w, assets/hero/cascao-hero-1017.webp 1017w"
       imagesizes="(max-width: 899px) 60vw, 21vw" fetchpriority="high">
+
+<!-- Cascao que se enche: a decisao precisa sair ANTES da primeira pintura,
+     senao o sorvete ja preenchido pisca antes de o script.js (defer) tirar
+     a imagem da frente. Aqui so se decide e se marca; quem toca o video e
+     valida o canal alpha e o script.js. Se este bloco nao rodar, a pagina
+     fica exatamente como era: a imagem preenchida de sempre. -->
+<script>
+(function () {
+  var c = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+  var v = document.createElement('video');
+  var ok = !window.matchMedia('(prefers-reduced-motion: reduce)').matches &&
+           !(c && c.saveData) &&
+           !!v.canPlayType && v.canPlayType('video/webm; codecs="vp9"') !== '';
+  if (ok) document.documentElement.classList.add('cascao-anima');
+}());
+</script>
 </head>
 <body>
 
@@ -25,11 +48,7 @@
 
 <header class="topo">
   <nav class="nav" aria-label="Principal">
-    <button class="nav__menu" type="button" aria-expanded="false" aria-controls="nav-painel">
-      <span class="nav__traco"></span>
-      <span class="nav__rotulo">Menu</span>
-    </button>
-    <ul class="nav__links" id="nav-painel">
+    <ul class="nav__links">
       <li><a href="#inicio">Início</a></li>
       <!-- TODO Fase 5: destino — hoje aponta para a seção de linhas -->
       <li><a href="#linhas">Produtos</a></li>
@@ -42,6 +61,43 @@
     <a class="nav__cta" href="#contato">Peça agora</a>
   </nav>
 </header>
+
+<!-- Navegacao do celular/tablet em retrato: dock fixo embaixo, no lugar do
+     painel grande que cobria a primeira tela. O item ativo sobe para dentro
+     de um circulo vermelho sobre uma curva da barra e acompanha a secao
+     visivel (script.js). "Mais" abre os destinos restantes num painel de
+     altura controlada. Na mesa ele nao aparece: o menu em pilula continua. -->
+<nav class="dock" aria-label="Navegação rápida">
+  <div class="dock__barra">
+    <span class="dock__marca" aria-hidden="true">
+      <svg class="dock__curva" viewBox="0 0 120 32" focusable="false"><path fill="#FFFFFF" d="M0 32C15 32 21 27 27 18C35 6 46 0 60 0C74 0 85 6 93 18C99 27 105 32 120 32Z"/></svg>
+      <span class="dock__bola"></span>
+    </span>
+    <a class="dock__item" href="#inicio" data-secao="inicio">
+      <svg class="dock__icone" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M3.5 11 12 4l8.5 7M6 9.5V20h4.5v-5.5h3V20H18V9.5"/></svg>
+      <span class="dock__rotulo">Início</span>
+    </a>
+    <a class="dock__item" href="#sobre" data-secao="sobre">
+      <svg class="dock__icone" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 20s-7.5-4.6-7.5-10.2A4.1 4.1 0 0 1 12 7.6a4.1 4.1 0 0 1 7.5 2.2C19.5 15.4 12 20 12 20z"/></svg>
+      <span class="dock__rotulo">Sobre nós</span>
+    </a>
+    <a class="dock__item" href="#linhas" data-secao="linhas">
+      <svg class="dock__icone" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M7.6 10.2a4.4 4.4 0 1 1 8.8 0M7 10.2h10L12 21z"/></svg>
+      <span class="dock__rotulo">Produtos</span>
+    </a>
+    <button class="dock__item dock__mais" type="button" aria-expanded="false" aria-controls="dock-painel">
+      <svg class="dock__icone" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="5.5" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="18.5" cy="12" r="1.6"/></svg>
+      <span class="dock__rotulo">Mais</span>
+    </button>
+  </div>
+  <ul class="dock__painel" id="dock-painel" hidden>
+    <li><a href="#linhas">Linhas</a></li>
+    <li><a href="#sobre">Sobre nós</a></li>
+    <!-- TODO Fase 5: destino — secao #contato ainda nao existe -->
+    <li><a href="#contato">Contato</a></li>
+    <li><a class="dock__cta" href="#contato">Peça agora</a></li>
+  </ul>
+</nav>
 
 <main>
 
@@ -69,19 +125,45 @@
         </a>
       </div>
 
+      <!-- Cascao: tres camadas na MESMA caixa. A imagem preenchida continua
+           sendo o conteudo real (e ela que da a altura da caixa, e ela que o
+           leitor de tela le e e ela que aparece sem JS, com movimento
+           reduzido ou com Save-Data). Poster e video so entram em cena
+           quando o script do <head> aprova o navegador e marca
+           <html class="cascao-anima">. -->
       <div class="hero__cascao">
-        <img src="assets/hero/cascao-hero-760.webp"
-             srcset="assets/hero/cascao-hero-500.webp 500w, assets/hero/cascao-hero-760.webp 760w, assets/hero/cascao-hero-1017.webp 1017w"
-             sizes="(max-width: 899px) 60vw, 21vw"
-             width="1017" height="2430" fetchpriority="high"
-             alt="Casquinha de sorvete de creme com calda de morango">
+        <div class="cascao" data-cascao>
+          <img class="cascao__poster" src="assets/hero/cascao-vazio-poster.png"
+               width="930" height="2226" alt="" aria-hidden="true" fetchpriority="high">
+          <!-- src do <source> so entra pelo script.js: com preload="auto" e o
+               src no HTML o navegador ja teria baixado 2,3 MB antes de
+               sabermos se o video pode ser usado (Save-Data, movimento
+               reduzido, sem VP9 com alpha). -->
+          <video class="cascao__video" width="930" height="2226"
+                 autoplay muted playsinline preload="auto"
+                 aria-hidden="true" tabindex="-1">
+            <source data-src="assets/hero/cascao-preenchendo.webm" type="video/webm; codecs=vp9">
+          </video>
+          <img class="cascao__fallback" src="assets/hero/cascao-hero-760.webp"
+               srcset="assets/hero/cascao-hero-500.webp 500w, assets/hero/cascao-hero-760.webp 760w, assets/hero/cascao-hero-1017.webp 1017w"
+               sizes="(max-width: 899px) 60vw, 21vw"
+               width="1017" height="2430" fetchpriority="high"
+               alt="Casquinha de sorvete de creme com calda de morango">
+        </div>
       </div>
     </div>
 
     <!-- camada 3: onda branca DESENHADA NA FRENTE do cascão — é ela que corta o cone -->
     <div class="hero__base">
-      <svg class="hero__onda" viewBox="0 0 1713 68" preserveAspectRatio="none" aria-hidden="true" focusable="false">
-        <path fill="#FFFFFF" d="M0 51C10 46.5 40 31.5 60 24C80 16.5 100 10 120 6C140 2 160 -0.2 180 0C200 0.2 220 2.5 240 7C260 11.5 280 19.8 300 27C320 34.2 340 44.3 360 50C380 55.7 400 59.5 420 61C440 62.5 460 61.8 480 59C500 56.2 520 50 540 44C560 38 580 29.2 600 23C620 16.8 640 10.3 660 7C680 3.7 700 2.5 720 3C740 3.5 760 5.8 780 10C800 14.2 820 21.2 840 28C860 34.8 880 44.8 900 51C920 57.2 940 63.3 960 65C980 66.7 1000 65.5 1020 61C1040 56.5 1060 45.7 1080 38C1100 30.3 1120 20 1140 15C1160 10 1180 7.3 1200 8C1220 8.7 1240 13 1260 19C1280 25 1300 36.5 1320 44C1340 51.5 1360 60.3 1380 64C1400 67.7 1420 69.3 1440 66C1460 62.7 1480 52.3 1500 44C1520 35.7 1540 22.2 1560 16C1580 9.8 1600 6 1620 7C1640 8 1664.7 16.8 1680 22C1695.3 27.2 1706.7 35.3 1712 38L1712 68L0 68Z"/>
+      <!-- borda de cima da faixa branca, em duas versoes de pontos de
+           controle (celular e mesa). Mesmo desenho: comeca alta a esquerda,
+           desce, SOBE atras do cascao (cobre so a ponta do cone) e volta a
+           ondular ate a borda direita. -->
+      <svg class="hero__onda hero__onda--mob" viewBox="0 0 390 60" preserveAspectRatio="none" aria-hidden="true" focusable="false">
+        <path fill="#FFFFFF" d="M0 22C44 22 72 44 116 44C156 44 168 18 200 18C238 18 258 46 306 46C348 46 370 28 390 26V60H0Z"/>
+      </svg>
+      <svg class="hero__onda hero__onda--mesa" viewBox="0 0 1713 110" preserveAspectRatio="none" aria-hidden="true" focusable="false">
+        <path fill="#FFFFFF" d="M0 58C140 58 220 94 380 94C560 94 700 60 860 60C1020 60 1120 96 1300 96C1480 96 1580 52 1713 52V110H0Z"/>
       </svg>
 
       <ul class="pilares reveal">
@@ -146,10 +228,37 @@
          heroi, porque esta secao pinta por cima dele: no heroi ela ficava
          escondida atras da faixa vermelha. Sobe junto com ela. -->
     <svg class="historia__topo" viewBox="0 0 1440 90" preserveAspectRatio="none" aria-hidden="true" focusable="false">
-      <path fill="#FFFFFF" d="M0 0L1440 0L1440 26C1381.7 32.3 1203.3 61.7 1090 64C976.7 66.3 871.7 38.7 760 40C648.3 41.3 546.7 71.3 420 72C293.3 72.7 70 48.7 0 44Z"/>
+      <path fill="#FFFFFF" d="M0 0H1440V32C1240 66 990 84 730 80C470 76 230 50 0 58Z"/>
     </svg>
 
     <div class="historia__palco">
+      <!-- decoracao do vao navy entre a onda vermelha do topo e o texto
+           (arquivo qotimo-decoracao-sobre.svg, curvas Bezier; inline para herdar o
+           aria-hidden e nao custar outra requisicao). Fundo transparente:
+           o azul e o da propria secao. -->
+      <div class="historia__deco" aria-hidden="true">
+        <svg viewBox="0 0 1452 310" fill="none" focusable="false">
+          <g fill="#fff">
+            <path d="M0 205C83 256 173 285 264 286C371 289 453 251 555 213C662 173 755 167 847 188C946 210 1030 271 1125 278C1202 285 1244 255 1301 231C1359 206 1402 199 1452 205V222C1399 210 1364 220 1307 243C1249 267 1205 293 1123 287C1025 280 939 221 845 199C752 177 664 183 559 222C451 262 369 299 263 295C167 293 77 263 0 221Z"/>
+            <path d="M121 270C107 251 111 228 127 210C137 198 151 190 166 186C160 175 164 163 176 151C171 134 177 116 188 102C203 82 228 68 249 67C264 65 277 71 277 81C277 90 269 96 258 96C267 87 267 80 258 77C243 72 219 82 204 98C188 115 185 133 193 149C179 159 175 171 184 182C196 198 222 203 256 205C290 207 323 209 344 227C358 241 356 257 341 270C349 251 340 240 323 232C304 224 280 224 253 223C208 222 181 213 169 195C153 201 139 214 133 229C125 246 131 261 145 272Z"/>
+            <path d="M201 90C191 108 199 121 215 131C230 141 250 145 269 149C300 155 321 171 325 189C328 203 321 213 312 222C316 204 310 193 297 184C282 173 257 169 237 164C210 158 189 147 187 129C184 114 189 101 201 90Z"/>
+            <path d="M162 160C151 178 160 190 177 199C197 209 223 211 251 212C282 213 306 217 323 228C307 221 279 223 251 222C218 221 191 218 174 208C154 196 146 181 162 160Z"/>
+            <path d="M146 210C149 227 174 238 210 244C246 250 285 247 316 245C293 256 254 261 218 256C176 251 148 238 141 221Z"/>
+            <path d="M190 112C186 131 206 143 230 151C248 157 270 160 292 165C266 164 240 162 221 158C193 152 175 135 190 112Z"/>
+            <path d="M364 258C473 243 534 204 645 189C735 177 794 187 848 204" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/>
+            <path d="M1060 268C1127 272 1181 258 1218 240C1253 224 1279 229 1282 244C1284 254 1277 261 1268 264" fill="none" stroke="#fff" stroke-width="7" stroke-linecap="round"/>
+          </g>
+          <g class="historia__gota historia__gota--a" fill="#ED2229">
+            <path d="M62 149C55 143 58 133 65 127C74 119 83 123 89 133C98 149 105 165 116 178C94 174 75 164 62 149Z"/>
+            <circle cx="91" cy="206" r="7"/>
+          </g>
+          <g class="historia__gota historia__gota--b" fill="#ED2229">
+            <path d="M1285 204C1296 183 1307 164 1326 157C1339 152 1352 158 1352 168C1352 179 1338 183 1327 186C1307 191 1295 197 1285 204Z"/>
+            <circle cx="1284" cy="222" r="6.5"/>
+          </g>
+        </svg>
+      </div>
+
       <div class="historia__texto">
         <p class="historia__eyebrow reveal">Sobre nós</p>
         <h2 class="historia__titulo reveal" id="historia-titulo">Uma história feita de sabor</h2>
@@ -256,67 +365,78 @@
         <p class="linhas__sub">Quatro linhas, muitos momentos para saborear.</p>
       </div>
 
+      <!-- Uma foto por linha, com os tres produtos ja agrupados no proprio
+           arquivo (fundo transparente). A caixa reserva a proporcao do
+           arquivo antes de ele chegar, entao a altura do card nao pula. -->
       <div class="linhas__board">
 
-        <article class="linha reveal" id="linha-tradicionais" style="--ph:104;--pw:50">
+        <article class="linha reveal" id="linha-tradicionais" data-catalogo="sorvetes" style="--ar:1120/739">
           <svg class="linha__blob" viewBox="-30 -30 940 410" preserveAspectRatio="none" aria-hidden="true" focusable="false"><path fill="#FFFFFF" d="M170 -11C218 -23.1 272.3 -13.6 323.4 -9C374.6 -4.4 425.7 15.2 476.9 16.5C528 17.8 578.4 1.3 630.3 -1.2C682.2 -3.7 749 -20.9 788.1 1.5C827.1 23.8 856.6 88.3 864.7 133.1C872.8 177.8 862.2 232.5 836.4 269.8C810.6 307 756.6 345 710 356.5C663.4 368 607.7 344.2 556.6 338.8C505.4 333.4 454.3 322.2 403.1 324.2C352 326.3 301.1 349.6 249.7 351C198.3 352.3 132.9 356.6 94.8 332.4C56.6 308.2 30.6 250.4 20.7 205.6C10.8 160.9 10.7 100 35.6 63.9C60.5 27.8 122 1.2 170 -11Z"/></svg>
           <div class="linha__texto">
             <span class="linha__num" aria-hidden="true">01</span>
             <h3 class="linha__nome">Tradicionais</h3>
             <p class="linha__desc">Os favoritos de todos os dias.</p>
-            <!-- TODO Fase 5: destino — página da linha ou WhatsApp -->
-            <a class="linha__btn" href="#linhas">Conheça a linha <svg viewBox="0 0 20 16" aria-hidden="true" focusable="false"><path d="M1 8h17M11.5 1.5 18 8l-6.5 6.5"/></svg></a>
+            <!-- o card inteiro abre o mesmo catalogo; o botao e o alvo de foco -->
+            <button class="linha__btn" type="button" data-catalogo="sorvetes" aria-haspopup="dialog">Conheça a linha <svg viewBox="0 0 20 16" aria-hidden="true" focusable="false"><path d="M1 8h17M11.5 1.5 18 8l-6.5 6.5"/></svg></button>
           </div>
-          <ul class="linha__produtos">
-            <li class="produto"><img src="assets/produtos/sundae-morango-380.webp" srcset="assets/produtos/sundae-morango-380.webp 261w, assets/produtos/sundae-morango-760.webp 521w" sizes="(max-width: 899px) 26vw, 13vw" width="694" height="1012" alt="Sundae de morango" loading="lazy" decoding="async"><span>Morango</span></li>
-            <li class="produto"><img src="assets/produtos/moreninha-380.webp" srcset="assets/produtos/moreninha-380.webp 260w, assets/produtos/moreninha-760.webp 519w" sizes="(max-width: 899px) 26vw, 13vw" width="716" height="1048" alt="Moreninha, sorvete com cobertura de chocolate na casquinha" loading="lazy" decoding="async"><span>Moreninha</span></li>
-            <li class="produto"><img src="assets/produtos/sundae-chocolate-380.webp" srcset="assets/produtos/sundae-chocolate-380.webp 249w, assets/produtos/sundae-chocolate-760.webp 498w" sizes="(max-width: 899px) 26vw, 13vw" width="687" height="1048" alt="Sundae de chocolate" loading="lazy" decoding="async"><span>Chocolate</span></li>
-          </ul>
+          <figure class="linha__grupo">
+            <img src="assets/linhas/tradicionais-agrupados-560.webp"
+                 srcset="assets/linhas/tradicionais-agrupados-560.webp 560w, assets/linhas/tradicionais-agrupados-1120.webp 1120w"
+                 sizes="(max-width: 679px) 76vw, (max-width: 1099px) 38vw, (max-width: 1199px) 42vw, 22vw"
+                 width="1120" height="739" loading="lazy" decoding="async"
+                 alt="Sundae de morango, Moreninha e sundae de chocolate, da linha Tradicionais">
+          </figure>
         </article>
-        <article class="linha linha--espelhada reveal" id="linha-picoles" style="--ph:132;--pw:48">
+        <article class="linha linha--espelhada reveal" id="linha-picoles" data-catalogo="picoles" style="--ar:1120/797">
           <svg class="linha__blob" viewBox="-30 -30 940 410" preserveAspectRatio="none" aria-hidden="true" focusable="false"><path fill="#FFFFFF" d="M170 -11C218 -23.1 272.3 -13.6 323.4 -9C374.6 -4.4 425.7 15.2 476.9 16.5C528 17.8 578.4 1.3 630.3 -1.2C682.2 -3.7 749 -20.9 788.1 1.5C827.1 23.8 856.6 88.3 864.7 133.1C872.8 177.8 862.2 232.5 836.4 269.8C810.6 307 756.6 345 710 356.5C663.4 368 607.7 344.2 556.6 338.8C505.4 333.4 454.3 322.2 403.1 324.2C352 326.3 301.1 349.6 249.7 351C198.3 352.3 132.9 356.6 94.8 332.4C56.6 308.2 30.6 250.4 20.7 205.6C10.8 160.9 10.7 100 35.6 63.9C60.5 27.8 122 1.2 170 -11Z"/></svg>
           <div class="linha__texto">
             <span class="linha__num" aria-hidden="true">02</span>
             <h3 class="linha__nome">Picolés</h3>
             <p class="linha__desc">Refrescância em qualquer momento.</p>
-            <!-- TODO Fase 5: destino — página da linha ou WhatsApp -->
-            <a class="linha__btn" href="#linhas">Conheça a linha <svg viewBox="0 0 20 16" aria-hidden="true" focusable="false"><path d="M1 8h17M11.5 1.5 18 8l-6.5 6.5"/></svg></a>
+            <!-- o card inteiro abre o mesmo catalogo; o botao e o alvo de foco -->
+            <button class="linha__btn" type="button" data-catalogo="picoles" aria-haspopup="dialog">Conheça a linha <svg viewBox="0 0 20 16" aria-hidden="true" focusable="false"><path d="M1 8h17M11.5 1.5 18 8l-6.5 6.5"/></svg></button>
           </div>
-          <ul class="linha__produtos">
-            <li class="produto"><img src="assets/produtos/picole-blue-ice-380.webp" srcset="assets/produtos/picole-blue-ice-380.webp 214w, assets/produtos/picole-blue-ice-760.webp 427w" sizes="(max-width: 899px) 26vw, 13vw" width="589" height="1048" alt="Picolé Blue Ice" loading="lazy" decoding="async"><span>Blue Ice</span></li>
-            <li class="produto"><img src="assets/produtos/picole-chocolate-380.webp" srcset="assets/produtos/picole-chocolate-380.webp 189w, assets/produtos/picole-chocolate-760.webp 379w" sizes="(max-width: 899px) 26vw, 13vw" width="522" height="1047" alt="Picolé de chocolate" loading="lazy" decoding="async"><span>Chocolate</span></li>
-            <li class="produto"><img src="assets/produtos/picole-coco-380.webp" srcset="assets/produtos/picole-coco-380.webp 198w, assets/produtos/picole-coco-760.webp 395w" sizes="(max-width: 899px) 26vw, 13vw" width="545" height="1048" alt="Picolé de coco" loading="lazy" decoding="async"><span>Coco</span></li>
-          </ul>
+          <figure class="linha__grupo">
+            <img src="assets/linhas/picoles-agrupados-560.webp"
+                 srcset="assets/linhas/picoles-agrupados-560.webp 560w, assets/linhas/picoles-agrupados-1120.webp 1120w"
+                 sizes="(max-width: 679px) 76vw, (max-width: 1099px) 38vw, (max-width: 1199px) 42vw, 22vw"
+                 width="1120" height="797" loading="lazy" decoding="async"
+                 alt="Picolés Qótimo de chocolate, Blue Ice e coco">
+          </figure>
         </article>
-        <article class="linha reveal" id="linha-sorvetes" style="--ph:102;--pw:52">
+        <article class="linha reveal" id="linha-sorvetes" data-catalogo="sorvetes" style="--ar:1120/714">
           <svg class="linha__blob" viewBox="-30 -30 940 410" preserveAspectRatio="none" aria-hidden="true" focusable="false"><path fill="#FFFFFF" d="M170 -11C218 -23.1 272.3 -13.6 323.4 -9C374.6 -4.4 425.7 15.2 476.9 16.5C528 17.8 578.4 1.3 630.3 -1.2C682.2 -3.7 749 -20.9 788.1 1.5C827.1 23.8 856.6 88.3 864.7 133.1C872.8 177.8 862.2 232.5 836.4 269.8C810.6 307 756.6 345 710 356.5C663.4 368 607.7 344.2 556.6 338.8C505.4 333.4 454.3 322.2 403.1 324.2C352 326.3 301.1 349.6 249.7 351C198.3 352.3 132.9 356.6 94.8 332.4C56.6 308.2 30.6 250.4 20.7 205.6C10.8 160.9 10.7 100 35.6 63.9C60.5 27.8 122 1.2 170 -11Z"/></svg>
           <div class="linha__texto">
             <span class="linha__num" aria-hidden="true">03</span>
-            <h3 class="linha__nome">Sorvetes</h3>
+            <h3 class="linha__nome">Sorvetes em pote</h3>
             <p class="linha__desc">Mais sabores para a sua história.</p>
-            <!-- TODO Fase 5: destino — página da linha ou WhatsApp -->
-            <a class="linha__btn" href="#linhas">Conheça a linha <svg viewBox="0 0 20 16" aria-hidden="true" focusable="false"><path d="M1 8h17M11.5 1.5 18 8l-6.5 6.5"/></svg></a>
+            <!-- o card inteiro abre o mesmo catalogo; o botao e o alvo de foco -->
+            <button class="linha__btn" type="button" data-catalogo="sorvetes" aria-haspopup="dialog">Conheça a linha <svg viewBox="0 0 20 16" aria-hidden="true" focusable="false"><path d="M1 8h17M11.5 1.5 18 8l-6.5 6.5"/></svg></button>
           </div>
-          <ul class="linha__produtos">
-            <li class="produto"><img src="assets/produtos/pote-pistache-380.webp" srcset="assets/produtos/pote-pistache-380.webp 517w, assets/produtos/pote-pistache-760.webp 1033w" sizes="(max-width: 899px) 26vw, 13vw" width="1048" height="771" alt="Pote de sorvete de pistache, 1,5 litro" loading="lazy" decoding="async"><span>Pistache</span></li>
-            <li class="produto"><img src="assets/produtos/pote-napolitano-380.webp" srcset="assets/produtos/pote-napolitano-380.webp 574w, assets/produtos/pote-napolitano-760.webp 1148w" sizes="(max-width: 899px) 26vw, 13vw" width="1048" height="694" alt="Pote de sorvete napolitano, 1,5 litro" loading="lazy" decoding="async"><span>Napolitano</span></li>
-            <li class="produto"><img src="assets/produtos/pote-super-flocos-380.webp" srcset="assets/produtos/pote-super-flocos-380.webp 490w, assets/produtos/pote-super-flocos-760.webp 981w" sizes="(max-width: 899px) 26vw, 13vw" width="1048" height="812" alt="Pote de sorvete super flocos, 1,5 litro" loading="lazy" decoding="async"><span>Super Flocos</span></li>
-          </ul>
+          <figure class="linha__grupo">
+            <img src="assets/linhas/sorvetes-pote-agrupados-560.webp"
+                 srcset="assets/linhas/sorvetes-pote-agrupados-560.webp 560w, assets/linhas/sorvetes-pote-agrupados-1120.webp 1120w"
+                 sizes="(max-width: 679px) 76vw, (max-width: 1099px) 38vw, (max-width: 1199px) 42vw, 22vw"
+                 width="1120" height="714" loading="lazy" decoding="async"
+                 alt="Potes de sorvete Qótimo napolitano, pistache e super flocos, de 1,5 litro">
+          </figure>
         </article>
-        <article class="linha linha--espelhada reveal" id="linha-acai" style="--ph:110;--pw:52">
+        <article class="linha linha--espelhada reveal" id="linha-acai" data-catalogo="acai" style="--ar:1120/717">
           <svg class="linha__blob" viewBox="-30 -30 940 410" preserveAspectRatio="none" aria-hidden="true" focusable="false"><path fill="#FFFFFF" d="M170 -11C218 -23.1 272.3 -13.6 323.4 -9C374.6 -4.4 425.7 15.2 476.9 16.5C528 17.8 578.4 1.3 630.3 -1.2C682.2 -3.7 749 -20.9 788.1 1.5C827.1 23.8 856.6 88.3 864.7 133.1C872.8 177.8 862.2 232.5 836.4 269.8C810.6 307 756.6 345 710 356.5C663.4 368 607.7 344.2 556.6 338.8C505.4 333.4 454.3 322.2 403.1 324.2C352 326.3 301.1 349.6 249.7 351C198.3 352.3 132.9 356.6 94.8 332.4C56.6 308.2 30.6 250.4 20.7 205.6C10.8 160.9 10.7 100 35.6 63.9C60.5 27.8 122 1.2 170 -11Z"/></svg>
           <div class="linha__texto">
             <span class="linha__num" aria-hidden="true">04</span>
             <h3 class="linha__nome">Açaí</h3>
             <p class="linha__desc">Energia e sabor em várias formas.</p>
-            <!-- TODO Fase 5: destino — página da linha ou WhatsApp -->
-            <a class="linha__btn" href="#linhas">Conheça a linha <svg viewBox="0 0 20 16" aria-hidden="true" focusable="false"><path d="M1 8h17M11.5 1.5 18 8l-6.5 6.5"/></svg></a>
+            <!-- o card inteiro abre o mesmo catalogo; o botao e o alvo de foco -->
+            <button class="linha__btn" type="button" data-catalogo="acai" aria-haspopup="dialog">Conheça a linha <svg viewBox="0 0 20 16" aria-hidden="true" focusable="false"><path d="M1 8h17M11.5 1.5 18 8l-6.5 6.5"/></svg></button>
           </div>
-          <ul class="linha__produtos">
-            <li class="produto"><img src="assets/produtos/acai-individual-380.webp" srcset="assets/produtos/acai-individual-380.webp 378w, assets/produtos/acai-individual-760.webp 756w" sizes="(max-width: 899px) 26vw, 13vw" width="1043" height="1048" alt="Açaí individual tradicional" loading="lazy" decoding="async"><span>Individual</span></li>
-            <li class="produto"><img src="assets/produtos/acai-pote-1l-380.webp" srcset="assets/produtos/acai-pote-1l-380.webp 435w, assets/produtos/acai-pote-1l-760.webp 870w" sizes="(max-width: 899px) 26vw, 13vw" width="1048" height="916" alt="Pote de açaí tradicional, 1 litro" loading="lazy" decoding="async"><span>Pote 1 L</span></li>
-            <li class="produto"><img src="assets/produtos/acai-picole-380.webp" srcset="assets/produtos/acai-picole-380.webp 249w, assets/produtos/acai-picole-760.webp 497w" sizes="(max-width: 899px) 26vw, 13vw" width="686" height="1048" alt="Picolé de açaí com leitinho" loading="lazy" decoding="async"><span>Picolé</span></li>
-          </ul>
+          <figure class="linha__grupo">
+            <img src="assets/linhas/acai-agrupados-560.webp"
+                 srcset="assets/linhas/acai-agrupados-560.webp 560w, assets/linhas/acai-agrupados-1120.webp 1120w"
+                 sizes="(max-width: 679px) 76vw, (max-width: 1099px) 38vw, (max-width: 1199px) 42vw, 22vw"
+                 width="1120" height="717" loading="lazy" decoding="async"
+                 alt="Açaí Qótimo no copo individual, picolé de açaí com leitinho e pote tradicional de 1 litro">
+          </figure>
         </article>
       </div>
     </div>
@@ -347,6 +467,67 @@
   </section>
 
 </main>
+
+<!-- ===================== CATALOGO (modal unico) =====================
+     Um so modal, preenchido pelo script.js a partir da configuracao
+     CATALOGOS. A imagem so recebe src quando alguem pede para abrir
+     (nada de 7 MB baixados com o modal fechado). -->
+<div class="catalogo" id="catalogo" role="dialog" aria-modal="true" aria-labelledby="catalogo-titulo" hidden>
+  <svg class="catalogo__onda" viewBox="0 0 1440 120" preserveAspectRatio="none" aria-hidden="true" focusable="false">
+    <path fill="#E52023" d="M0 70C140 40 260 28 420 44C600 62 700 96 880 92C1060 88 1180 50 1300 38C1370 31 1420 34 1440 36V0H0Z" opacity=".9"/>
+  </svg>
+
+  <h2 class="catalogo__titulo" id="catalogo-titulo">Catálogo</h2>
+
+  <a class="catalogo__baixar catalogo__baixar--barra" href="assets/catalogos/catalogo-qotimo-produtos.pdf"
+     download="catalogo-qotimo-produtos.pdf"
+     aria-label="Baixar catálogo completo de produtos Qótimo em PDF">
+    <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 3v12M6.5 10 12 15.5 17.5 10M4 20h16"/></svg>
+    <span>Baixar catálogo completo (PDF)</span>
+  </a>
+
+  <button class="catalogo__voltar" type="button" data-fechar>
+    <svg viewBox="0 0 20 14" aria-hidden="true" focusable="false"><path d="M19 7H1.5M7.6 1.2 1.5 7l6.1 5.8"/></svg>
+    Voltar ao site
+  </button>
+
+  <button class="catalogo__fechar" type="button" data-fechar aria-label="Fechar catálogo">
+    <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6 6l12 12M18 6 6 18"/></svg>
+  </button>
+
+  <div class="catalogo__rolagem">
+    <div class="catalogo__folha">
+      <p class="catalogo__estado" data-estado="carregando" role="status">
+        <span class="catalogo__spinner" aria-hidden="true"></span>
+        <span class="catalogo__msg">Carregando catálogo…</span>
+        <button class="catalogo__tentar" type="button" hidden>Tentar novamente</button>
+      </p>
+      <!-- a arte ja desenha abas, um X e "Consultar disponibilidade"; os
+           botoes reais vao por cima exatamente dessas areas (o script.js
+           posiciona pela configuracao ZONAS) -->
+      <div class="catalogo__arte">
+        <img class="catalog-image" alt="" loading="lazy" decoding="async">
+        <nav class="catalogo__zonas" aria-label="Trocar de catálogo">
+          <button class="catalogo__zona catalogo__zona--aba" type="button" data-zona="picoles">Picolés</button>
+          <button class="catalogo__zona catalogo__zona--aba" type="button" data-zona="sorvetes">Sorvetes</button>
+          <button class="catalogo__zona catalogo__zona--aba" type="button" data-zona="acai">Açaí</button>
+          <button class="catalogo__zona catalogo__zona--redonda" type="button" data-zona="fechar" aria-label="Fechar catálogo"></button>
+          <button class="catalogo__zona" type="button" data-zona="unidades">Consultar disponibilidade nas unidades</button>
+        </nav>
+      </div>
+    </div>
+
+    <div class="catalogo__fim">
+      <p>Quer todas as linhas num arquivo só?</p>
+      <a class="catalogo__baixar" href="assets/catalogos/catalogo-qotimo-produtos.pdf"
+         download="catalogo-qotimo-produtos.pdf"
+         aria-label="Baixar catálogo completo de produtos Qótimo em PDF">
+        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 3v12M6.5 10 12 15.5 17.5 10M4 20h16"/></svg>
+        Baixar catálogo completo (PDF)
+      </a>
+    </div>
+  </div>
+</div>
 
 <script src="data/unidades.js" defer></script>
 <script src="script.js" defer></script>

@@ -1,12 +1,101 @@
 /* =========================================================================
    Qótimo Sorvetes
-   Fonte: Poppins. A arte aprovada usa uma geométrica arredondada de "o"
+   Duas fontes, com papéis separados.
+
+   TEXTO — Poppins. A arte aprovada usa uma geométrica arredondada de "o"
    circular e terminais retos; Poppins bate a métrica sem precisar do
-   letter-spacing negativo que o Montserrat exigia para imitá-la.
+   letter-spacing negativo que o Montserrat exigia para imitá-la. Ela
+   continua sendo a fonte de leitura: parágrafos, subtítulos, legendas,
+   botões, navegação e os dados das unidades.
+
+   DESTAQUE — "Qotimo Destaque", só em títulos curtos, chamadas e nomes de
+   linha. Ver o bloco @font-face logo abaixo: é ele, e só ele, que decide
+   qual arquivo entra nesse papel.
 
    Regra de escala: a arte de 1711x919 e o ALVO na faixa 1440-1711px.
    Acima disso cresce a margem, nunca o conteudo — todo tamanho tem teto.
    ========================================================================= */
+
+/* ----------------------------------------------- fonte de destaque -------
+   O pedido original era a Chiquinhorc2. Ela NÃO vai ao ar: é um tipo
+   exclusivo, desenhado pela Fabio Haag Type / VLF Design para a Chiquinho
+   Sorvetes — concorrente direta. Os arquivos não trazem licença nenhuma
+   (name ID 13 e 14 vazios) e vêm com fsType 8, que é permissão de embutir
+   em DOCUMENTO, não licença de webfont para outra marca. Sem autorização
+   por escrito da detentora, usá-la na Qótimo é risco jurídico e de marca.
+   O porquê completo está em tarefas/tarefa3/RELATORIO.md.
+
+   No lugar dela entra a Fredoka (SIL OFL, uso comercial liberado, licença
+   em assets/fontes/OFL.txt): a parente licenciada mais próxima que existe
+   — geométrica de terminais arredondados, mesmo "o" circular, altura de
+   caixa-alta quase idêntica (700 contra 680 em mil).
+
+   O TRUQUE DA TROCA: a família se chama "Qotimo Destaque" e tem peso 700 e
+   900 nos dois casos. Todo o resto do arquivo fala só com esse nome. Trocar
+   de fonte é trocar este bloco — nenhuma outra regra muda.
+
+   size-adjust: as duas têm altura-x menor que a Poppins (500 e 510 contra
+   558). O ajuste recompõe o tamanho óptico de uma vez, em vez de espalhar
+   correção de font-size regra a regra. Os valores diferentes (105% e 102%)
+   são o que deixa as duas com a mesma mancha.
+
+   A fl-icons que veio no ZIP é fonte de ícones do tema Flatsome: não entra
+   no projeto e não é usada em texto nenhum.
+   ------------------------------------------------------------------------ */
+
+@font-face{
+  font-family:"Qotimo Destaque";
+  font-style:normal;
+  font-weight:700;
+  font-display:swap;
+  size-adjust:105%;
+  src:url("assets/fontes/fredoka-bold.woff2") format("woff2"),
+      url("assets/fontes/fredoka-bold.woff") format("woff");
+}
+@font-face{
+  font-family:"Qotimo Destaque";
+  font-style:normal;
+  font-weight:900;
+  font-display:swap;
+  size-adjust:105%;
+  src:url("assets/fontes/fredoka-black.woff2") format("woff2"),
+      url("assets/fontes/fredoka-black.woff") format("woff");
+}
+
+/* COM AUTORIZAÇÃO DA DETENTORA: copie os quatro arquivos bold/black de
+   tarefas/tarefa3/site/ para assets/fontes/, comente os dois @font-face
+   acima e descomente o bloco abaixo inteiro. Nada mais no projeto muda. (A
+   chiquinhorc2-regular não entra: o papel de destaque só usa 700 e 900.)
+
+   Todas as medidas calibradas adiante — o teto de 165u do primeiro pilar,
+   os 7.6em da História, os 8.7em das Linhas, o nowrap da chamada do herói —
+   foram escolhidas dentro da janela que serve ÀS DUAS fontes, então valem
+   sem retoque. A única exceção é o corpo dos nomes de linha: a Chiquinho é
+   ~10% mais larga que a Fredoka e, no mesmo corpo, "Tradicionais" encostaria
+   na borda da coluna. Por isso o --fs-linha vem junto, aqui dentro.
+
+@font-face{
+  font-family:"Qotimo Destaque";
+  font-style:normal;
+  font-weight:700;
+  font-display:swap;
+  size-adjust:102%;
+  src:url("assets/fontes/chiquinhorc2-bold.woff2") format("woff2"),
+      url("assets/fontes/chiquinhorc2-bold.woff") format("woff");
+}
+@font-face{
+  font-family:"Qotimo Destaque";
+  font-style:normal;
+  font-weight:900;
+  font-display:swap;
+  size-adjust:102%;
+  src:url("assets/fontes/chiquinhorc2-black.woff2") format("woff2"),
+      url("assets/fontes/chiquinhorc2-black.woff") format("woff");
+}
+:root{
+  --fs-linha:clamp(1.52rem,2.39vw,2.52rem);
+}
+*/
 
 /* ---------------------------------------------------------------- tokens */
 
@@ -17,6 +106,12 @@
   --corpo:#2A5183;            /* 5.9:1 sobre branco */
   --corpo-claro:#D9E4F1;      /* corpo sobre navy */
 
+  /* famílias. A Poppins na frente da fila de fallback do destaque é de
+     propósito: se o webfont falhar, a página cai numa fonte que já está
+     carregada, com métrica conhecida, em vez de pular para a do sistema. */
+  --fonte-texto:Poppins,"Segoe UI",system-ui,sans-serif;
+  --fonte-destaque:"Qotimo Destaque",Poppins,"Segoe UI",system-ui,sans-serif;
+
   --maxw:1711px;
   --content:1440px;
   --gutter:clamp(20px,4vw,64px);
@@ -25,7 +120,15 @@
   --fs-menu:clamp(.85rem,1.15vw,1.05rem);      /* teto ~16,8px */
   --fs-tagline:clamp(1.15rem,2.1vw,1.85rem);   /* teto ~29,6px */
   --fs-titulo:clamp(2rem,4.45vw,4rem);          /* teto 64px */
-  --fs-linha:clamp(1.5rem,2.35vw,2.44rem);     /* teto 39px = arte */
+  /* Remedido para a fonte de destaque. A restricao e a coluna de texto do
+     card (os 42fr de .linha): 255px em 1600, 230px em 1440, 204px em 1280.
+     "Tradicionais" tem de caber inteira nela e "Sorvetes em pote" tem de
+     quebrar em duas linhas — que e o que a Poppins fazia.
+       1600px: coluna 255 | Poppins antes 245 | destaque agora 239
+       1440px: coluna 230 | Poppins antes 220 | destaque agora 215
+     A de destaque e mais estreita, entao o corpo sobe (2.35vw -> 2.55vw) e
+     o nome volta a ocupar a mesma mancha de antes. */
+  --fs-linha:clamp(1.62rem,2.55vw,2.69rem);
   --fs-corpo:clamp(.95rem,1.2vw,1.19rem);      /* teto ~19px */
   --fs-legenda:clamp(.75rem,.95vw,.95rem);
 
@@ -37,6 +140,12 @@
   --sp-xl:clamp(36px,5vw,88px);
 
   --raio:999px;
+
+  /* movimento: uma curva e tres tempos para o site inteiro */
+  --ease:cubic-bezier(.22,1,.36,1);
+  --t-toque:.12s;          /* retorno do toque/clique */
+  --t-rapido:.22s;         /* cor, sombra, pequenos saltos */
+  --t-medio:.45s;          /* deslocamentos: dock, cartoes, fotos */
 }
 
 *,*::before,*::after{box-sizing:border-box}
@@ -45,7 +154,7 @@ html{-webkit-text-size-adjust:100%}
 
 body{
   margin:0;
-  font-family:Poppins,"Segoe UI",system-ui,sans-serif;
+  font-family:var(--fonte-texto);
   font-size:var(--fs-corpo);
   line-height:1.5;
   color:var(--corpo);
@@ -134,7 +243,8 @@ body>*{
 }
 .nav__cta:hover{background:#c5171a}
 
-.nav__menu{display:none}      /* hamburguer: so na composicao empilhada */
+.dock{display:none}           /* dock: so no celular/tablet em retrato */
+.hero__onda--mob{display:none}
 
 /* ----------------------------------------------------------------- heroi */
 
@@ -196,12 +306,21 @@ body>*{
 
 .hero__logo{width:calc(600 * var(--u));max-width:none;height:auto}
 
+/* A chamada da marca, logo abaixo do logotipo — que já é desenhado numa
+   arredondada de "o" circular. É o melhor lugar do site para o destaque: o
+   logo e a frase passam a falar a mesma língua. O logotipo continua sendo a
+   IMAGEM de sempre; nada aqui o substitui.
+   29u -> 31u: a de destaque é ~8% mais estreita que a Poppins e a frase
+   ficava curta demais sob um logo de largura fixa (600u). Em 31u ela mede
+   441u (a Poppins media 466u) e continua com folga larga dentro dos 631u
+   livres — o nowrap está garantido nas duas fontes. */
 .hero__tagline{
   display:block;
   margin-block-start:0;
   margin-inline-start:calc(9 * var(--u));
-  font-size:max(17px,calc(29 * var(--u)));
-  font-weight:700;line-height:1.2;
+  font-family:var(--fonte-destaque);
+  font-size:max(18px,calc(31 * var(--u)));
+  font-weight:900;line-height:1.18;
   color:var(--branco);
   white-space:nowrap;
 }
@@ -232,9 +351,51 @@ body>*{
   transform:none;
   display:block;
 }
-.hero__cascao img{
+
+/* A caixa continua sendo a da imagem preenchida (1017x2430): e ela que fica
+   no fluxo e da a altura, exatamente como antes. Poster e video se encaixam
+   por cima com object-fit:contain — o webm e 930x2226, proporcao 0,17% mais
+   estreita, e o "contain" alinha o objeto dentro de 1px do que a imagem
+   desenhava (medido: topo 40,4u vs 41u; ponta 2389,6u vs 2389u na escala de
+   1017u). Nada de esticar: o cascao nunca muda de forma. */
+.cascao{
+  position:relative;display:block;
   width:calc(365 * var(--u));
-  max-width:none;height:auto;
+  aspect-ratio:1017 / 2430;      /* rede: se a imagem falhar a caixa fica */
+}
+.cascao__fallback{
+  width:100%;height:auto;max-width:none;   /* no fluxo: e quem mede a caixa */
+}
+.cascao__poster,
+.cascao__video{
+  position:absolute;inset:0;
+  width:100%;height:100%;max-width:none;
+  object-fit:contain;
+  background:transparent;        /* sem retangulo preto atras do alpha */
+  pointer-events:none;
+}
+
+/* Estados. Sem a classe .cascao-anima no <html> — sem JS, com movimento
+   reduzido, com Save-Data ou sem VP9 alpha — vale o desenho de sempre:
+   so a imagem preenchida, que nem chega a ser escondida. */
+.cascao__poster,
+.cascao__video{display:none}
+
+.cascao-anima .cascao__poster{display:block}
+.cascao-anima .cascao__video{display:block;opacity:0}
+.cascao-anima .cascao__fallback{opacity:0}
+
+/* video rodando: ele assume o cascao e o poster sai numa troca curta.
+   O estado fica gravado no elemento, entao o ultimo quadro continua
+   visivel depois do "ended" — nao reinicia e nao some. */
+.cascao-anima .cascao[data-estado="tocando"] .cascao__video{opacity:1}
+.cascao-anima .cascao[data-estado="tocando"] .cascao__poster{opacity:0}
+.cascao-anima .cascao[data-estado="tocando"] .cascao__video,
+.cascao-anima .cascao[data-estado="tocando"] .cascao__poster{
+  transition:opacity .16s linear;
+}
+@media (prefers-reduced-motion:reduce){
+  .cascao__video,.cascao__poster{transition:none}
 }
 
 /* onda branca na FRENTE do cascao: e ela que corta a ponta */
@@ -264,7 +425,7 @@ body>*{
      que cobre a costura: sem ela o vermelho da faixa vazava 1px de fio
      ao longo da base e subindo pela borda direita */
   inset-inline:-2px;width:calc(100% + 4px);max-width:none;
-  height:calc(68 * var(--u));
+  height:calc(110 * var(--u));           /* viewBox 1713x110 */
   box-shadow:0 3px 0 var(--branco);
 }
 
@@ -304,9 +465,12 @@ body>*{
   margin-block-start:calc(12 * var(--u));
 }
 
+/* Títulos de duas ou três palavras: é o que a de destaque faz melhor. O
+   parágrafo logo abaixo fica em Poppins — ali quem manda é a leitura. */
 .pilar__texto h2{
+  font-family:var(--fonte-destaque);
   font-size:max(14px,calc(23.5 * var(--u)));
-  font-weight:800;color:var(--navy);line-height:1.18;
+  font-weight:900;color:var(--navy);line-height:1.16;
   max-width:calc(300 * var(--u));
 }
 .pilar__texto p{
@@ -317,11 +481,17 @@ body>*{
   max-width:calc(290 * var(--u));
 }
 
-/* As quebras da arte saem de max-width medido, nao de <br>. Larguras
-   naturais em Poppins (u=1): "Ingredientes" 156 / "Ingredientes de" 191;
-   "Sorvetes sempre fresquinhos" 254 / "...e" 269; "Cada sabor e pensado"
-   202 / "...para" 249. Cada teto cai dentro da janela certa. */
-.pilar:nth-child(1) .pilar__texto h2{max-width:calc(175 * var(--u))}
+/* As quebras da arte saem de max-width medido, nao de <br>. Os tetos dos
+   paragrafos continuam medidos em Poppins (u=1): "Sorvetes sempre
+   fresquinhos" 254 / "...e" 269; "Cada sabor e pensado" 202 / "...para" 249.
+
+   O h2 do primeiro pilar trocou de fonte, entao o teto dele foi remedido. A
+   quebra tem de cair DEPOIS de "Ingredientes" e ANTES de "de". Janela:
+   Fredoka 139..172u, Chiquinho 151..186u — 165u cai dentro das duas e ainda
+   deixa a segunda linha ("de Qualidade", 158u no pior caso) inteira. Os
+   175u de antes eram da Poppins e agora deixariam "Ingredientes de" subir
+   para a primeira linha. */
+.pilar:nth-child(1) .pilar__texto h2{max-width:calc(165 * var(--u))}
 .pilar:nth-child(2) .pilar__texto p{max-width:calc(260 * var(--u))}
 .pilar:nth-child(3) .pilar__texto p{max-width:calc(243 * var(--u))}
 
@@ -378,7 +548,9 @@ body>*{
   padding-inline:var(--gutter);
 }
 
-.linhas__head{margin-block-end:clamp(16px,2.2vw,40px)}
+/* a folga precisa passar do transbordo do blob (12% da altura do card),
+   senao a primeira fileira sobe por cima do subtitulo */
+.linhas__head{margin-block-end:clamp(38px,4.6vw,72px)}
 
 .linhas__eyebrow{
   font-size:var(--fs-legenda);
@@ -387,9 +559,12 @@ body>*{
   margin-block-end:var(--sp-xs);
 }
 
+/* O teto de 8.7em continua valendo sem retoque: a quebra tem de cair
+   depois de "seu", e a janela nas duas fontes de destaque e 6.8..10.1em. */
 .linhas__titulo{
+  font-family:var(--fonte-destaque);
   font-size:var(--fs-titulo);      /* teto 64px = valor da arte */
-  font-weight:800;line-height:1.04;
+  font-weight:900;line-height:1.08;
   color:var(--branco);
   max-width:8.7em;                 /* quebra em 2 linhas, como na arte */
 }
@@ -414,10 +589,11 @@ body>*{
 
 .linha{
   position:relative;
-  aspect-ratio:865/332;
-  display:flex;
+  display:grid;
+  grid-template-columns:minmax(0,42fr) minmax(0,58fr);
   align-items:center;
-  padding:clamp(10px,1.4vw,24px) clamp(20px,2.8vw,50px);
+  column-gap:clamp(6px,1vw,18px);
+  padding:clamp(20px,2.2vw,38px) clamp(20px,2.6vw,46px);
 }
 
 /* blob branco: mesma forma nos quatro, variacao por espelhamento.
@@ -433,10 +609,6 @@ body>*{
 
 .linha__texto{
   position:relative;z-index:1;
-  flex:0 1 auto;
-  /* o que os produtos deixam livre; o teto de --fs-linha foi calibrado
-     para a palavra mais larga ("Tradicionais") caber aqui */
-  max-width:calc(100% - var(--pw,66) * 1%);
   display:grid;justify-items:start;gap:clamp(3px,.5vw,9px);
 }
 
@@ -445,22 +617,28 @@ body>*{
   width:clamp(30px,2.8vw,48px);aspect-ratio:1;
   background:var(--vermelho);color:var(--branco);
   border-radius:50%;
+  font-family:var(--fonte-destaque);
   font-size:clamp(.8rem,1.1vw,1.19rem);font-weight:700;
   margin-block-end:clamp(2px,.4vw,8px);
 }
 
+/* Tradicionais / Picoles / Sorvetes / Acai: a aplicacao mais forte do
+   destaque no site. Quatro nomes de produto, curtos, grandes e sozinhos no
+   card — exatamente onde a personalidade da fonte rende. A descricao e o
+   botao logo abaixo continuam em Poppins. */
 .linha__nome{
-  font-size:var(--fs-linha);       /* teto ~39px = valor da arte */
-  font-weight:800;line-height:1.05;
+  font-family:var(--fonte-destaque);
+  font-size:var(--fs-linha);
+  font-weight:900;line-height:1.08;
   color:var(--navy);
   text-wrap:balance;
 }
 
 .linha__desc{
-  /* 70% da COLUNA de texto (que ja e 100%-pw do card) da ~34% do card, que
-     e onde a descricao termina na arte. Em % do card os dois percentuais se
-     multiplicariam e a caixa virava 18%, cortando "Refrescancia". */
-  max-width:70%;
+  /* Sem teto proprio: quem limita a linha agora e a coluna de texto do card
+     (os 42fr de .linha). O antigo 70% vinha de quando o texto dividia o card
+     com os produtos soltos e precisava parar antes deles; aqui ele so
+     espremia a descricao em tres linhas. */
   font-size:var(--fs-corpo);
   color:var(--corpo);
   line-height:1.3;
@@ -479,41 +657,27 @@ body>*{
 }
 .linha__btn svg{width:clamp(14px,1.2vw,20px);height:auto;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
 .linha__btn:hover{background:#c5171a;transform:translateY(-2px)}
+/* virou <button> (abre o catalogo): zera o que o navegador poe em botao */
+button.linha__btn{border:0;font-family:inherit;line-height:inherit;cursor:pointer}
+.linha[data-catalogo]{cursor:pointer}
 
-/* Produtos: cada arquivo recortado na propria silhueta (a tela quadrada de
-   1200x1200 e que os encolhia). Uma regra so para os doze — mesma altura de
-   caixa, alinhados pela base, com leve sobreposicao, e o do meio um pouco
-   maior, como na arte. Nenhum percentual por produto. */
-.linha__produtos{
-  position:absolute;z-index:0;
-  inset-block-end:13%;
-  inset-inline-end:6%;
-  width:calc(var(--pw,66) * 1%);
-  height:calc(var(--ph,95) * 1%);
-  display:flex;align-items:flex-end;justify-content:center;
+/* Foto agrupada da linha: um arquivo so por linha, com os tres produtos ja
+   montados e fundo transparente. A caixa reserva a proporcao do arquivo
+   (--ar, escrito no HTML) antes de a imagem chegar, entao a altura do card
+   nao pula durante o carregamento. As margens negativas deixam os produtos
+   encostarem na borda do blob, como na arte, em vez de ficarem presos
+   dentro de uma caixa. */
+.linha__grupo{
+  position:relative;z-index:1;
+  margin:calc(-1 * clamp(8px,1.4vw,26px)) calc(-1 * clamp(4px,1vw,18px));
+  aspect-ratio:var(--ar,3/2);
 }
 
-.produto{
-  flex:1 1 0;min-width:0;height:100%;
-  display:flex;flex-direction:column;
-  align-items:center;justify-content:flex-end;
-  gap:4%;
-}
-.produto+.produto{margin-inline-start:-6%}
-.produto:nth-child(2){flex-grow:1.2;z-index:2}   /* destaque central */
-
-.produto img{
-  max-width:100%;max-height:100%;
-  width:auto;height:auto;
-  min-height:0;
-}
-
-.produto span{
-  flex:0 0 auto;
-  font-size:var(--fs-legenda);
-  color:var(--corpo);
-  line-height:1.2;
-  white-space:nowrap;     /* rotulo de produto, nao texto corrido */
+.linha__grupo img{
+  width:100%;height:100%;
+  object-fit:contain;
+  object-position:center bottom;
+  filter:drop-shadow(0 14px 26px rgb(0 15 35 / .18));
 }
 
 /* ----------------------------------------------------- utilitarios comuns */
@@ -606,7 +770,8 @@ body>*{
   align-content:start;
   /* topo mais curto: a onda vermelha agora nasce la em cima, na faixa
      branca do heroi, entao o conteudo nao precisa esperar por ela */
-  padding-block:clamp(48px,3.8vw,72px) clamp(92px,8.6vw,156px);
+  --palco-pt:clamp(48px,3.8vw,72px);
+  padding-block:var(--palco-pt) clamp(92px,8.6vw,156px);
   padding-inline:max(var(--gutter),(100% - 1560px) / 2);
   /* o topo saiu daqui e virou .historia__faixa (precisa subir para dentro
      do heroi); aqui fica so a onda de baixo, que emoldura os marcos.
@@ -618,18 +783,57 @@ body>*{
 
 .historia__texto{display:grid;justify-items:start}
 
+/* decoracao (sorvete + onda branca) no vao navy entre a onda vermelha do
+   topo e o texto. Linha propria na grade, de ponta a ponta do conteudo.
+   O topo dela encosta na parte baixa da onda vermelha: 58% da altura da
+   tira (.historia__faixa), que tambem sobe --sobe. O desenho so comeca a
+   ocupar a direita la pelos 40% da propria altura, entao os pingos
+   vermelhos caem sempre no azul, nunca sobre o vermelho.
+   --deco-sobe puxa o desenho mais para perto da onda vermelha (24px na
+   mesa, menos nas telas menores, onde a onda e mais baixa). */
+.historia__deco{
+  --onda-h:calc(max(100cqw,1100px) * 232 / 1711);
+  --deco-sobe:24px;
+  grid-column:1 / -1;
+  width:100%;
+  margin-block:calc(var(--sobe) + var(--onda-h) * .58 - var(--palco-pt) - var(--deco-sobe))
+               calc(-1 * clamp(0px,1.4vw,24px));
+  pointer-events:none;
+}
+/* proporcao do viewBox (1452x310) sempre: largura manda, altura segue */
+.historia__deco svg{width:100%;height:auto;max-width:none}
+/* os dois pingos vermelhos balancam de leve, em ritmos diferentes */
+.historia__gota{transform-box:fill-box}
+.historia__gota--a{animation:gota-a 4.4s ease-in-out infinite}
+.historia__gota--b{animation:gota-b 5.1s ease-in-out infinite}
+@keyframes gota-a{50%{transform:translateY(-3px)}}
+@keyframes gota-b{50%{transform:translateY(3px)}}
+@media (prefers-reduced-motion:reduce){.historia__gota{animation:none}}
+
 .historia__eyebrow{
   font-size:var(--fs-legenda);
   font-weight:700;letter-spacing:.22em;text-transform:uppercase;
   color:var(--branco);
 }
+/* Titulo curto de secao: destaque. O olho-magico ("Sobre nos"), o
+   subtitulo e os tres paragrafos abaixo ficam em Poppins — dois blocos de
+   destaque empilhados pesariam, e o corpo e texto de leitura.
+
+   max-width 9.5em -> 7.6em: em Poppins o teto de 9.5em era o que jogava
+   "feita" para a segunda linha. A de destaque e mais estreita e "Uma
+   historia feita" passaria a caber (8.6em na Fredoka, 9.0em na Chiquinho),
+   mudando a quebra da arte. A janela para quebrar depois de "historia" e
+   6.4..8.6em; 7.6em serve as duas fontes.
+   letter-spacing: o -.01em existia para fechar a Poppins. Numa arredondada
+   ele encosta os contornos redondos uns nos outros — sai. */
 .historia__titulo{
   margin-block-start:clamp(10px,1vw,18px);
+  font-family:var(--fonte-destaque);
   font-size:clamp(2.3rem,4.1vw,4.4rem);  /* ~70px na arte de 1711 */
-  font-weight:800;line-height:1.02;
-  letter-spacing:-.01em;
+  font-weight:900;line-height:1.06;
+  letter-spacing:normal;
   color:var(--branco);
-  max-width:9.5em;
+  max-width:7.6em;
   text-wrap:balance;
 }
 .historia__sub{
@@ -712,7 +916,12 @@ body>*{
   letter-spacing:.2em;text-transform:uppercase;
   padding-inline-start:.2em;              /* compensa o espaco da ultima letra */
 }
-.selo strong{font-size:max(20px,4.4cqi);font-weight:800;margin-block-start:.12em}
+/* so o numero vai para o destaque: o "DESDE" e caixa-alta miuda com muito
+   espacejamento, e ai a Poppins desenha melhor */
+.selo strong{
+  font-family:var(--fonte-destaque);
+  font-size:max(20px,4.4cqi);font-weight:900;margin-block-start:.12em;
+}
 
 /* gotas de apoio: dois grupos, so decoracao */
 .gotas{position:absolute;z-index:0;fill:var(--vermelho);pointer-events:none}
@@ -811,9 +1020,10 @@ body>*{
 }
 .unidades__titulo{
   margin-block-start:clamp(12px,1.2vw,20px);
+  font-family:var(--fonte-destaque);
   font-size:clamp(2rem,3.9vw,4.1rem);
-  font-weight:800;line-height:1.05;
-  letter-spacing:-.01em;
+  font-weight:900;line-height:1.1;
+  letter-spacing:normal;     /* idem historia: nada de fechar uma arredondada */
   color:var(--branco);
   text-wrap:balance;
 }
@@ -896,9 +1106,13 @@ body>*{
   display:grid;gap:6px;align-content:start;
   padding:clamp(12px,1.1vw,18px) clamp(10px,1vw,16px) clamp(10px,.9vw,14px);
 }
+/* O NOME da unidade e titulo curto e ganha o destaque. Endereco, status de
+   aberto/fechado e o link "Como chegar" ficam em Poppins: sao informacao de
+   servico, lida de perto e em corpo pequeno. */
 .card__nome{
+  font-family:var(--fonte-destaque);
   font-size:clamp(1.15rem,1.45vw,1.55rem);
-  font-weight:800;line-height:1.15;
+  font-weight:700;line-height:1.2;
   color:var(--navy);
 }
 .card__end{
@@ -935,7 +1149,7 @@ body>*{
 }
 .card--destaque .card__info > :not(.card__acao){grid-column:1}
 .card--destaque .card__acao{grid-column:2;grid-row:1 / span 3}
-.card--destaque .card__nome{font-size:clamp(1.5rem,2.3vw,2.4rem)}
+.card--destaque .card__nome{font-size:clamp(1.5rem,2.3vw,2.4rem);font-weight:900}
 
 /* quarto card deitado: foto a esquerda, texto a direita */
 .grade[data-layout="editorial"] .card:nth-child(4) > article{flex-direction:row;align-items:stretch}
@@ -966,8 +1180,11 @@ body>*{
   .historia__palco{
     grid-template-columns:minmax(0,1fr);
     row-gap:clamp(40px,7vw,64px);
-    padding-block:clamp(96px,14vw,130px) clamp(90px,16vw,150px);
+    --palco-pt:clamp(96px,14vw,130px);
+    padding-block:var(--palco-pt) clamp(90px,16vw,150px);
   }
+  /* o row-gap da coluna unica ja separa; a decoracao come parte dele */
+  .historia__deco{--deco-sobe:16px;margin-block-end:calc(-1 * clamp(18px,4vw,36px))}
   .historia__corpo{max-width:68ch}
   .fotos{max-width:860px;justify-self:center}
 
@@ -992,6 +1209,15 @@ body>*{
   .historia__titulo{max-width:none}
   .historia__btn{width:100%}
 
+  /* decoracao: o desenho inteiro, de borda a borda da tela (a onda do
+     arquivo ja nasce e morre nas bordas), so em escala menor. Nada e
+     cortado; a altura acompanha a largura, sem faixa azul sobrando. */
+  .historia__deco{
+    --deco-sobe:10px;
+    width:auto;
+    margin-inline:calc(-1 * var(--gutter));
+  }
+
   .fotos{
     aspect-ratio:auto;
     display:grid;
@@ -1001,9 +1227,10 @@ body>*{
   .foto{position:relative;inset:auto;width:auto;height:auto;rotate:none;padding:6px}
   .foto--principal{grid-column:1 / -1;aspect-ratio:1}
   .foto--area,.foto--interior{aspect-ratio:1}
+  /* selo DENTRO do canto da foto principal: nem fora dela, nem sobre texto */
   .selo{
-    inset-inline:auto 10px;inset-block-start:-18px;
-    width:26%;
+    inset-inline:auto 18px;inset-block-start:18px;
+    width:24%;
   }
   .selo span{font-size:max(9px,3.2cqi)}
   .selo strong{font-size:max(18px,7.4cqi)}
@@ -1044,27 +1271,20 @@ body>*{
 
 /* ---------------------------------------------------- pontos de quebra */
 
-/* Notebooks estreitos (900-1200): o card fica mais alto para o texto e os
-   produtos caberem sem se tocar. */
+/* Notebooks estreitos (900-1200): o card fica mais alto para o texto e a
+   foto caberem sem se apertar. */
 @media (max-width:1199px){
-  /* o card fica alto e o interior empilha: texto em cima, produtos embaixo.
-     E o que acaba com o estouro da coluna de texto (o botao "Conheca a
-     linha" nao cabia nos ~120px que sobravam em 1024). */
+  /* o interior empilha: texto em cima, foto embaixo. E o que acaba com o
+     estouro da coluna de texto (o botao "Conheca a linha" nao cabia nos
+     ~120px que sobravam em 1024). */
   .linha{
-    aspect-ratio:auto;
-    flex-direction:column;
-    align-items:center;
-    gap:clamp(10px,1.6vw,18px);
+    grid-template-columns:minmax(0,1fr);
+    row-gap:clamp(10px,1.6vw,18px);
     padding:clamp(18px,2.4vw,32px) clamp(22px,2.8vw,40px) clamp(14px,2vw,24px);
     text-align:center;
   }
-  .linha__texto{max-width:none;width:100%;justify-items:center}
-  .linha__produtos{
-    position:static;
-    width:100%;
-    height:clamp(150px,19vw,230px);
-  }
-  .produto+.produto{margin-inline-start:-4%}
+  .linha__texto{width:100%;justify-items:center}
+  .linha__grupo{margin-inline:calc(-1 * clamp(6px,1.4vw,22px))}
 }
 
 @media (max-width:1099px){
@@ -1119,74 +1339,8 @@ body>*{
 
   body>*{--um:min(100cqw / 390, 1.7px)}
 
-  /* ---- menu: hamburguer + CTA ---- */
-  .topo{
-    inset-block-start:calc(16 * var(--um));
-    padding-inline:calc(14 * var(--um));
-  }
-  .nav{
-    width:100%;
-    justify-content:space-between;
-    gap:calc(10 * var(--um));
-    height:calc(54 * var(--um));
-    padding-inline:calc(16 * var(--um)) calc(7 * var(--um));
-  }
-
-  .nav__menu{
-    display:flex;align-items:center;gap:calc(9 * var(--um));
-    background:none;border:0;padding:0;cursor:pointer;
-    font:inherit;color:var(--navy);
-  }
-  .nav__rotulo{
-    font-size:max(13px,calc(16 * var(--um)));font-weight:700;
-  }
-  /* tres tracos desenhados com sombras, para nao precisar de mais markup */
-  .nav__traco,
-  .nav__traco::before,
-  .nav__traco::after{
-    display:block;
-    width:calc(20 * var(--um));height:calc(2.5 * var(--um));
-    background:var(--navy);border-radius:2px;
-    transition:transform .25s,opacity .2s;
-  }
-  .nav__traco{position:relative}
-  .nav__traco::before,.nav__traco::after{content:"";position:absolute;inset-inline-start:0}
-  .nav__traco::before{inset-block-start:calc(-7 * var(--um))}
-  .nav__traco::after{inset-block-start:calc(7 * var(--um))}
-
-  .nav__menu[aria-expanded="true"] .nav__traco{background:transparent}
-  .nav__menu[aria-expanded="true"] .nav__traco::before{transform:translateY(calc(7 * var(--um))) rotate(45deg)}
-  .nav__menu[aria-expanded="true"] .nav__traco::after{transform:translateY(calc(-7 * var(--um))) rotate(-45deg)}
-
-  /* painel: some do fluxo e vira lista abaixo da pilula */
-  .nav__links{
-    position:absolute;
-    inset-block-start:calc(62 * var(--um));
-    inset-inline:0;
-    display:grid;gap:0;
-    background:var(--branco);
-    border-radius:calc(22 * var(--um));
-    box-shadow:0 10px 30px rgb(0 20 45 / .22);
-    padding:calc(6 * var(--um)) 0;
-    opacity:0;visibility:hidden;transform:translateY(calc(-8 * var(--um)));
-    /* visibility sem transicao na abertura (senao o link ainda nao e
-       focavel quando o script manda o foco) e so no fim do fade ao fechar */
-    transition:opacity .2s,transform .2s,visibility 0s .2s;
-  }
-  .nav__links.is-aberto{
-    opacity:1;visibility:visible;transform:none;
-    transition:opacity .2s,transform .2s,visibility 0s;
-  }
-  .nav__links a{
-    display:block;
-    padding:calc(12 * var(--um)) calc(22 * var(--um));
-    font-size:max(15px,calc(17 * var(--um)));
-  }
-
-  .nav__cta{
-    width:calc(128 * var(--um));height:calc(40 * var(--um));
-    font-size:max(13px,calc(15 * var(--um)));
-  }
+  /* menu: o hamburguer saiu; cabecalho compacto e dock ficam na revisao
+     mais abaixo (MOBILE / TABLET EM RETRATO) */
 
   /* ---- heroi empilhado: um eixo central so ---- */
   .hero{
@@ -1214,7 +1368,7 @@ body>*{
   .hero__logo{width:calc(289 * var(--um))}     /* 74% da largura do quadro */
   .hero__tagline{
     margin:calc(14 * var(--um)) 0 0;
-    font-size:max(15px,calc(19 * var(--um)));
+    font-size:max(16px,calc(20 * var(--um)));
     white-space:normal;
   }
   .btn{
@@ -1230,7 +1384,7 @@ body>*{
     /* a onda esconde ~18% da altura do cascao */
     margin-block-end:calc(-45 * var(--um));
   }
-  .hero__cascao img{width:calc(234 * var(--um))}   /* objeto = 55% do quadro */
+  .cascao{width:calc(234 * var(--um))}             /* objeto = 55% do quadro */
 
   .hero__onda{height:calc(26 * var(--um))}
 
@@ -1249,6 +1403,11 @@ body>*{
   .pilar{gap:calc(16 * var(--um));align-items:center}
   .pilar__icone{width:calc(60 * var(--um))}
   .pilar__texto{margin-block-start:0}
+  /* 19um e nao mais: "Ingredientes de Qualidade" tem de caber numa linha
+     so nos 266um que sobram ao lado do icone. Nesse corpo ela mede 237um na
+     Fredoka e 254um na Chiquinho — as duas com mais folga do que a Poppins
+     tinha (261um). O size-adjust do @font-face ja resolve o tamanho optico;
+     subir o corpo aqui so comeria essa folga. */
   .pilar__texto h2,
   .pilar:nth-child(1) .pilar__texto h2{
     font-size:max(15px,calc(19 * var(--um)));max-width:none;
@@ -1260,21 +1419,20 @@ body>*{
   }
 
   /* ---- linhas ---- */
-  .linhas__head{max-width:none}
+  /* o card empilhado e mais alto, entao o blob transborda mais para cima */
+  .linhas__head{max-width:none;margin-block-end:clamp(56px,9vw,80px)}
   .linhas__board{grid-template-columns:minmax(0,1fr)}
 
   /* o mobile mantem blob, numero, gotas e faixas — so reorganiza:
-     os produtos voltam ao fluxo, abaixo do texto */
+     a foto agrupada vai para baixo do texto */
   .linha{
-    aspect-ratio:auto;
-    flex-direction:column;
-    align-items:center;
-    gap:clamp(12px,3vw,22px);
+    grid-template-columns:minmax(0,1fr);
+    row-gap:clamp(12px,3vw,22px);
     padding:clamp(24px,6vw,40px) clamp(26px,6vw,44px) clamp(16px,4vw,30px);
     text-align:center;
   }
   .linha__texto{
-    max-width:none;width:100%;
+    width:100%;
     justify-items:center;
   }
   .linha__blob{inset-inline-start:-3%;width:106%}
@@ -1288,12 +1446,235 @@ body>*{
   .historia{--sobe:0px}
   .historia__topo{height:clamp(26px,7vw,54px)}
 
-  .linha__produtos{
-    position:static;
-    width:100%;
-    height:clamp(150px,40vw,250px);
+  .linha__grupo{margin-inline:calc(-1 * clamp(8px,2.6vw,20px))}
+}
+
+/* ================== MOBILE / TABLET EM RETRATO (revisao) ==================
+   Mesma condicao da composicao empilhada; vem depois dela e so refaz o que
+   estava errado na tela pequena:
+     - menu: cabecalho so com o CTA + dock fixo embaixo (nada de painel
+       gigante sobre o heroi)
+     - heroi: cabe na altura real da tela; a onda branca volta a cobrir a
+       parte de baixo da casquinha, como na mesa
+     - linhas: cartao limpo com raio organico no lugar do blob esticado
+   ======================================================================= */
+@media (max-width:899px),(orientation:portrait) and (max-width:1099px){
+
+  /* --um agora tambem respeita a ALTURA: em celular baixo ou deitado o
+     quadro encolhe pelo lado que apertar, como o --u da mesa */
+  :root{--dock-h:calc(72px + env(safe-area-inset-bottom,0px))}
+  body>*{--um:min(100cqw / 390, 1.7px, 100svh / 720)}
+
+  /* o dock e fixo: o fim da pagina precisa de folga para nada ficar
+     escondido atras dele */
+  body{padding-block-end:calc(var(--dock-h) + 8px)}
+
+  /* ---- cabecalho compacto: so o CTA, sem caixa branca ---- */
+  .topo{
+    inset-block-start:max(calc(14 * var(--um)),env(safe-area-inset-top,0px));
+    padding-inline:calc(14 * var(--um));
   }
-  .produto+.produto{margin-inline-start:-3%}
+  .nav{
+    width:100%;height:auto;
+    justify-content:flex-end;
+    padding:0;background:none;box-shadow:none;
+  }
+  .nav__links{display:none}
+  .nav__cta{
+    width:auto;height:auto;min-height:44px;
+    padding-inline:20px;
+    font-size:15px;
+    border:2px solid var(--branco);
+    box-shadow:0 8px 20px rgb(0 20 45 / .28);
+  }
+
+  /* ---- heroi na altura da tela ----
+     --peek: o que sobra embaixo para a onda branca e o comeco dos pilares
+     aparecerem acima do dock. --sobrepoe: quanto da casquinha a onda come
+     (so o cone; a massa de sorvete fica inteira). */
+  .hero{
+    --peek:calc(var(--dock-h) + 34px);
+    --sobrepoe:calc(64 * var(--um));
+    --palco-h:max(calc(100svh - var(--peek)), calc(540 * var(--um)));
+  }
+  .hero__palco{
+    height:var(--palco-h);
+    padding:calc(86 * var(--um)) calc(20 * var(--um)) 0;
+  }
+  .hero__logo{width:calc(252 * var(--um))}
+  .hero__tagline{margin-block-start:calc(10 * var(--um))}
+  /* largura pelo conteudo: com --um pequeno (celular deitado) a largura
+     fixa quebrava "Explore Nossos Sabores" em duas linhas */
+  .btn{
+    margin-block-start:calc(14 * var(--um));
+    width:auto;min-width:calc(215 * var(--um));min-height:44px;
+    padding-inline:max(18px,calc(22 * var(--um)));
+    white-space:nowrap;
+  }
+
+  /* o cascao ocupa o que sobrar da altura (flex), mede pela altura e
+     deriva a largura da proporcao do arquivo — nunca achata */
+  .hero__cascao{
+    flex:1 1 0;
+    min-height:calc(170 * var(--um));
+    display:flex;justify-content:center;
+    margin-block:calc(12 * var(--um)) calc(-1 * var(--sobrepoe));
+  }
+  .cascao{height:100%;width:auto;max-width:100%}
+  .cascao__fallback{position:absolute;inset:0;height:100%;object-fit:contain}
+
+  /* faixa vermelha ancorada no pe do palco: a curva passa por tras do cone,
+     como na composicao da mesa, em vez de so aparecer na borda direita */
+  .hero__faixa--base{
+    inset-block:calc(var(--palco-h) - 205 * var(--um)) auto;
+    height:calc(330 * var(--um));
+  }
+
+  .hero__onda--mesa{display:none}
+  .hero__onda--mob{display:block;height:calc(52 * var(--um))}
+  .hero__base{padding-block:calc(18 * var(--um)) calc(34 * var(--um))}
+
+  /* ---- dock ---- */
+  .dock{
+    display:block;
+    position:fixed;z-index:60;
+    inset-inline-start:50%;
+    inset-block-end:calc(10px + env(safe-area-inset-bottom,0px));
+    width:min(calc(100% - 20px),460px);
+    translate:-50% 0;
+  }
+  .dock__barra{
+    position:relative;
+    display:grid;grid-template-columns:repeat(4,minmax(0,1fr));
+    height:62px;
+    background:var(--branco);
+    border-radius:22px;
+    box-shadow:0 12px 30px rgb(0 20 45 / .3);
+  }
+
+  /* marca do item ativo: curva que sobe da barra + bola vermelha. Anda de
+     um item para outro com translate (sem mexer no layout) */
+  .dock__marca{
+    position:absolute;inset-block-start:0;inset-inline-start:0;
+    width:25%;height:0;
+    translate:calc(var(--i,0) * 100%) 0;
+    transition:translate var(--t-medio) var(--ease),opacity var(--t-rapido) ease;
+    pointer-events:none;
+  }
+  .dock.sem-ativo .dock__marca{opacity:0}
+  .dock__curva{
+    position:absolute;inset-block-end:-2px;inset-inline-start:50%;
+    width:120px;height:32px;max-width:none;   /* gola branca em volta da bola */
+    translate:-50% 0;
+    filter:drop-shadow(0 -3px 4px rgb(0 20 45 / .07));
+  }
+  .dock__bola{
+    position:absolute;inset-block-start:-21px;inset-inline-start:50%;
+    width:46px;height:46px;margin-inline-start:-23px;
+    border-radius:50%;
+    background:var(--vermelho);
+    box-shadow:0 6px 14px rgb(229 32 35 / .38);
+  }
+
+  .dock__item{
+    position:relative;z-index:1;
+    display:flex;flex-direction:column;align-items:center;justify-content:flex-end;
+    gap:4px;
+    min-width:0;min-height:44px;
+    padding:0 2px 10px;
+    border:0;background:none;
+    font:inherit;color:var(--navy);
+    cursor:pointer;
+    -webkit-tap-highlight-color:transparent;
+  }
+  .dock__icone{
+    width:22px;height:22px;
+    fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round;
+    transition:translate var(--t-medio) var(--ease),color var(--t-rapido) ease,scale var(--t-toque) ease;
+  }
+  .dock__mais .dock__icone{fill:currentColor;stroke:none}
+  .dock__rotulo{
+    font-size:11.5px;font-weight:600;line-height:1;
+    color:#4A6484;                       /* 5,6:1 sobre branco */
+    white-space:nowrap;
+    transition:color var(--t-rapido) ease;
+  }
+  /* ativo: o icone sobe para dentro da bola */
+  .dock__item[aria-current] .dock__icone{translate:0 -25px;color:var(--branco)}
+  .dock__item[aria-current] .dock__rotulo{color:var(--vermelho);font-weight:700}
+  .dock__mais[aria-expanded="true"] .dock__rotulo{color:var(--vermelho)}
+  .dock__item:active .dock__icone{scale:.88}
+  .dock__item:focus-visible{outline:3px solid var(--vermelho);outline-offset:-5px;border-radius:16px}
+
+  /* painel do "Mais": altura controlada, acima do dock, sem cobrir a tela */
+  .dock__painel{
+    position:absolute;inset-inline-end:0;inset-block-end:calc(100% + 32px);
+    width:min(250px,100%);
+    display:grid;gap:2px;
+    padding:8px;
+    background:var(--branco);
+    border-radius:20px;
+    box-shadow:0 16px 40px rgb(0 20 45 / .3);
+    transform-origin:100% 100%;
+    animation:dock-abre var(--t-rapido) var(--ease);
+  }
+  .dock__painel[hidden]{display:none}
+  .dock__painel a{
+    display:flex;align-items:center;
+    min-height:46px;padding-inline:16px;
+    border-radius:14px;
+    font-weight:700;color:var(--navy);
+    transition:background var(--t-rapido) ease;
+  }
+  .dock__painel a:hover{background:#EEF3F9}
+  .dock__painel .dock__cta{
+    justify-content:center;margin-block-start:4px;
+    background:var(--vermelho);color:var(--branco);
+    border-radius:var(--raio);
+  }
+  .dock__painel .dock__cta:hover{background:#c5171a}
+
+  /* ---- linhas: cartao limpo ----
+     O blob da mesa, esticado numa coluna estreita, virava capsula
+     irregular e os cartoes se encavalavam. Aqui: fundo branco, raio
+     organico controlado, padding constante e a foto contida. */
+  .linhas__head{margin-block-end:clamp(26px,6vw,44px)}
+  .linhas__board{gap:clamp(18px,4.6vw,30px)}
+  .linha__blob{display:none}
+  .linha{
+    background:var(--branco);
+    border-radius:34px 28px 36px 30px / 30px 34px 28px 36px;
+    box-shadow:0 14px 34px rgb(0 15 35 / .24);
+    padding:clamp(22px,6vw,32px) clamp(18px,5vw,28px) clamp(14px,4vw,22px);
+    row-gap:clamp(10px,3vw,16px);
+  }
+  .linha__grupo{
+    margin:0 auto;
+    width:min(100%,420px);
+  }
+  .linha__desc{max-width:30ch}
+  .linha__btn{min-height:44px;padding-inline:20px}
+}
+
+@keyframes dock-abre{from{opacity:0;transform:translateY(8px) scale(.97)}}
+
+/* celular deitado: pouca altura. O quadro ja encolhe pelo --um; aqui so
+   se garante que o CTA e o dock nao comam o heroi */
+@media (orientation:landscape) and (max-height:500px) and (max-width:1099px){
+  .hero{--peek:calc(var(--dock-h) + 20px)}
+  .dock__barra{height:56px}
+  .dock__item{padding-block-end:7px}
+}
+
+/* Tablet em retrato: 2 x 2, como pede a referencia. A coluna unica fica so
+   no celular, onde dois cards lado a lado deixariam a foto pequena demais.
+   Vem depois da composicao empilhada de proposito: herda o card empilhado
+   (texto em cima, foto embaixo) e so refaz a grade da secao. */
+@media (min-width:680px) and (max-width:1099px){
+  .linhas__board{
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:clamp(22px,3.4vw,44px);
+  }
 }
 
 @media (max-width:560px){
@@ -1301,6 +1682,294 @@ body>*{
   .pilar{padding-inline:0}
   .pilar+.pilar{border-inline-start:0;border-block-start:1px solid #DCE5EF;padding-block-start:var(--sp-s)}
   .nav{border-radius:clamp(20px,6vw,32px)}
+}
+
+/* ============================================================= CATALOGO
+   Modal unico para os tres catalogos aprovados (PNG longo) + o PDF
+   completo. A arte e usada como esta: sem recorte, sem filtro, sem nada
+   por cima. Grade da janela:
+     mesa     titulo | baixar | voltar | fechar
+              rolagem (ocupa o resto)
+     celular  titulo | voltar | fechar
+              rolagem
+              baixar (largura total, no rodape)
+   A barra fica fora da area que rola: nunca cobre o inicio do catalogo.
+   ======================================================================= */
+
+html.catalogo-aberto,html.catalogo-aberto body{overflow:hidden}
+
+.catalogo{
+  --t:260ms;
+  --lado:max(24px,(100vw - 1440px) / 2);
+  position:fixed;inset:0;z-index:100;
+  display:grid;
+  grid-template-columns:minmax(0,1fr) auto auto auto;
+  grid-template-rows:auto minmax(0,1fr);
+  grid-template-areas:
+    "titulo baixar voltar fechar"
+    "rolagem rolagem rolagem rolagem";
+  align-items:center;
+  column-gap:12px;
+  background:rgba(0,59,107,.94);
+  -webkit-backdrop-filter:blur(8px);
+  backdrop-filter:blur(8px);
+  color:var(--branco);
+  opacity:0;
+  transition:opacity var(--t) ease;
+}
+.catalogo[hidden]{display:none}
+.catalogo.is-aberto{opacity:1}
+
+/* onda organica so na moldura, atras da barra — nunca sobre a arte */
+.catalogo__onda{
+  grid-row:1;grid-column:1 / -1;align-self:start;
+  width:100%;height:clamp(34px,5vw,64px);max-width:none;
+  pointer-events:none;
+}
+
+/* barra: os itens moram na linha 1 da grade */
+.catalogo__titulo,.catalogo__baixar--barra,.catalogo__voltar,.catalogo__fechar{
+  position:relative;z-index:1;
+  margin-block:clamp(12px,1.3vw,18px);
+}
+.catalogo__titulo{
+  grid-area:titulo;
+  margin-inline-start:var(--lado);
+  font-family:var(--fonte-destaque);
+  font-size:clamp(1.15rem,1.8vw,1.6rem);font-weight:900;line-height:1.15;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+}
+.catalogo__baixar--barra{grid-area:baixar}
+.catalogo__voltar{grid-area:voltar}
+.catalogo__fechar{grid-area:fechar;margin-inline-end:var(--lado)}
+
+.catalogo__voltar,.catalogo__fechar,.catalogo__tentar{
+  display:inline-flex;align-items:center;justify-content:center;gap:10px;
+  min-height:44px;
+  border:2px solid rgb(255 255 255 / .7);
+  border-radius:var(--raio);
+  background:transparent;color:var(--branco);
+  font:600 .95rem/1 var(--fonte-texto);
+  padding-inline:18px;
+  cursor:pointer;
+  transition:background .2s,border-color .2s;
+}
+.catalogo__voltar svg{width:18px;height:auto;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.catalogo__fechar{width:44px;padding:0}
+.catalogo__fechar svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2.4;stroke-linecap:round}
+.catalogo__voltar:hover,.catalogo__fechar:hover{background:rgb(255 255 255 / .14);border-color:var(--branco)}
+
+/* botao do PDF: vermelho, pilula, 44px; o hover so escurece (nada se mexe) */
+.catalogo__baixar{
+  display:inline-flex;align-items:center;justify-content:center;gap:10px;
+  min-height:44px;
+  padding-inline:20px;
+  background:#E52023;color:#FFFFFF;
+  border-radius:var(--raio);
+  font:600 .95rem/1.2 var(--fonte-texto);
+  white-space:nowrap;
+  transition:background .2s;
+}
+.catalogo__baixar svg{width:20px;height:20px;flex:none;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+.catalogo__baixar:hover{background:#c5171a}
+
+.catalogo a:focus-visible,.catalogo button:focus-visible{outline:3px solid #FFFFFF;outline-offset:3px}
+.catalogo__tentar:focus-visible{outline-color:var(--navy)!important}
+
+.catalogo__rolagem{
+  grid-area:rolagem;
+  align-self:stretch;
+  overflow-y:auto;overflow-x:hidden;
+  overscroll-behavior:contain;
+  -webkit-overflow-scrolling:touch;
+  padding:4px var(--lado) 0;
+  transform:translateY(16px);
+  transition:transform var(--t) cubic-bezier(.22,.7,.3,1);
+}
+.catalogo.is-aberto .catalogo__rolagem{transform:none}
+
+/* area branca em volta da arte. Sem border-radius recortando a imagem: o
+   arredondado e da moldura, que tem folga interna */
+.catalogo__folha{
+  position:relative;
+  max-width:1440px;margin-inline:auto;
+  padding:clamp(6px,.7vw,10px);
+  background:#FFFFFF;
+  border-radius:clamp(12px,1.2vw,18px);
+  box-shadow:0 24px 60px rgb(0 18 40 / .4);
+}
+.catalog-image{
+  display:block;
+  width:min(100%,1711px);
+  height:auto;
+  margin:0 auto;
+  object-fit:contain;
+}
+.catalogo__folha.is-carregando,.catalogo__folha.is-erro{min-height:min(60vh,520px)}
+
+/* botoes reais sobre as abas, o X e o CTA desenhados na arte. Invisiveis:
+   a arte ja mostra o botao; aqui so aparece o retorno de hover e foco. */
+.catalogo__arte{position:relative}
+.catalogo__zonas{position:absolute;inset:0;pointer-events:none}
+.catalogo__folha.is-carregando .catalogo__zonas,
+.catalogo__folha.is-erro .catalogo__zonas{display:none}
+.catalogo__zona{
+  position:absolute;
+  pointer-events:auto;
+  margin:0;padding:0;border:0;
+  background:transparent;
+  border-radius:var(--raio);
+  color:transparent;font-size:0;      /* o rotulo e so para leitor de tela */
+  cursor:pointer;
+  transition:background .15s,box-shadow .15s;
+  -webkit-tap-highlight-color:transparent;
+}
+.catalogo__zona:hover{background:rgb(0 59 107 / .08)}
+.catalogo__zona--aba[aria-current="true"]{cursor:default}
+.catalogo__zona--aba[aria-current="true"]:hover{background:transparent}
+.catalogo__zona--redonda{border-radius:50%}
+.catalogo__zona--redonda:hover{background:rgb(255 255 255 / .16)}
+.catalogo .catalogo__zona:focus-visible{outline:3px solid #E52023;outline-offset:2px;background:rgb(255 255 255 / .12)}
+.catalogo__folha.is-carregando .catalog-image,
+.catalogo__folha.is-erro .catalog-image{display:none}
+
+.catalogo__estado{
+  display:none;
+  position:absolute;inset:0;
+  flex-direction:column;align-items:center;justify-content:center;gap:14px;
+  margin:0;padding:24px;
+  color:var(--navy);font-weight:600;text-align:center;
+}
+.catalogo__folha.is-carregando .catalogo__estado,
+.catalogo__folha.is-erro .catalogo__estado{display:flex}
+.catalogo__spinner{
+  width:40px;height:40px;border-radius:50%;
+  border:4px solid #D9E4F1;border-top-color:var(--vermelho);
+  animation:girar .8s linear infinite;
+}
+.catalogo__folha.is-erro .catalogo__spinner{display:none}
+@keyframes girar{to{transform:rotate(1turn)}}
+.catalogo__tentar{border-color:var(--navy);color:var(--navy)}
+.catalogo__tentar:hover{background:#EEF3F9}
+
+/* CTA de encerramento, depois da imagem */
+.catalogo__fim{
+  max-width:1440px;margin-inline:auto;
+  display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:14px 20px;
+  padding:clamp(24px,3vw,40px) 0 clamp(32px,4vw,56px);
+  text-align:center;
+}
+.catalogo__fim p{margin:0;font-weight:600;color:var(--corpo-claro)}
+
+/* tablet e celular: barra compacta, respiro de 10px, PDF no rodape */
+@media (max-width:899px){
+  .catalogo{
+    --lado:10px;
+    grid-template-columns:minmax(0,1fr) auto auto;
+    grid-template-rows:auto minmax(0,1fr) auto;
+    grid-template-areas:
+      "titulo voltar fechar"
+      "rolagem rolagem rolagem"
+      "baixar baixar baixar";
+    column-gap:8px;
+  }
+  .catalogo__titulo,.catalogo__voltar,.catalogo__fechar{margin-block:8px}
+  /* nome inteiro, em ate duas linhas, em vez de cortar com reticencias */
+  .catalogo__titulo{
+    font-size:clamp(1rem,4.2vw,1.35rem);
+    white-space:normal;text-wrap:balance;
+    display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;
+  }
+  .catalogo__voltar{padding-inline:14px;font-size:.85rem}
+  .catalogo__baixar--barra{
+    margin:8px 10px max(8px,env(safe-area-inset-bottom));
+  }
+  .catalogo__folha{padding:0;border-radius:8px;overflow:visible}
+  .catalog-image{width:100%;height:auto}
+  .catalogo__fim .catalogo__baixar{width:100%}
+}
+@media (max-width:380px){
+  .catalogo__voltar{padding-inline:12px;font-size:.8rem}
+  .catalogo__voltar svg{display:none}
+}
+
+@media (prefers-reduced-motion:reduce){
+  .catalogo,.catalogo__rolagem{transition:none}
+  .catalogo__rolagem{transform:none}
+}
+
+/* ============================================= INTERACOES (todo o site)
+   Uma linguagem so de tempo/curva (tokens --ease, --t-*): botoes sobem e
+   ganham sombra no hover, afundam no toque; cartoes das linhas sobem e o
+   produto cresce de leve. Hover so onde existe hover de verdade — no touch
+   fica o retorno do toque, sem hover preso.
+   ======================================================================= */
+
+:is(.btn,.btn-pill,.linha__btn,.nav__cta,.filtro,.catalogo__baixar){
+  transition:
+    transform var(--t-rapido) var(--ease),
+    background-color var(--t-rapido) ease,
+    box-shadow var(--t-rapido) var(--ease),
+    color var(--t-rapido) ease;
+}
+@media (hover:hover){
+  :is(.btn,.btn-pill,.linha__btn,.nav__cta):hover{
+    transform:translateY(-2px);
+    box-shadow:0 10px 22px rgb(229 32 35 / .34);
+  }
+}
+:is(.btn,.btn-pill,.linha__btn,.nav__cta,.filtro):active{
+  transform:translateY(0) scale(.97);
+  transition-duration:var(--t-toque);
+}
+/* sobre o azul, o anel de foco vermelho some no botao vermelho: branco */
+:is(.btn,.btn-pill,.nav__cta):focus-visible{outline-color:var(--branco)}
+.linha__btn:focus-visible{outline-color:var(--navy)}
+
+/* --- cartoes das linhas ---
+   A transicao de entrada (.reveal) e reescrita aqui junto com a do hover,
+   senao uma apagaria a outra. translate/scale sao propriedades separadas
+   do transform da entrada: nao se somam nem brigam. */
+.linha,
+.tem-motion .linha.reveal{
+  transition:
+    opacity .7s cubic-bezier(.22,.7,.3,1) var(--d,0ms),
+    transform .7s cubic-bezier(.22,.7,.3,1) var(--d,0ms),
+    translate var(--t-medio) var(--ease),
+    scale var(--t-toque) ease;
+}
+.linha__grupo img{
+  transform-origin:50% 90%;
+  transition:scale var(--t-medio) var(--ease);
+}
+@media (hover:hover){
+  .linha:hover{translate:0 -5px}
+  .linha:hover .linha__grupo img{scale:1.05}
+  .linha:hover .linha__blob{filter:drop-shadow(0 20px 40px rgb(0 15 35 / .3))}
+}
+.linha__blob{transition:filter var(--t-medio) var(--ease)}
+@media (hover:none){
+  .linha:active{scale:.985}
+}
+
+/* --- fotos da historia: entram escalonadas (.reveal + --d); no hover
+   sobem um pouco. Anima o quadro (wrapper), nunca a foto. --- */
+.foto,
+.tem-motion .foto.reveal{
+  transition:
+    opacity .8s cubic-bezier(.22,.7,.3,1) var(--d,0ms),
+    transform .8s var(--ease) var(--d,0ms),
+    translate var(--t-medio) var(--ease),
+    box-shadow var(--t-medio) var(--ease);
+}
+.tem-motion .foto.reveal:not(.is-visible){transform:translateY(34px) scale(.97)}
+@media (hover:hover){
+  .foto:hover{translate:0 -6px;box-shadow:0 26px 54px rgb(0 18 40 / .45)}
+}
+
+@media (prefers-reduced-motion:reduce){
+  .linha:hover,.foto:hover{translate:none}
+  .linha:hover .linha__grupo img{scale:1}
 }
 
 /* --------------------------------------------------------- animacao (PE)
@@ -1315,7 +1984,7 @@ body>*{
 }
 
 /* paralaxe: o script escreve o transform, o CSS so prepara a camada */
-.hero__faixa,.hero__cascao img,.hero__copy{will-change:transform}
+.hero__faixa,.hero__cascao,.hero__copy{will-change:transform}
 .tem-motion .reveal.is-visible{opacity:1;transform:none}
 
 /* "Sobre nós" se escreve sozinho quando a secao entra na tela.

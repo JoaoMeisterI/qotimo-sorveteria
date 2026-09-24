@@ -1,0 +1,9 @@
+Fontes servidas pelo site https://chiquinho.com.br/ em 23/09/2026.
+
+site/: Chiquinhorc2 nos pesos regular, bold e black; formatos WOFF e WOFF2.
+icones/: fl-icons.woff2 do tema Flatsome (ícones de interface, não texto).
+
+Origem da fonte principal: https://chiquinho.com.br/wp-content/fonts/
+Origem dos ícones: https://chiquinho.com.br/wp-content/themes/flatsome/assets/css/icons/
+
+O site não informou licença de redistribuição ou uso comercial dessas fontes. Verifique a autorização antes de usar a fonte proprietária em outra marca.
