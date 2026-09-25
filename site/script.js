@@ -130,6 +130,11 @@
 
   function cascaoAnimado() {
     if (!raiz.classList.contains('cascao-anima')) return;
+    if (raiz.classList.contains('cascao-webp')) {
+      var caixaWebp = document.querySelector('[data-cascao]');
+      if (caixaWebp) cascaoWebp(caixaWebp);
+      return;
+    }
 
     var caixa = document.querySelector('[data-cascao]');
     var video = caixa && caixa.querySelector('.cascao__video');
@@ -225,6 +230,103 @@
     fonte.src = fonte.getAttribute('data-src');
     video.load();
     mostrar();                                 // ja pode estar em cache
+  }
+
+  /* --- cascao que se enche, versao WebKit ---------------------------------
+     Safari e todo navegador de iPhone nao desenham o alpha do webm; o <head>
+     marca <html class="cascao-webp"> e a mesma animacao vem em WebP animado
+     (76 quadros a 15 por segundo, toca uma vez).
+       poster    cascao vazio (o mesmo da versao em video)
+       tocando   animacao por cima, poster sai
+       fim       o ultimo quadro em alta (.cascao__final) assume e a
+                 animacao sai — nitido, e aparece mesmo com "Reproduzir
+                 imagens animadas" desligado nos ajustes do iPhone
+     O arquivo e baixado INTEIRO antes de entrar (fetch -> blob): assim a
+     animacao comeca no primeiro quadro, e nao no meio enquanto carrega.
+     Rede, formato ou 12 s sem resposta: volta a imagem preenchida.
+     --------------------------------------------------------------------- */
+
+  var CASCAO_WEBP = 'assets/hero/cascao-preenchendo-480.webp';
+  var CASCAO_FINAL = 'assets/hero/cascao-final-760.webp';
+  var CASCAO_DURACAO = 5070;                   // 76 quadros de 1/15 s
+
+  function cascaoWebp(caixa) {
+    var encerrado = false;
+    var urlQuadros = null;
+
+    var camada = function (classe) {
+      var img = document.createElement('img');
+      img.className = classe;
+      img.alt = '';
+      img.setAttribute('aria-hidden', 'true');
+      return img;
+    };
+    var quadros = camada('cascao__quadros');
+    var final = camada('cascao__final');
+
+    var tirar = function (img) {
+      if (img.parentNode) img.parentNode.removeChild(img);
+    };
+    var liberar = function () {
+      tirar(quadros);
+      if (urlQuadros) URL.revokeObjectURL(urlQuadros);
+      urlQuadros = null;
+    };
+
+    var desistir = function () {
+      if (encerrado) return;
+      encerrado = true;
+      raiz.classList.remove('cascao-anima');   // volta a imagem preenchida
+      raiz.classList.remove('cascao-webp');
+      caixa.removeAttribute('data-estado');
+      liberar();
+      tirar(final);
+    };
+
+    if (!window.fetch || !window.URL || !URL.createObjectURL) { desistir(); return; }
+
+    var espera = window.setTimeout(desistir, 12000);
+
+    var pronto = function (img) {
+      return img.decode ? img.decode() : new Promise(function (ok, erro) {
+        img.onload = ok;
+        img.onerror = erro;
+      });
+    };
+
+    /* troca para o final so se ele decodificou; senao a animacao fica
+       parada no proprio ultimo quadro, que e o mesmo desenho */
+    var terminar = function () {
+      if (encerrado) return;
+      encerrado = true;
+      pronto(final).then(function () {
+        caixa.setAttribute('data-estado', 'fim');
+        window.setTimeout(liberar, 400);       // depois do fade de .2 s
+      }, function () {});
+    };
+
+    final.src = CASCAO_FINAL;
+    caixa.appendChild(final);
+
+    fetch(CASCAO_WEBP)
+      .then(function (r) {
+        if (!r.ok) throw new Error(r.status);
+        return r.blob();
+      })
+      .then(function (blob) {
+        if (encerrado) return null;
+        urlQuadros = URL.createObjectURL(blob);
+        quadros.src = urlQuadros;
+        caixa.appendChild(quadros);
+        return pronto(quadros);
+      })
+      .then(function () {
+        if (encerrado) return;
+        window.clearTimeout(espera);
+        caixa.setAttribute('data-estado', 'tocando');
+        window.setTimeout(terminar, CASCAO_DURACAO + 300);
+      })
+      .catch(desistir);
   }
 
   /* --- paralaxe da secao Nossa historia -----------------------------------
