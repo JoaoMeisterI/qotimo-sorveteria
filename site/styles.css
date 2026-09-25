@@ -1649,7 +1649,10 @@ button.linha__btn{border:0;font-family:inherit;line-height:inherit;cursor:pointe
   body>*{
     --um:min(100cqw / 390, 1.7px, 100svh / 720);
     --dh:62px;
-    --topo-y:max(28px,calc(env(safe-area-inset-top,0px) + 22px));
+    /* a gola sobe .52 x --dh acima da barra (32px): com 28px ela saia pelo
+       alto da pagina e a bola colava na borda da tela. Altura da gola +
+       14px de respiro. O logo desce junto (padding do .hero__palco). */
+    --topo-y:calc(env(safe-area-inset-top,0px) + var(--dh) * .52 + 14px);
   }
 
   /* ---- menu: 3 destinos + "Mais", largura da tela ---- */
@@ -1739,7 +1742,7 @@ button.linha__btn{border:0;font-family:inherit;line-height:inherit;cursor:pointe
 /* celular deitado: pouca altura. O quadro ja encolhe pelo --um; aqui a
    barra fica um pouco mais baixa para sobrar heroi */
 @media (orientation:landscape) and (max-height:500px) and (max-width:1099px){
-  body>*{--dh:54px;--topo-y:24px}
+  body>*{--dh:54px;--topo-y:calc(var(--dh) * .52 + 10px)}   /* gola + respiro */
   .hero{--peek:24px}
 }
 

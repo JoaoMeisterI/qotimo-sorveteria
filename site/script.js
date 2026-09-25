@@ -149,8 +149,14 @@
       } catch (e) {}
     };
 
-    /* canto superior esquerdo do quadro: transparente no webm com alpha,
-       255 (preto opaco) em quem ignora o canal */
+    /* Duas provas no quadro reduzido a 8x8:
+         - canto superior esquerdo transparente (255 = preto opaco em quem
+           ignora o canal alpha)
+         - o PROPRIO cascao opaco: no 1o quadro ele cobre 8 dos 64 pixels
+           com alpha > 200 (medido no poster, que e esse mesmo quadro).
+       So o canto nao bastava: o WebKit (Safari e todo navegador de iPhone)
+       entrega um canvas em branco quando nao consegue copiar o quadro — o
+       canto dava "transparente", o video assumia e o cascao sumia. */
     var temAlpha = function () {
       try {
         var tela = document.createElement('canvas');
@@ -160,10 +166,12 @@
         if (!ctx) return false;
         ctx.clearRect(0, 0, 8, 8);
         ctx.drawImage(video, 0, 0, 8, 8);
-        var a = ctx.getImageData(0, 0, 1, 1).data[3];
+        var px = ctx.getImageData(0, 0, 8, 8).data;
         tela.width = tela.height = 0;          // descarta o canvas
         tela = ctx = null;
-        return a < 32;
+        var opacos = 0;
+        for (var i = 3; i < px.length; i += 4) if (px[i] > 200) opacos++;
+        return px[3] < 32 && opacos >= 3;
       } catch (e) {
         return false;                          // canvas sujo/bloqueado
       }

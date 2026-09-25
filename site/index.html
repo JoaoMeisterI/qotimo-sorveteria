@@ -35,7 +35,14 @@
 (function () {
   var c = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
   var v = document.createElement('video');
-  var ok = !window.matchMedia('(prefers-reduced-motion: reduce)').matches &&
+  /* WebKit (Safari no Mac e TODO navegador de iPhone/iPad, inclusive o do
+     WhatsApp e o Chrome de iOS): anuncia VP9 mas nao desenha o canal alpha
+     do webm — o video ficava invisivel por cima e o cascao sumia. Fica com
+     a imagem preenchida. Chrome/Edge/Opera trazem "Chrome/" no agente. */
+  var ua = navigator.userAgent;
+  var webkit = /AppleWebKit/.test(ua) && !/Chrome\/|Chromium\//.test(ua);
+  var ok = !webkit &&
+           !window.matchMedia('(prefers-reduced-motion: reduce)').matches &&
            !(c && c.saveData) &&
            !!v.canPlayType && v.canPlayType('video/webm; codecs="vp9"') !== '';
   if (ok) document.documentElement.classList.add('cascao-anima');
