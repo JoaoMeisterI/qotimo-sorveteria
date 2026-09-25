@@ -130,9 +130,9 @@
 
   function cascaoAnimado() {
     if (!raiz.classList.contains('cascao-anima')) return;
-    if (raiz.classList.contains('cascao-webp')) {
-      var caixaWebp = document.querySelector('[data-cascao]');
-      if (caixaWebp) cascaoWebp(caixaWebp);
+    if (raiz.classList.contains('cascao-mp4')) {
+      var caixaMp4 = document.querySelector('[data-cascao]');
+      if (caixaMp4) cascaoMp4(caixaMp4);
       return;
     }
 
@@ -234,99 +234,253 @@
 
   /* --- cascao que se enche, versao WebKit ---------------------------------
      Safari e todo navegador de iPhone nao desenham o alpha do webm; o <head>
-     marca <html class="cascao-webp"> e a mesma animacao vem em WebP animado
-     (76 quadros a 15 por segundo, toca uma vez).
-       poster    cascao vazio (o mesmo da versao em video)
-       tocando   animacao por cima, poster sai
-       fim       o ultimo quadro em alta (.cascao__final) assume e a
-                 animacao sai — nitido, e aparece mesmo com "Reproduzir
-                 imagens animadas" desligado nos ajustes do iPhone
-     O arquivo e baixado INTEIRO antes de entrar (fetch -> blob): assim a
-     animacao comeca no primeiro quadro, e nao no meio enquanto carrega.
-     Rede, formato ou 12 s sem resposta: volta a imagem preenchida.
+     marca <html class="cascao-mp4"> e a mesma animacao vem num MP4 H.264
+     comum (quem decodifica e o chip de video: 30 quadros por segundo, sem
+     pesar no processador), com a cor na metade esquerda e a mascara de
+     transparencia em cinza na metade direita. Um canvas WebGL junta as duas
+     a cada quadro. Estados, como na versao em video:
+       poster    cascao vazio
+       tocando   canvas por cima, poster sai
+       fim       o ultimo quadro em alta (.cascao__final) assume; video e
+                 WebGL sao liberados
+     A prova do alpha e a mesma ideia do webm: um quadro ja montado precisa
+     ter o canto transparente e o cascao opaco — feita com o video JA
+     TOCANDO (antes do play o WebKit entrega quadro vazio ao canvas).
+     Canvas em branco, WebGL recusado, video bloqueado (modo economia do
+     iPhone recusa autoplay), erro de rede ou 12 s sem aparecer: volta a
+     imagem preenchida.
      --------------------------------------------------------------------- */
 
-  var CASCAO_WEBP = 'assets/hero/cascao-preenchendo-480.webp';
+  var CASCAO_MP4 = 'assets/hero/cascao-preenchendo-lado.mp4';
   var CASCAO_FINAL = 'assets/hero/cascao-final-760.webp';
-  var CASCAO_DURACAO = 5070;                   // 76 quadros de 1/15 s
 
-  function cascaoWebp(caixa) {
+  function cascaoMp4(caixa) {
     var encerrado = false;
-    var urlQuadros = null;
+    var iniciado = false;                      // o play ja foi pedido
+    var mostrando = false;                     // o canvas ja passou na prova
+    var laco = 0;
 
-    var camada = function (classe) {
-      var img = document.createElement('img');
-      img.className = classe;
-      img.alt = '';
-      img.setAttribute('aria-hidden', 'true');
-      return img;
+    var camada = function (tag, classe) {
+      var el = document.createElement(tag);
+      el.className = classe;
+      el.setAttribute('aria-hidden', 'true');
+      return el;
     };
-    var quadros = camada('cascao__quadros');
-    var final = camada('cascao__final');
+    var video = camada('video', 'cascao__fonte');
+    var tela = camada('canvas', 'cascao__quadros');
+    var final = camada('img', 'cascao__final');
+    final.alt = '';
 
-    var tirar = function (img) {
-      if (img.parentNode) img.parentNode.removeChild(img);
+    video.muted = true;
+    video.defaultMuted = true;
+    video.playsInline = true;
+    video.setAttribute('muted', '');
+    video.setAttribute('playsinline', '');
+    video.preload = 'auto';
+
+    var gl = null;
+    try {
+      gl = tela.getContext('webgl', { alpha: true, premultipliedAlpha: true, antialias: false }) ||
+           tela.getContext('experimental-webgl', { alpha: true, premultipliedAlpha: true });
+    } catch (e) {}
+
+    var tirar = function (el) {
+      if (el.parentNode) el.parentNode.removeChild(el);
     };
     var liberar = function () {
-      tirar(quadros);
-      if (urlQuadros) URL.revokeObjectURL(urlQuadros);
-      urlQuadros = null;
+      if (laco && video.cancelVideoFrameCallback) video.cancelVideoFrameCallback(laco);
+      laco = 0;
+      try {
+        video.pause();
+        video.removeAttribute('src');
+        video.load();
+      } catch (e) {}
+      tirar(video);
+      tirar(tela);
+      if (gl) {
+        var perder = gl.getExtension('WEBGL_lose_context');
+        if (perder) perder.loseContext();
+        gl = null;
+      }
     };
 
     var desistir = function () {
       if (encerrado) return;
       encerrado = true;
       raiz.classList.remove('cascao-anima');   // volta a imagem preenchida
-      raiz.classList.remove('cascao-webp');
+      raiz.classList.remove('cascao-mp4');
       caixa.removeAttribute('data-estado');
       liberar();
       tirar(final);
     };
 
-    if (!window.fetch || !window.URL || !URL.createObjectURL) { desistir(); return; }
+    if (!gl) { desistir(); return; }
 
-    var espera = window.setTimeout(desistir, 12000);
+    /* WebGL: um retangulo com a textura do video. Cor da metade esquerda,
+       alpha do verde da metade direita (a compressao deixa um fundo de ~2%
+       — cortado para o vazio ficar vazio de verdade). Saida
+       pre-multiplicada, como o canvas espera. */
+    var compilar = function (tipo, fonte) {
+      var s = gl.createShader(tipo);
+      gl.shaderSource(s, fonte);
+      gl.compileShader(s);
+      return gl.getShaderParameter(s, gl.COMPILE_STATUS) ? s : null;
+    };
+    var vs = compilar(gl.VERTEX_SHADER,
+      'attribute vec2 p;varying vec2 uv;' +
+      'void main(){uv=vec2(p.x*.5+.5,.5-p.y*.5);gl_Position=vec4(p,0.,1.);}');
+    var fs = compilar(gl.FRAGMENT_SHADER,
+      'precision mediump float;varying vec2 uv;uniform sampler2D t;uniform float m;' +
+      'void main(){float x=clamp(uv.x*.5,m,.5-m);' +
+      'vec3 c=texture2D(t,vec2(x,uv.y)).rgb;' +
+      'float a=clamp((texture2D(t,vec2(.5+x,uv.y)).g-.03)/.94,0.,1.);' +
+      'gl_FragColor=vec4(c*a,a);}');
+    var prog = vs && fs && gl.createProgram();
+    if (!prog) { desistir(); return; }
+    gl.attachShader(prog, vs);
+    gl.attachShader(prog, fs);
+    gl.linkProgram(prog);
+    if (!gl.getProgramParameter(prog, gl.LINK_STATUS)) { desistir(); return; }
+    gl.useProgram(prog);
 
-    var pronto = function (img) {
-      return img.decode ? img.decode() : new Promise(function (ok, erro) {
-        img.onload = ok;
-        img.onerror = erro;
-      });
+    gl.bindBuffer(gl.ARRAY_BUFFER, gl.createBuffer());
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 1, -1, -1, 1, 1, 1]), gl.STATIC_DRAW);
+    var pos = gl.getAttribLocation(prog, 'p');
+    gl.enableVertexAttribArray(pos);
+    gl.vertexAttribPointer(pos, 2, gl.FLOAT, false, 0, 0);
+
+    gl.bindTexture(gl.TEXTURE_2D, gl.createTexture());
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+
+    var desenhar = function () {
+      if (!gl) return false;
+      try {
+        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE, video);
+      } catch (e) {
+        return false;
+      }
+      gl.clearColor(0, 0, 0, 0);
+      gl.clear(gl.COLOR_BUFFER_BIT);
+      gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+      return true;
     };
 
-    /* troca para o final so se ele decodificou; senao a animacao fica
-       parada no proprio ultimo quadro, que e o mesmo desenho */
+    /* canto transparente + cascao opaco no quadro montado (le logo depois
+       de desenhar, no mesmo passo — o buffer ainda esta la) */
+    /* UMA leitura so do quadro inteiro: cada readPixels espera a GPU
+       terminar, e 50 leituras pequenas custavam mais que uma grande */
+    var montouCerto = function () {
+      var w = tela.width, h = tela.height;
+      var px = new Uint8Array(w * h * 4);
+      gl.readPixels(0, 0, w, h, gl.RGBA, gl.UNSIGNED_BYTE, px);
+      var alfa = function (x, y) { return px[(y * w + x) * 4 + 3]; };
+      if (alfa(2, h - 3) > 8) return false;    // canto de cima (y vem de baixo)
+      var opacos = 0;
+      for (var y = 1; y < 8; y++) {
+        for (var x = 1; x < 8; x++) {
+          if (alfa(Math.round(w * x / 8), Math.round(h * y / 8)) > 200) opacos++;
+        }
+      }
+      return opacos >= 3;                      // o cascao vazio cobre ~8 de 49
+    };
+
+    /* Redesenha a cada quadro novo do video. O canvas so aparece quando um
+       quadro ja montado passa na prova — no WebKit o video so entrega
+       quadros ao canvas DEPOIS que comeca a tocar (antes do play o quadro
+       vem vazio), entao a prova e feita aqui, com o video ja rodando e o
+       canvas ainda escondido atras do poster. O comeco da animacao e o
+       cascao vazio parado por ~1 s: alguns quadros de atraso nao se veem. */
+    var ultimoTempo = -1;
+    var proximo = function () {
+      if (!gl || encerrado) return;
+      /* sem requestVideoFrameCallback o laco roda na taxa da tela (ate
+         120 Hz no iPhone): so sobe quadro para a GPU quando o video andou */
+      if (video.currentTime === ultimoTempo && mostrando) {
+        laco = window.requestAnimationFrame(proximo);
+        return;
+      }
+      ultimoTempo = video.currentTime;
+      desenhar();
+      if (!mostrando) {
+        if (montouCerto()) {
+          mostrando = true;
+          window.clearTimeout(espera);
+          caixa.setAttribute('data-estado', 'tocando');
+        } else if (video.currentTime > 1.2 || video.ended) {
+          /* 1,2 s de video sem um quadro bom: a parte parada do comeco ja
+             passou, entrar agora seria pular a animacao */
+          desistir();
+          return;
+        }
+      }
+      if (video.ended) return;
+      laco = video.requestVideoFrameCallback
+        ? video.requestVideoFrameCallback(proximo)
+        : window.requestAnimationFrame(proximo);
+    };
+
     var terminar = function () {
-      if (encerrado) return;
+      if (encerrado || !mostrando) return;
       encerrado = true;
-      pronto(final).then(function () {
+      desenhar();                               // garante o ultimo quadro
+      var decodificar = final.decode ? final.decode() : Promise.resolve();
+      decodificar.then(function () {
         caixa.setAttribute('data-estado', 'fim');
         window.setTimeout(liberar, 400);       // depois do fade de .2 s
-      }, function () {});
+      }, function () {});                       // sem o final: fica o canvas
     };
 
-    final.src = CASCAO_FINAL;
-    caixa.appendChild(final);
+    /* o video comecou a tocar (escondido): passa a desenhar e a provar */
+    var assumir = function () {
+      if (encerrado) return;
+      proximo();
+    };
 
-    fetch(CASCAO_WEBP)
-      .then(function (r) {
-        if (!r.ok) throw new Error(r.status);
-        return r.blob();
-      })
-      .then(function (blob) {
-        if (encerrado) return null;
-        urlQuadros = URL.createObjectURL(blob);
-        quadros.src = urlQuadros;
-        caixa.appendChild(quadros);
-        return pronto(quadros);
-      })
-      .then(function () {
-        if (encerrado) return;
-        window.clearTimeout(espera);
-        caixa.setAttribute('data-estado', 'tocando');
-        window.setTimeout(terminar, CASCAO_DURACAO + 300);
-      })
-      .catch(desistir);
+    var comecar = function () {
+      if (encerrado || iniciado) return;
+      if (video.readyState < 2 || !video.videoWidth) return;
+      iniciado = true;
+      /* 2px transparentes de cada lado: ao escalar o canvas o compositor do
+         WebKit pega um pouco alem da borda e desenhava um fio nela. Com a
+         faixa vazia o que ele pega e transparente. O CSS mede o canvas pela
+         altura, entao o desenho continua no mesmo tamanho e centralizado. */
+      tela.width = video.videoWidth / 2 + 4;
+      tela.height = video.videoHeight;
+      gl.viewport(2, 0, video.videoWidth / 2, video.videoHeight);
+      /* meio pixel de margem da emenda cor|mascara: o filtro linear
+         misturava a ultima coluna da cor na mascara e desenhava um fio
+         na borda esquerda do canvas */
+      gl.uniform1f(gl.getUniformLocation(prog, 'm'), 0.5 / video.videoWidth);
+      var tocar = video.play();
+      if (tocar && tocar.then) tocar.then(assumir, desistir);
+      else assumir();
+    };
+
+    var espera = window.setTimeout(function () {
+      if (!mostrando) desistir();
+    }, 12000);
+
+    /* tamanho do arquivo em pixels fisicos (ver .cascao__fonte no CSS):
+       e o tamanho em que o WebKit entrega o quadro ao WebGL */
+    video.addEventListener('loadedmetadata', function () {
+      var dpr = window.devicePixelRatio || 1;
+      video.style.width = (video.videoWidth / dpr) + 'px';
+      video.style.height = (video.videoHeight / dpr) + 'px';
+    });
+    video.addEventListener('loadeddata', comecar);
+    video.addEventListener('canplay', comecar);
+    video.addEventListener('ended', terminar);
+    video.addEventListener('error', desistir);
+
+    final.src = CASCAO_FINAL;
+    caixa.appendChild(video);
+    caixa.appendChild(tela);
+    caixa.appendChild(final);
+    video.src = CASCAO_MP4;
+    video.load();
   }
 
   /* --- paralaxe da secao Nossa historia -----------------------------------

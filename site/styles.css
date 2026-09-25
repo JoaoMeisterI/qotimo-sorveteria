@@ -516,14 +516,37 @@ body>*{
   .cascao__video,.cascao__poster{transition:none}
 }
 
-/* WebKit (html.cascao-webp): o Safari nao desenha o alpha do webm, entao
-   a mesma animacao vem em WebP animado. O script cria duas camadas na
-   caixa do cascao, encaixadas como o poster e o video:
-     .cascao__quadros  a animacao (toca uma vez e para no ultimo quadro)
-     .cascao__final    esse ultimo quadro em alta, que assume ao fim — fica
-                       nitido e aparece mesmo com "Reproduzir imagens
-                       animadas" desligado no iPhone */
-.cascao-webp .cascao__video{display:none}
+/* WebKit (html.cascao-mp4): o Safari nao desenha o alpha do webm, entao
+   a mesma animacao vem em MP4 H.264 (decodificado pelo chip de video, 30
+   quadros por segundo) com cor e mascara de transparencia lado a lado. O
+   script cria as camadas na caixa do cascao, encaixadas como o poster:
+     .cascao__fonte    o <video> do MP4 — nunca aparece, so alimenta o canvas
+     .cascao__quadros  canvas WebGL que junta cor + mascara a cada quadro
+     .cascao__final    o ultimo quadro em alta, que assume ao fim (nitido, e
+                       libera o video e o WebGL) */
+.cascao-mp4 .cascao__video{display:none}
+/* O WebKit entrega o video ao WebGL no tamanho em que ele esta DESENHADO
+   na tela, nao no tamanho do arquivo: com 2px a textura vinha vazia. O
+   script da ao elemento exatamente o tamanho do arquivo em pixels fisicos
+   (largura / devicePixelRatio). Fica invisivel (opacity 0 — com
+   visibility:hidden o WebKit tambem para de entregar quadros); o que
+   sobrar para fora e cortado pelo overflow do .hero. */
+.cascao__fonte{
+  position:absolute;inset-block-start:0;inset-inline-start:0;
+  max-width:none;
+  opacity:0;pointer-events:none;
+}
+/* O canvas NAO usa object-fit: o WebKit desenhava um fio na borda da
+   imagem encaixada (so no canvas). A propria caixa tem o tamanho do
+   desenho — altura cheia, largura pela proporcao do canvas (width/height
+   que o script define), centralizada. Mesmo resultado do contain aqui:
+   a caixa do cascao e sempre mais larga que o cascao. */
+.cascao-mp4 .cascao__quadros{
+  inset:0 auto;inset-inline-start:50%;
+  width:auto;height:100%;
+  object-fit:fill;
+  translate:-50% 0;
+}
 .cascao__quadros,
 .cascao__final{
   position:absolute;inset:0;
@@ -534,10 +557,10 @@ body>*{
 }
 /* no "fim" a animacao continua por baixo enquanto o final entra; o script
    a remove depois da troca (sem piscada entre as duas) */
-.cascao-webp .cascao[data-estado="tocando"] .cascao__quadros,
-.cascao-webp .cascao[data-estado="fim"] .cascao__quadros{opacity:1}
-.cascao-webp .cascao[data-estado="fim"] .cascao__final{opacity:1;transition:opacity .2s linear}
-.cascao-webp .cascao[data-estado="fim"] .cascao__poster{opacity:0}
+.cascao-mp4 .cascao[data-estado="tocando"] .cascao__quadros,
+.cascao-mp4 .cascao[data-estado="fim"] .cascao__quadros{opacity:1}
+.cascao-mp4 .cascao[data-estado="fim"] .cascao__final{opacity:1;transition:opacity .2s linear}
+.cascao-mp4 .cascao[data-estado="fim"] .cascao__poster{opacity:0}
 
 /* onda branca na FRENTE do cascao: e ela que corta a ponta */
 /* A emenda da faixa branca caia em coordenada fracionaria e o navegador

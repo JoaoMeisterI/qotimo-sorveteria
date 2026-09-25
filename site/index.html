@@ -38,17 +38,19 @@
   /* WebKit (Safari no Mac e TODO navegador de iPhone/iPad, inclusive o do
      WhatsApp e o Chrome de iOS): anuncia VP9 mas nao desenha o canal alpha
      do webm — o video ficava invisivel por cima e o cascao sumia. Esses
-     recebem a MESMA animacao em WebP animado (cascao-webp), que o Safari
-     desenha com transparencia. Chrome/Edge/Opera trazem "Chrome/" no agente. */
+     recebem a MESMA animacao em MP4 H.264 com a mascara de transparencia ao
+     lado (cascao-mp4), montada num canvas pelo script.js.
+     Chrome/Edge/Opera trazem "Chrome/" no agente. */
   var ua = navigator.userAgent;
   var webkit = /AppleWebKit/.test(ua) && !/Chrome\/|Chromium\//.test(ua);
+  var toca = function (tipo) { return !!v.canPlayType && v.canPlayType(tipo) !== ''; };
   var calmo = window.matchMedia('(prefers-reduced-motion: reduce)').matches ||
               !!(c && c.saveData);
-  var webm = !webkit && !!v.canPlayType &&
-             v.canPlayType('video/webm; codecs="vp9"') !== '';
-  if (!calmo && (webm || webkit)) {
+  var webm = !webkit && toca('video/webm; codecs="vp9"');
+  var mp4 = webkit && toca('video/mp4; codecs="avc1.640029"');
+  if (!calmo && (webm || mp4)) {
     document.documentElement.classList.add('cascao-anima');
-    if (webkit) document.documentElement.classList.add('cascao-webp');
+    if (mp4) document.documentElement.classList.add('cascao-mp4');
   }
 }());
 </script>
