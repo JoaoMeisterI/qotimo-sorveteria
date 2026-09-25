@@ -213,7 +213,9 @@ body>*{
 
 body>*{
   --dh:clamp(48px,calc(60 * var(--u)),62px);
-  --topo-y:max(24px,calc(28 * var(--u)));
+  /* a gola sobe .52 x --dh acima da barra: com so 28px ela encostava no
+     alto da janela. Altura da gola + respiro, como no celular. */
+  --topo-y:calc(var(--dh) * .52 + max(20px,calc(24 * var(--u))));
 }
 
 .topo{
