@@ -1695,16 +1695,27 @@ button.linha__btn{border:0;font-family:inherit;line-height:inherit;cursor:pointe
     white-space:nowrap;
   }
 
-  /* o cascao ocupa o que sobrar da altura (flex), mede pela altura e
-     deriva a largura da proporcao do arquivo — nunca achata */
+  /* o cascao ocupa o que sobrar da altura (flex). A caixa .cascao cobre
+     esse espaco inteiro (absolute + inset) e as tres camadas se encaixam
+     nela com object-fit:contain — medem pela altura, nunca achatam.
+     Antes a caixa tinha height:100% dentro do item flex e largura pela
+     aspect-ratio: no iPhone o cascao sumia (espaco reservado, nada
+     desenhado). Sem porcentagem de altura nem aspect-ratio aqui, e sem
+     camada de GPU propria (will-change) — o paralaxe do celular usa
+     translate 2D (script.js). */
   .hero__cascao{
     flex:1 1 0;
+    width:100%;
+    /* relative (as camadas se ancoram aqui) — e inset:auto, senao valem os
+       deslocamentos da mesa (left 678u, top 86u) e o cascao ia para a
+       direita e saia pela borda */
+    position:relative;inset:auto;
     min-height:calc(170 * var(--um));
-    display:flex;justify-content:center;
     margin-block:calc(12 * var(--um)) calc(-1 * var(--sobrepoe));
+    will-change:auto;
   }
-  .cascao{height:100%;width:auto;max-width:100%}
-  .cascao__fallback{position:absolute;inset:0;height:100%;object-fit:contain}
+  .cascao{position:absolute;inset:0;width:auto;height:auto;max-width:none;aspect-ratio:auto}
+  .cascao__fallback{position:absolute;inset:0;width:100%;height:100%;object-fit:contain}
 
   /* faixa vermelha ancorada no pe do palco: a curva passa por tras do cone,
      como na composicao da mesa, em vez de so aparecer na borda direita */

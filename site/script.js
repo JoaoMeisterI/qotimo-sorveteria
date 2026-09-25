@@ -78,8 +78,10 @@
         Array.prototype.forEach.call(faixas, function (el, i) {
           el.style.transform = 'translate3d(0,' + (i ? -d : d) + 'px,0)';
         });
+        /* 2D de proposito: translate3d obriga uma camada de GPU so para o
+           cascao, e no iPhone ela chegou a nao ser desenhada */
         if (cascao) cascao.style.transform =
-          'translate3d(0,' + (p * altura * -0.034).toFixed(1) + 'px,0)';
+          'translate(0,' + (p * altura * -0.034).toFixed(1) + 'px)';
 
         /* O texto sobe um pouco mais que o resto e esmaece: da a leitura de
            que a primeira tela esta saindo, sem esconder nada antes da hora
