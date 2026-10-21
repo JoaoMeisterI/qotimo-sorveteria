@@ -216,6 +216,8 @@ body>*{
   /* a gola sobe .52 x --dh acima da barra: com so 28px ela encostava no
      alto da janela. Altura da gola + respiro, como no celular. */
   --topo-y:calc(var(--dh) * .52 + max(20px,calc(24 * var(--u))));
+  /* base da barra: e daqui que o cascao se afasta (ver .hero__cascao) */
+  --topo-fim:calc(var(--topo-y) + var(--dh));
 }
 
 .topo{
@@ -464,7 +466,15 @@ body>*{
    so width, com height:auto. */
 .hero__cascao{
   position:absolute;z-index:1;
-  inset-block-start:calc(86 * var(--u));
+  /* 86u e a posicao da arte. Mas a barra tem pisos em px (--dh >= 48px,
+     respiro >= 20px): quando --u encolhe, ela para de descer junto e a
+     ponta do cascao encostava nela. Entao o topo e o que for mais baixo
+     entre a arte e "base da barra + respiro", descontando a margem de
+     40px do arquivo (40 / 1017 * 365u = 14.36u) para medir o OBJETO. */
+  inset-block-start:max(
+    calc(86 * var(--u)),
+    calc(var(--topo-fim) + max(12px,calc(16 * var(--u))) - 14.36 * var(--u))
+  );
   inset-inline-start:calc(678 * var(--u));
   transform:none;
   display:block;
